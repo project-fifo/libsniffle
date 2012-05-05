@@ -3,5 +3,6 @@
   {applications, [kernel,
                   stdlib,
 		  alog,
+		  nodefinder,
 		  gproc
 		 ]}]}.
