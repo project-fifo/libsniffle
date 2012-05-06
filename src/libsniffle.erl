@@ -9,7 +9,9 @@
 -module(libsniffle).
 
 %% API
--export([list_machines/1]).
+-export([list_machines/1,
+	 list_keys/1,
+	 ping/0]).
 
 %%%===================================================================
 %%% API
@@ -28,6 +30,12 @@ list_machines(Auth) ->
 list_keys(Auth) ->
     Sniffle = gproc:lookup_pid({n, g, sniffle}),
     gen_server:gen_call(Sniffle, {keys, list, Auth}).
+
+ping() ->
+    Sniffle = gproc:lookup_pid({n, g, sniffle}),
+    gen_server:gen_call(Sniffle, ping).
+
+
 
 %%%===================================================================
 %%% Internal functions
