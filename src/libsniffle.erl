@@ -35,7 +35,7 @@ list_keys(Auth) ->
 
 ping() ->
     Sniffle = sniffle(),
-    gen_server:call(Sniffle, {ping}).
+    gen_server:call(Sniffle, ping).
 
 create_key(Auth, Pass, KeyID, PublicKey) ->
     Sniffle = sniffle(),
