@@ -23,20 +23,22 @@
 %% @end
 %%--------------------------------------------------------------------
 list_machines(Auth) ->
-    Sniffle = gproc:lookup_pid({n, g, sniffle}),
-    gen_server:call(Sniffle, {machines, list, Auth}).
+    Sniffle = sniffle(),
+    gen_server:gen_call(Sniffle, {machines, list, Auth}).
 
 
 list_keys(Auth) ->
-    Sniffle = gproc:lookup_pid({n, g, sniffle}),
-    gen_server:call(Sniffle, {keys, list, Auth}).
+    Sniffle = sniffle(),
+    gen_server:gen_call(Sniffle, {keys, list, Auth}).
 
-ping() ->
-    Sniffle = gproc:lookup_pid({n, g, sniffle}),
-    gen_server:call(Sniffle, ping).
-
+create_key(Auth, Pass, KeyID, PublicKey) ->
+    Sniffle = sniffle(),
+    gen_server:gen_call(Sniffle, {keys, create, Auth, Pass, KeyID, PublicKey}).
 
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+sniffle() ->
+    gproc:lookup_pid({n, g, sniffle}).
