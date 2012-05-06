@@ -12,6 +12,11 @@
 -export([list_machines/1,
 	 get_machine/2,
 	 delete_machine/2,
+	 start_machine/2,
+	 stop_machine/2,
+	 reboot_machine/2,
+	 list_packages/1,
+	 list_datasets/1,
 	 list_keys/1,
 	 ping/0,
 	 create_key/4]).
@@ -36,7 +41,27 @@ get_machine(Auth, UUID) ->
 delete_machine(Auth, UUID) ->
     Sniffle = sniffle(),
     gen_server:call(Sniffle, {machines, delete, Auth, UUID}).
-    
+
+start_machine(Auth, UUID) ->
+    Sniffle = sniffle(),
+    gen_server:call(Sniffle, {machines, start, Auth, UUID}).
+
+stop_machine(Auth, UUID) ->
+    Sniffle = sniffle(),
+    gen_server:call(Sniffle, {machines, stop, Auth, UUID}).
+
+reboot_machine(Auth, UUID) ->
+    Sniffle = sniffle(),
+    gen_server:call(Sniffle, {machines, reboot, Auth, UUID}).
+
+list_datasets(Auth) ->
+    Sniffle = sniffle(),
+    gen_server:call(Sniffle, {datasets, list, Auth}).
+
+list_packages(Auth) ->
+    Sniffle = sniffle(),
+    gen_server:call(Sniffle, {packages, list, Auth}).
+
 list_keys(Auth) ->
     Sniffle = sniffle(),
     gen_server:call(Sniffle, {keys, list, Auth}).
