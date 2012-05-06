@@ -10,6 +10,7 @@
 
 %% API
 -export([list_machines/1,
+	 get_machine/2,
 	 list_keys/1,
 	 ping/0,
 	 create_key/4]).
@@ -27,6 +28,10 @@ list_machines(Auth) ->
     Sniffle = sniffle(),
     gen_server:call(Sniffle, {machines, list, Auth}).
 
+get_machine(Auth, UUID) ->
+    Sniffle = sniffle(),
+    gen_server:call(Sniffle, {machines, get, Auth, UUID}).
+
 
 list_keys(Auth) ->
     Sniffle = sniffle(),
@@ -40,6 +45,7 @@ ping() ->
 create_key(Auth, Pass, KeyID, PublicKey) ->
     Sniffle = sniffle(),
     gen_server:call(Sniffle, {keys, create, Auth, Pass, KeyID, PublicKey}).
+
 
 
 %%%===================================================================
