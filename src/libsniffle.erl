@@ -25,21 +25,21 @@
 %%--------------------------------------------------------------------
 list_machines(Auth) ->
     Sniffle = sniffle(),
-    gen_server:gen_call(Sniffle, {machines, list, Auth}).
+    gen_server:gen(Sniffle, {machines, list, Auth}).
 
 
 list_keys(Auth) ->
     Sniffle = sniffle(),
-    gen_server:gen_call(Sniffle, {keys, list, Auth}).
+    gen_server:gen(Sniffle, {keys, list, Auth}).
 
 
 ping() ->
     Sniffle = sniffle(),
-    gen_server:gen_call(Sniffle, {ping}).
+    gen_server:gen(Sniffle, {ping}).
 
 create_key(Auth, Pass, KeyID, PublicKey) ->
     Sniffle = sniffle(),
-    gen_server:gen_call(Sniffle, {keys, create, Auth, Pass, KeyID, PublicKey}).
+    gen_server:gen(Sniffle, {keys, create, Auth, Pass, KeyID, PublicKey}).
 
 
 %%%===================================================================
