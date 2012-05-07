@@ -3,6 +3,6 @@
   {applications, [kernel,
                   stdlib,
 		  alog,
-		  nodefinder,
+		  redgrid,
 		  gproc
 		 ]}]}.
