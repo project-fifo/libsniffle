@@ -36,7 +36,7 @@
 %% @end
 %%--------------------------------------------------------------------
 list_machines(Auth) ->
-    sniffle_call(Auth, {machines, list, Auth}).
+    sniffle_call(Auth, {machines, list}).
 
 get_machine(Auth, UUID) ->
     sniffle_call(Auth, {machines, get, UUID}).
