@@ -22,8 +22,9 @@
 	 list_datasets/1,
 	 list_keys/1,
 	 list_images/1,
-	 ping/0,
-	 create_key/4]).
+	 info/1,
+	 ping/1,
+	 create_key/5]).
 
 %%%===================================================================
 %%% API
@@ -53,7 +54,7 @@ start_machine(Auth, UUID, Image) ->
     sniffle_call(Auth, {machines, start, UUID, [Image]}).
 
 stop_machine(Auth, UUID) ->
-    sniffle_call(Auth, {machines, stop,, UUID}).
+    sniffle_call(Auth, {machines, stop, UUID}).
 
 reboot_machine(Auth, UUID) ->
     sniffle_call(Auth, {machines, reboot, UUID}).
@@ -76,7 +77,11 @@ list_keys(Auth) ->
 create_key(Auth, Name, Pass, KeyID, PublicKey) ->
     sniffle_call(Auth, {keys, create, Name, Pass, KeyID, PublicKey}).
 
-ping() ->
+
+info(Auth) ->
+    sniffle_call(Auth, info).
+
+ping(Auth) ->
     sniffle_call(Auth, ping).
 
 
@@ -86,7 +91,7 @@ ping() ->
 %%% Internal functions
 %%%===================================================================
 
-snarl_call(Auth, Call) ->
+sniffle_call(Auth, Call) ->
     gen_server:call(sniffle(), {call, Auth, Call}).
     
 sniffle() ->
