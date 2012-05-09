@@ -1,8 +1,10 @@
 {application, libsniffle,
- [{vsn, "0.1.0"},
+ [{description, ""},
+  {vsn, "0.1.0"},
   {applications, [kernel,
                   stdlib,
 		  alog,
 		  redgrid,
 		  gproc
-		 ]}]}.
+		 ]}
+  {mod, { libsniffle_app, []}}]}.

@@ -35,64 +35,49 @@
 %% @end
 %%--------------------------------------------------------------------
 list_machines(Auth) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, list, Auth}).
+    sniffle_call(Auth, {machines, list, Auth}).
 
 get_machine(Auth, UUID) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, get, Auth, UUID}).
+    sniffle_call(Auth, {machines, get, UUID}).
 
 get_machine_info(Auth, UUID) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, info, Auth, UUID}).
+    sniffle_call(Auth, {machines, info, UUID}).
 
 delete_machine(Auth, UUID) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, delete, Auth, UUID}).
+    sniffle_call(Auth, {machines, delete, UUID}).
 
 start_machine(Auth, UUID) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, start, Auth, UUID}).
+    sniffle_call(Auth, {machines, start, UUID}).
 
 start_machine(Auth, UUID, Image) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, start, Auth, UUID, [Image]}).
+    sniffle_call(Auth, {machines, start, UUID, [Image]}).
 
 stop_machine(Auth, UUID) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, stop, Auth, UUID}).
+    sniffle_call(Auth, {machines, stop,, UUID}).
 
 reboot_machine(Auth, UUID) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, reboot, Auth, UUID}).
+    sniffle_call(Auth, {machines, reboot, UUID}).
 
 create_machine(Auth, Data) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {machines, create, Auth, Data}).
+    sniffle_call(Auth, {machines, create, Data}).
 
 list_datasets(Auth) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {datasets, list, Auth}).
+    sniffle_call(Auth, {datasets, list}).
 
 list_packages(Auth) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {packages, list, Auth}).
+    sniffle_call(Auth, {packages, list}).
 
 list_images(Auth) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {images, list, Auth}).
+    sniffle_call(Auth, {images, list}).
 
 list_keys(Auth) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {keys, list, Auth}).
+    sniffle_call(Auth, {keys, list}).
 
-create_key(Auth, Pass, KeyID, PublicKey) ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, {keys, create, Auth, Pass, KeyID, PublicKey}).
+create_key(Auth, Name, Pass, KeyID, PublicKey) ->
+    sniffle_call(Auth, {keys, create, Name, Pass, KeyID, PublicKey}).
 
 ping() ->
-    Sniffle = sniffle(),
-    gen_server:call(Sniffle, ping).
+    sniffle_call(Auth, ping).
 
 
 
@@ -101,5 +86,8 @@ ping() ->
 %%% Internal functions
 %%%===================================================================
 
+snarl_call(Auth, Call) ->
+    gen_server:call(sniffle(), {call, Auth, Call}).
+    
 sniffle() ->
     gproc:lookup_pid({n, g, sniffle}).
