@@ -91,6 +91,9 @@ ping(Auth) ->
 %%% Internal functions
 %%%===================================================================
 
+sniffle_call({Auth, _}, Call) ->
+    sniffle_call(Auth, Call);
+
 sniffle_call(Auth, Call) ->
     gen_server:call(sniffle(), {call, Auth, Call}).
     
