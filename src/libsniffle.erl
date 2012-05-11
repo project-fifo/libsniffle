@@ -22,6 +22,7 @@
 	 list_datasets/1,
 	 list_keys/1,
 	 list_images/1,
+	 register/3,
 	 info/1,
 	 ping/1,
 	 create_key/5]).
@@ -83,6 +84,9 @@ info(Auth) ->
 ping(Auth) ->
     sniffle_call(Auth, ping).
 
+register(Auth, Type, Spec) ->
+    sniffle_cast(Auth, {register, Type, Spec}).
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -92,6 +96,13 @@ sniffle_call({Auth, _}, Call) ->
 
 sniffle_call(Auth, Call) ->
     gen_server:call(sniffle(), {call, Auth, Call}).
+
+sniffle_cast({Auth, _}, Cast) ->
+    sniffle_cast(Auth, Cast);
+
+sniffle_cast(Auth, Cast) ->
+    gen_server:cast(sniffle(), {call, Auth, Cast}).
+
     
 sniffle() ->
     gproc:lookup_pid({n, g, sniffle}).
