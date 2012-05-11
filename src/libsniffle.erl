@@ -77,15 +77,11 @@ list_keys(Auth) ->
 create_key(Auth, Name, Pass, KeyID, PublicKey) ->
     sniffle_call(Auth, {keys, create, Name, Pass, KeyID, PublicKey}).
 
-
 info(Auth) ->
     sniffle_call(Auth, info).
 
 ping(Auth) ->
     sniffle_call(Auth, ping).
-
-
-
 
 %%%===================================================================
 %%% Internal functions
