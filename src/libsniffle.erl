@@ -101,7 +101,7 @@ sniffle_cast({Auth, _}, Cast) ->
     sniffle_cast(Auth, Cast);
 
 sniffle_cast(Auth, Cast) ->
-    gen_server:cast(sniffle(), {call, Auth, Cast}).
+    gen_server:cast(sniffle(), {cast, Auth, Cast}).
 
     
 sniffle() ->
