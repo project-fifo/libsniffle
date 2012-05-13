@@ -25,6 +25,7 @@
 	 register/3,
 	 info/1,
 	 ping/1,
+	 join_client_channel/0,
 	 create_key/5]).
 
 %%%===================================================================
@@ -86,6 +87,9 @@ ping(Auth) ->
 
 register(Auth, Type, Spec) ->
     sniffle_cast(Auth, {register, Type, Spec}).
+
+join_client_channel() ->
+    gproc:reg({p, g, {sniffle, register}}).
 
 %%%===================================================================
 %%% Internal functions
