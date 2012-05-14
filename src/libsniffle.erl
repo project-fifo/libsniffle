@@ -19,6 +19,7 @@
 	 stop_machine/2,
 	 reboot_machine/2,
 	 list_packages/1,
+	 create_package/5,
 	 list_datasets/1,
 	 list_keys/1,
 	 list_images/1,
@@ -69,6 +70,10 @@ list_datasets(Auth) ->
 
 list_packages(Auth) ->
     sniffle_call(Auth, {packages, list}).
+
+create_package(Auth, Name, Disk, Memory, Swap) ->
+    sniffle_call(Auth, {packages, create, Name, Disk, Memory, Swap}).
+
 
 list_images(Auth) ->
     sniffle_call(Auth, {images, list}).
