@@ -67,8 +67,11 @@ reboot_machine(Auth, UUID) ->
 create_machine(Auth, Data) ->
     sniffle_call(Auth, {machines, create, Data}).
 
+create_machine({Auth, _}, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
+    create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags);
+
 create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
-    sniffle_call(Auth, {machines, create, Name, PackageUUID, DatasetUUID, Metadata, Tags}).
+    gen_server:call(sniffle(), {call, Auth, {machines, create, Name, PackageUUID, DatasetUUID, Metadata, Tags}}, 60000).
 
 list_datasets(Auth) ->
     sniffle_call(Auth, {datasets, list}).
@@ -81,7 +84,6 @@ create_package(Auth, Name, Disk, Memory, Swap) ->
 
 delete_package(Auth, Name) ->
     sniffle_call(Auth, {packages, delete, Name}).
-
 
 list_images(Auth) ->
     sniffle_call(Auth, {images, list}).
