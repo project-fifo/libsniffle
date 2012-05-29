@@ -71,7 +71,7 @@ create_machine({Auth, _}, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
     create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags);
 
 create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
-    gen_server:call(sniffle(), {call, Auth, {machines, create, Name, PackageUUID, DatasetUUID, Metadata, Tags}}, 60000).
+    gen_server:call(sniffle(), {call, Auth, {machines, create, Name, PackageUUID, DatasetUUID, Metadata, Tags}}, 120000).
 
 list_datasets(Auth) ->
     sniffle_call(Auth, {datasets, list}).
