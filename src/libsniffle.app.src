@@ -4,7 +4,6 @@
   {applications, [kernel,
                   stdlib,
 		  alog,
-		  redgrid,
 		  gproc
 		 ]},
   {mod, { libsniffle_app, []}}]}.
