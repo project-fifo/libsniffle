@@ -26,6 +26,7 @@
 	 list_keys/1,
 	 list_images/1,
 	 register/3,
+	 register/4,
 	 info/1,
 	 ping/1,
 	 join_client_channel/0,
@@ -102,6 +103,9 @@ ping(Auth) ->
 
 register(Auth, Type, Spec) ->
     sniffle_cast(Auth, {register, Type, Spec}).
+
+register(Auth, Type, UUID, Spec) ->
+    sniffle_cast(Auth, {register, Type, UUID, Spec}).
 
 join_client_channel() ->
     gproc:reg({p, g, {sniffle, register}}).
