@@ -25,6 +25,7 @@
 	 list_datasets/1,
 	 list_keys/1,
 	 list_images/1,
+	 list_hosts/1,
 	 register/3,
 	 register/4,
 	 info/1,
@@ -41,6 +42,9 @@
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
+list_hosts(Auth) ->
+    sniffle_call(Auth, {hosts, list}).
+
 list_machines(Auth) ->
     sniffle_call(Auth, {machines, list}).
 
