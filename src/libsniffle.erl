@@ -13,6 +13,7 @@
 	 get_machine/2,
 	 get_machine_info/2,
 	 create_machine/2,
+	 create_machine/7,
 	 create_machine/6,
 	 delete_machine/2,
 	 start_machine/2,
@@ -71,6 +72,12 @@ reboot_machine(Auth, UUID) ->
 
 create_machine(Auth, Data) ->
     sniffle_call(Auth, {machines, create, Data}).
+
+create_machine({Auth, _}, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
+    create_machine(Auth, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags);
+
+create_machine(Auth, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
+    gen_server:call(sniffle(), {call, Auth, {machines, create, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags}}, 120000).
 
 create_machine({Auth, _}, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
     create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags);
