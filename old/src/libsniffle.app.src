@@ -1,0 +1,9 @@
+{application, libsniffle,
+ [{description, "Sniffle interface library."},
+  {vsn, "0.1.2"},
+  {applications, [kernel,
+                  stdlib,
+		  alog,
+		  gproc
+		 ]},
+  {mod, { libsniffle_app, []}}]}.

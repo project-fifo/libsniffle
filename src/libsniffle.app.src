@@ -1,9 +1,13 @@
 {application, libsniffle,
- [{description, "Sniffle interface library."},
-  {vsn, "0.1.2"},
-  {applications, [kernel,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
                   stdlib,
-		  alog,
-		  gproc
-		 ]},
-  {mod, { libsniffle_app, []}}]}.
+		  zmq_mdns_client
+                 ]},
+  {mod, { libsniffle_app, []}},
+  {env, [{domain, ".local"}]}
+ ]}.
