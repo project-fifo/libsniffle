@@ -2,7 +2,9 @@
 
 -export([
 	 start/0, 
-	 servers/0
+	 servers/0,
+	 register_on_connect/1,
+	 register_on_disconnect/1
 	]).
 
 -export([
@@ -23,9 +25,6 @@
 	 hypervisor_list/1
 	]).
 
--export([
-	]).
-
 -type vm() :: any().
 -type hypervisor() :: any().
 
@@ -41,6 +40,12 @@ start() ->
 -spec servers() -> [any()].
 servers() ->
     libsnarl_server:servers().
+
+register_on_connect(Fn) ->
+    libsnarl_server:register_on_connect(Fn).
+
+register_on_disconnect(Fn) ->
+    libsnarl_server:register_on_disconnect(Fn).
 
 %%%===================================================================
 %%% VM Functions
