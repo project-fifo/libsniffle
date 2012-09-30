@@ -11,7 +11,9 @@
 	 vm_register/2,
 	 vm_unregister/1,
 	 vm_attribute_get/2,
+	 vm_attributes_get/1,
 	 vm_attribute_set/3,
+	 vm_attributes_set/2,
 	 vm_list/0,
 	 vm_list/1
 	]).
@@ -68,6 +70,14 @@ vm_attribute_get(VM, Attribute) ->
 -spec vm_attribute_set(VM::binary(), Attribute::binary(), Value::any()) -> any().
 vm_attribute_set(VM, Attribute, Value) ->
     send({vm, attribute, set, VM, Attribute, Value}).
+
+-spec vm_attributes_get(VM::binary()) -> [{binary(), any()}].
+vm_attributes_get(VM) ->
+    send({vm, attributes, get, VM}).
+
+-spec vm_attributes_set(VM::binary(), [{Attribute::binary(), Value::any()}]) -> any().
+vm_attributes_set(VM, Attributes) ->
+    send({vm, attributes, set, VM, Attributes}).
 
 -spec vm_list() -> [vm()].
 vm_list() ->
