@@ -10,10 +10,10 @@
 -export([
 	 vm_register/2,
 	 vm_unregister/1,
+	 vm_attribute_get/1,
 	 vm_attribute_get/2,
-	 vm_attributes_get/1,
+	 vm_attribute_set/2,
 	 vm_attribute_set/3,
-	 vm_attributes_set/2,
 	 vm_list/0,
 	 vm_list/1
 	]).
@@ -37,17 +37,17 @@
 -spec start() -> ok | error.
 start() ->
     application:start(zmq_mdns_client),
-    application:start(libsnarl).
+    application:start(libsniffle).
 
 -spec servers() -> [any()].
 servers() ->
-    libsnarl_server:servers().
+    libsniffle_server:servers().
 
 register_on_connect(Fn) ->
-    libsnarl_server:register_on_connect(Fn).
+    libsniffle_server:register_on_connect(Fn).
 
 register_on_disconnect(Fn) ->
-    libsnarl_server:register_on_disconnect(Fn).
+    libsniffle_server:register_on_disconnect(Fn).
 
 %%%===================================================================
 %%% VM Functions
@@ -56,28 +56,28 @@ register_on_disconnect(Fn) ->
 
 -spec vm_register(VM::binary(), Hypervisor::binary()) -> ok | error.
 vm_register(VM, Hypervisor) ->
-    send({vm, register, VM, Hypervisor}).
+    send({vm, register, ensure_binary(VM), ensure_binary(Hypervisor)}).
 
 
 -spec vm_unregister(VM::binary()) -> ok | error.
 vm_unregister(VM) ->
-    send({vm, unregister, VM}).
+    send({vm, unregister, ensure_binary(VM)}).
 
 -spec vm_attribute_get(VM::binary(), Attribute::binary()) -> any().
 vm_attribute_get(VM, Attribute) ->
-    send({vm, attribute, get, VM, Attribute}).
+    send({vm, attribute, get, ensure_binary(VM), ensure_binary(Attribute)}).
 
 -spec vm_attribute_set(VM::binary(), Attribute::binary(), Value::any()) -> any().
 vm_attribute_set(VM, Attribute, Value) ->
-    send({vm, attribute, set, VM, Attribute, Value}).
+    send({vm, attribute, set, ensure_binary(VM), ensure_binary(Attribute), Value}).
 
--spec vm_attributes_get(VM::binary()) -> [{binary(), any()}].
-vm_attributes_get(VM) ->
-    send({vm, attributes, get, VM}).
+-spec vm_attribute_get(VM::binary()) -> [{binary(), any()}].
+vm_attribute_get(VM) ->
+    send({vm, attribute, get, ensure_binary(VM)}).
 
--spec vm_attributes_set(VM::binary(), [{Attribute::binary(), Value::any()}]) -> any().
-vm_attributes_set(VM, Attributes) ->
-    send({vm, attributes, set, VM, Attributes}).
+-spec vm_attribute_set(VM::binary(), [{Attribute::binary(), Value::any()}]) -> any().
+vm_attribute_set(VM, Attributes) ->
+    send({vm, attribute, set, ensure_binary(VM), [{ensure_binary(K), V} || {K, V} <- Attributes]}).
 
 -spec vm_list() -> [vm()].
 vm_list() ->
@@ -85,29 +85,27 @@ vm_list() ->
 
 -spec vm_list(User::binary()) -> [vm()].
 vm_list(User) ->
-    send({vm, list, User}).
-
+    send({vm, list, ensure_binary(User)}).
 
 %%%===================================================================
 %%% Hypervisor Functions
 %%%===================================================================
 
-
 -spec hypervisor_register(Hypervisor::binary(), Host::binary(), Port::integer()) -> ok | error.
 hypervisor_register(Hypervisor, Host, Port) ->
-    send({hypervisor, register, Hypervisor, Host, Port}).
+    send({hypervisor, register, ensure_binary(Hypervisor), Host, Port}).
 
 -spec hypervisor_unregister(Hypervisor::binary()) -> ok | error.
 hypervisor_unregister(Hypervisor) ->
-    send({hyperisor, unregister, Hypervisor}).
+    send({hyperisor, unregister, ensure_binary(Hypervisor)}).
 
 -spec hypervisor_resource_get(Hypervisor::binary(), Resource::binary()) -> any().
 hypervisor_resource_get(Hypervisor, Resource) ->
-    send({hyperisor, resource, get, Hypervisor, Resource}).
+    send({hyperisor, resource, get, ensure_binary(Hypervisor), ensure_binary(Resource)}).
 
 -spec hypervisor_resource_set(Hypervisor::binary(), Resource::binary(), Value::any()) -> ok| error.
 hypervisor_resource_set(Hypervisor, Resource, Value) ->
-    send({hyperisor, resource, set, Hypervisor, Resource, Value}).
+    send({hyperisor, resource, set, ensure_binary(Hypervisor), ensure_binary(Resource), Value}).
 
 -spec hypervisor_list() -> [hypervisor()].
 hypervisor_list() ->
@@ -115,11 +113,24 @@ hypervisor_list() ->
 
 -spec hypervisor_list(User::binary()) -> [hypervisor()].
 hypervisor_list(User) ->
-    send({hyperisor, list, User}).
+    send({hyperisor, list, ensure_binary(User)}).
 
 %%%===================================================================
 %%% Internal Functions
 %%%===================================================================
 
 send(Msg) ->
-    libsnarl_server:send(Msg).
+    libsniffle_server:send(Msg).
+
+ensure_binary(A) when is_atom(A) ->
+    list_to_binary(atom_to_list(A));
+ensure_binary(L) when is_list(L) ->
+    list_to_binary(L);
+ensure_binary(B) when is_binary(B)->
+    B;
+ensure_binary(I) when is_integer(I) ->
+    list_to_binary(integer_to_list(I));
+ensure_binary(F) when is_float(F) ->
+    list_to_binary(float_to_list(F));
+ensure_binary(T) ->
+    term_to_binary(T).
