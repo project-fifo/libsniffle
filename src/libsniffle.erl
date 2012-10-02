@@ -1,142 +1,128 @@
-%%%-------------------------------------------------------------------
-%%% @author Heinz N. Gies <heinz@licenser.net>
-%%% @copyright (C) 2012, Heinz N. Gies
-%%% @doc
-%%%
-%%% @end
-%%% Created :  5 May 2012 by Heinz N. Gies <heinz@licenser.net>
-%%%-------------------------------------------------------------------
 -module(libsniffle).
 
-%% API
--export([list_machines/1,
-	 get_machine/2,
-	 get_machine_info/2,
-	 create_machine/2,
-	 create_machine/7,
-	 create_machine/6,
-	 delete_machine/2,
-	 start_machine/2,
-	 start_machine/3,
-	 stop_machine/2,
-	 reboot_machine/2,
-	 list_packages/1,
-	 create_package/5,
-	 delete_package/2,
-	 list_datasets/1,
-	 list_keys/1,
-	 list_images/1,
-	 list_hosts/1,
-	 register/3,
-	 register/4,
-	 info/1,
-	 ping/1,
-	 join_client_channel/0,
-	 create_key/5]).
+-export([
+	 start/0, 
+	 servers/0
+	]).
+
+-export([
+	 vm_register/2,
+	 vm_unregister/1,
+	 vm_attribute_get/1,
+	 vm_attribute_get/2,
+	 vm_attribute_set/2,
+	 vm_attribute_set/3,
+	 vm_list/0,
+	 vm_list/1
+	]).
+
+-export([
+	 hypervisor_register/3,
+	 hypervisor_unregister/1,
+	 hypervisor_resource_get/2,
+	 hypervisor_resource_set/3,
+	 hypervisor_list/0,
+	 hypervisor_list/1
+	]).
+
+-type vm() :: any().
+-type hypervisor() :: any().
 
 %%%===================================================================
-%%% API
+%%% Generatl Functions
 %%%===================================================================
 
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
-list_hosts(Auth) ->
-    sniffle_call(Auth, {hosts, list}).
+-spec start() -> ok | error.
+start() ->
+    application:start(zmq_mdns_client),
+    application:start(libsniffle).
 
-list_machines(Auth) ->
-    sniffle_call(Auth, {machines, list}).
-
-get_machine(Auth, UUID) ->
-    sniffle_call(Auth, {machines, get, UUID}).
-
-get_machine_info(Auth, UUID) ->
-    sniffle_call(Auth, {machines, info, UUID}).
-
-delete_machine(Auth, UUID) ->
-    sniffle_call(Auth, {machines, delete, UUID}).
-
-start_machine(Auth, UUID) ->
-    sniffle_call(Auth, {machines, start, UUID}).
-
-start_machine(Auth, UUID, Image) ->
-    sniffle_call(Auth, {machines, start, UUID, [Image]}).
-
-stop_machine(Auth, UUID) ->
-    sniffle_call(Auth, {machines, stop, UUID}).
-
-reboot_machine(Auth, UUID) ->
-    sniffle_call(Auth, {machines, reboot, UUID}).
-
-create_machine(Auth, Data) ->
-    sniffle_call(Auth, {machines, create, Data}).
-
-create_machine({Auth, _}, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
-    create_machine(Auth, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags);
-
-create_machine(Auth, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
-    gen_server:call(sniffle(), {call, Auth, {machines, create, Host, Name, PackageUUID, DatasetUUID, Metadata, Tags}}, 120000).
-
-create_machine({Auth, _}, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
-    create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags);
-
-create_machine(Auth, Name, PackageUUID, DatasetUUID, Metadata, Tags) ->
-    gen_server:call(sniffle(), {call, Auth, {machines, create, Name, PackageUUID, DatasetUUID, Metadata, Tags}}, 120000).
-
-list_datasets(Auth) ->
-    sniffle_call(Auth, {datasets, list}).
-
-list_packages(Auth) ->
-    sniffle_call(Auth, {packages, list}).
-
-create_package(Auth, Name, Disk, Memory, Swap) ->
-    sniffle_call(Auth, {packages, create, Name, Disk, Memory, Swap}).
-
-delete_package(Auth, Name) ->
-    sniffle_call(Auth, {packages, delete, Name}).
-
-list_images(Auth) ->
-    sniffle_call(Auth, {images, list}).
-
-list_keys(Auth) ->
-    sniffle_call(Auth, {keys, list}).
-
-create_key(Auth, Name, Pass, KeyID, PublicKey) ->
-    sniffle_call(Auth, {keys, create, Name, Pass, KeyID, PublicKey}).
-
-info(Auth) ->
-    sniffle_call(Auth, info).
-
-ping(Auth) ->
-    sniffle_call(Auth, ping).
-
-register(Auth, Type, Spec) ->
-    sniffle_cast(Auth, {register, Type, Spec}).
-
-register(Auth, Type, UUID, Spec) ->
-    sniffle_cast(Auth, {register, Type, UUID, Spec}).
-
-join_client_channel() ->
-    gproc:reg({p, g, {sniffle, register}}).
+-spec servers() -> [any()].
+servers() ->
+    libsniffle_server:servers().
 
 %%%===================================================================
-%%% Internal functions
+%%% VM Functions
 %%%===================================================================
 
-sniffle_call({Auth, _}, Call) ->
-    sniffle_call(Auth, Call);
 
-sniffle_call(Auth, Call) ->
-    gen_server:call(sniffle(), {call, Auth, Call}).
+-spec vm_register(VM::binary(), Hypervisor::binary()) -> ok | error.
+vm_register(VM, Hypervisor) ->
+    send({vm, register, ensure_binary(VM), ensure_binary(Hypervisor)}).
 
-sniffle_cast({Auth, _}, Cast) ->
-    sniffle_cast(Auth, Cast);
 
-sniffle_cast(Auth, Cast) ->
-    gen_server:cast(sniffle(), {cast, Auth, Cast}).
+-spec vm_unregister(VM::binary()) -> ok | error.
+vm_unregister(VM) ->
+    send({vm, unregister, ensure_binary(VM)}).
 
-    
-sniffle() ->
-    gproc:lookup_pid({n, g, sniffle}).
+-spec vm_attribute_get(VM::binary(), Attribute::binary()) -> any().
+vm_attribute_get(VM, Attribute) ->
+    send({vm, attribute, get, ensure_binary(VM), ensure_binary(Attribute)}).
+
+-spec vm_attribute_set(VM::binary(), Attribute::binary(), Value::any()) -> any().
+vm_attribute_set(VM, Attribute, Value) ->
+    send({vm, attribute, set, ensure_binary(VM), ensure_binary(Attribute), Value}).
+
+-spec vm_attribute_get(VM::binary()) -> [{binary(), any()}].
+vm_attribute_get(VM) ->
+    send({vm, attribute, get, ensure_binary(VM)}).
+
+-spec vm_attribute_set(VM::binary(), [{Attribute::binary(), Value::any()}]) -> any().
+vm_attribute_set(VM, Attributes) ->
+    send({vm, attribute, set, ensure_binary(VM), [{ensure_binary(K), V} || {K, V} <- Attributes]}).
+
+-spec vm_list() -> [vm()].
+vm_list() ->
+    send({vm, list}).
+
+-spec vm_list(User::binary()) -> [vm()].
+vm_list(User) ->
+    send({vm, list, ensure_binary(User)}).
+
+%%%===================================================================
+%%% Hypervisor Functions
+%%%===================================================================
+
+-spec hypervisor_register(Hypervisor::binary(), Host::binary(), Port::integer()) -> ok | error.
+hypervisor_register(Hypervisor, Host, Port) ->
+    send({hypervisor, register, ensure_binary(Hypervisor), Host, Port}).
+
+-spec hypervisor_unregister(Hypervisor::binary()) -> ok | error.
+hypervisor_unregister(Hypervisor) ->
+    send({hyperisor, unregister, ensure_binary(Hypervisor)}).
+
+-spec hypervisor_resource_get(Hypervisor::binary(), Resource::binary()) -> any().
+hypervisor_resource_get(Hypervisor, Resource) ->
+    send({hyperisor, resource, get, ensure_binary(Hypervisor), ensure_binary(Resource)}).
+
+-spec hypervisor_resource_set(Hypervisor::binary(), Resource::binary(), Value::any()) -> ok| error.
+hypervisor_resource_set(Hypervisor, Resource, Value) ->
+    send({hyperisor, resource, set, ensure_binary(Hypervisor), ensure_binary(Resource), Value}).
+
+-spec hypervisor_list() -> [hypervisor()].
+hypervisor_list() ->
+    send({hyperisor, list}).
+
+-spec hypervisor_list(User::binary()) -> [hypervisor()].
+hypervisor_list(User) ->
+    send({hyperisor, list, ensure_binary(User)}).
+
+%%%===================================================================
+%%% Internal Functions
+%%%===================================================================
+
+send(Msg) ->
+    libsniffle_server:send(Msg).
+
+ensure_binary(A) when is_atom(A) ->
+    list_to_binary(atom_to_list(A));
+ensure_binary(L) when is_list(L) ->
+    list_to_binary(L);
+ensure_binary(B) when is_binary(B)->
+    B;
+ensure_binary(I) when is_integer(I) ->
+    list_to_binary(integer_to_list(I));
+ensure_binary(F) when is_float(F) ->
+    list_to_binary(float_to_list(F));
+ensure_binary(T) ->
+    term_to_binary(T).
