@@ -2,9 +2,7 @@
 
 -export([
 	 start/0, 
-	 servers/0,
-	 register_on_connect/1,
-	 register_on_disconnect/1
+	 servers/0
 	]).
 
 -export([
@@ -42,12 +40,6 @@ start() ->
 -spec servers() -> [any()].
 servers() ->
     libsniffle_server:servers().
-
-register_on_connect(Fn) ->
-    libsniffle_server:register_on_connect(Fn).
-
-register_on_disconnect(Fn) ->
-    libsniffle_server:register_on_disconnect(Fn).
 
 %%%===================================================================
 %%% VM Functions

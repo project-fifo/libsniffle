@@ -16,11 +16,14 @@
 	 servers/0]).
 
 %% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
+-export([
+	 init/1,
+	 handle_call/3,
+	 handle_cast/2,
+	 handle_info/2,
 	 terminate/2,
-	 code_change/3,
-	 register_on_connect/1,
-	 register_on_disconnect/1]).
+	 code_change/3
+	]).
 
 -define(SERVER, ?MODULE). 
 
@@ -45,13 +48,6 @@ send(Msg) ->
 
 servers() ->
     gen_server:call(?SERVER, servers).
-
-register_on_connect(Fn) ->
-    gen_server:cast(?SERVER, {on_connect, Fn}).
-
-register_on_disconnect(Fn) ->
-    gen_server:cast(?SERVER, {on_disconnect, Fn}).
-
 
 %%%===================================================================
 %%% gen_server callbacks
