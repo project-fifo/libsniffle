@@ -89,23 +89,23 @@ hypervisor_register(Hypervisor, Host, Port) ->
 
 -spec hypervisor_unregister(Hypervisor::binary()) -> ok | error.
 hypervisor_unregister(Hypervisor) ->
-    send({hyperisor, unregister, ensure_binary(Hypervisor)}).
+    send({hypervisor, unregister, ensure_binary(Hypervisor)}).
 
 -spec hypervisor_resource_get(Hypervisor::binary(), Resource::binary()) -> any().
 hypervisor_resource_get(Hypervisor, Resource) ->
-    send({hyperisor, resource, get, ensure_binary(Hypervisor), ensure_binary(Resource)}).
+    send({hypervisor, resource, get, ensure_binary(Hypervisor), ensure_binary(Resource)}).
 
 -spec hypervisor_resource_set(Hypervisor::binary(), Resource::binary(), Value::any()) -> ok| error.
 hypervisor_resource_set(Hypervisor, Resource, Value) ->
-    send({hyperisor, resource, set, ensure_binary(Hypervisor), ensure_binary(Resource), Value}).
+    send({hypervisor, resource, set, ensure_binary(Hypervisor), ensure_binary(Resource), Value}).
 
 -spec hypervisor_list() -> [hypervisor()].
 hypervisor_list() ->
-    send({hyperisor, list}).
+    send({hypervisor, list}).
 
 -spec hypervisor_list(User::binary()) -> [hypervisor()].
 hypervisor_list(User) ->
-    send({hyperisor, list, ensure_binary(User)}).
+    send({hypervisor, list, ensure_binary(User)}).
 
 %%%===================================================================
 %%% Internal Functions
