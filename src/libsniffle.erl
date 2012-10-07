@@ -34,7 +34,7 @@
 
 -spec start() -> ok | error.
 start() ->
-    application:start(zmq_mdns_client),
+    application:start(mdns_client_lib),
     application:start(libsniffle).
 
 -spec servers() -> [any()].
@@ -111,14 +111,17 @@ hypervisor_list(User) ->
 %%% Internal Functions
 %%%===================================================================
 
+
 send(Msg) ->
     libsniffle_server:send(Msg).
 
+
+-spec ensure_binary(any()) -> binary().
 ensure_binary(A) when is_atom(A) ->
     list_to_binary(atom_to_list(A));
 ensure_binary(L) when is_list(L) ->
     list_to_binary(L);
-ensure_binary(B) when is_binary(B)->
+ensure_binary(B) when is_binary(B) ->
     B;
 ensure_binary(I) when is_integer(I) ->
     list_to_binary(integer_to_list(I));

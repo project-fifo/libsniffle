@@ -66,7 +66,7 @@ servers() ->
 %%--------------------------------------------------------------------
 
 init([]) ->
-    {ok, Pid} = zmq_mdns_client:instance("sniffle"),
+    {ok, Pid} = mdns_client_lib:instance("sniffle"),
     {ok, #state{zmq_worker = Pid}}.
 
 %%--------------------------------------------------------------------
@@ -85,11 +85,11 @@ init([]) ->
 %%--------------------------------------------------------------------
 
 handle_call(servers, _From, #state{zmq_worker = Pid} = State) ->
-    Reply = zmq_mdns_client_server:servers(Pid),
+    Reply = mdns_client_lib:servers(Pid),
     {reply, Reply, State};
 
 handle_call({send, Msg}, _From, #state{zmq_worker = Pid} = State) ->
-    Reply = zmq_mdns_client:send(Pid, Msg),
+    Reply = mdns_client_lib:call(Pid, Msg),
     {reply, Reply, State};
 
 handle_call(_Request, _From, State) ->
@@ -106,13 +106,6 @@ handle_call(_Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_cast({on_connect, Fn}, #state{zmq_worker = Pid} = State) ->
-    zmq_mdns_client:register_on_connect(Pid, Fn),
-    {noreply, State};
-
-handle_cast({on_disconnect, Fn}, #state{zmq_worker = Pid} = State) ->
-    zmq_mdns_client:register_on_disconnect(Pid, Fn),
-    {noreply, State};
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
