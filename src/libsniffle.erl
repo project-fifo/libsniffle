@@ -66,7 +66,6 @@
 -type dataset() :: term().
 -type package() :: term().
 
-
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
@@ -159,7 +158,7 @@ hypervisor_list(Requirements) ->
 
 -spec dataset_create(Dataset::binary()) -> ok.
 dataset_create(Dataset) ->
-    send({Dataset, create, Dataset}).
+    send({dataset, create, Dataset}).
 
 -spec dataset_delete(Dataset::binary()) -> ok.
 dataset_delete(Dataset) ->
@@ -167,7 +166,7 @@ dataset_delete(Dataset) ->
 
 -spec dataset_get(Dataset::binary()) -> Dataset::dataset().
 dataset_get(Dataset) ->
-    send({Dataset, get, Dataset}).
+    send({dataset, get, Dataset}).
 
 -spec dataset_attribute_get(Dataset::binary()) -> {ok, [{Key::term(), Key::term()}]}.
 dataset_attribute_get(Dataset) ->
