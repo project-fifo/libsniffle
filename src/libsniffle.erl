@@ -207,7 +207,7 @@ package_delete(Package) ->
 
 -spec package_get(Package::binary()) -> Package::package().
 package_get(Package) ->
-    send({package, delete, Package}).
+    send({package, get, Package}).
 
 -spec package_attribute_get(Package::binary()) -> {ok, [{Key::term(), Key::term()}]}.
 package_attribute_get(Package) ->
@@ -242,7 +242,6 @@ iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) ->
 
 iprange_delete(Iprange) ->
     send({iprange, delete, Iprange}).
-
 
 iprange_get(Iprange) ->
     send({iprange, get, Iprange}).
