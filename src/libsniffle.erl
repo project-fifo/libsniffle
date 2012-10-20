@@ -199,7 +199,7 @@ dataset_list(User) ->
 
 -spec package_create(Package::binary()) -> ok.
 package_create(Package) ->
-    send({Package, create, Package}).
+    send({package, create, Package}).
 
 -spec package_delete(Package::binary()) -> ok.
 package_delete(Package) ->
