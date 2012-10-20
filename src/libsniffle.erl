@@ -242,7 +242,13 @@ package_list(User) ->
 %%%===================================================================
 
 iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) ->
-    send({iprange, create, Iprange, Network, Gateway, Netmask, First, Last, Tag}).
+    send({iprange, create, Iprange,
+	  ip_to_bin(Network), 
+	  ip_to_bin(Gateway), 
+	  ip_to_bin(Netmask), 
+	  ip_to_bin(First), 
+	  ip_to_bin(Last), 
+	  Tag}).
 
 iprange_delete(Iprange) ->
     send({iprange, delete, Iprange}).
@@ -281,3 +287,13 @@ ensure_binary(F) when is_float(F) ->
     list_to_binary(float_to_list(F));
 ensure_binary(T) ->
     term_to_binary(T).
+
+ip_to_bin(IP) ->
+    [As, Bs, Cs, Ds] = re:split(IP, "\\.", [{return, list}]),
+    {A, _} = string:to_integer(As), 
+    {B, _} = string:to_integer(Bs), 
+    {C, _} = string:to_integer(Cs), 
+    {D, _} = string:to_integer(Ds),
+    <<I:32>> = <<A:8, B:8, C:8, D:8>>,
+    I.
+    
