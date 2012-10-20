@@ -2,7 +2,8 @@
 
 -export([
 	 start/0, 
-	 servers/0
+	 servers/0,
+	 create/3
 	]).
 
 -export([
@@ -79,6 +80,9 @@ start() ->
 servers() ->
     libsniffle_server:servers().
 
+-spec create(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) -> {ok, UUID::binary()}.
+create(PackageID, DatasetID, Config) ->
+    send({vm, create, PackageID, DatasetID, Config}).
 %%%===================================================================
 %%% VM Functions
 %%%===================================================================
