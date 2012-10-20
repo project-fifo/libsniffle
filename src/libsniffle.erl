@@ -19,7 +19,9 @@
 -export([
 	 hypervisor_register/3,
 	 hypervisor_unregister/1,
+	 hypervisor_resource_get/1,
 	 hypervisor_resource_get/2,
+	 hypervisor_resource_set/2,
 	 hypervisor_resource_set/3,
 	 hypervisor_list/0,
 	 hypervisor_list/1
@@ -131,9 +133,17 @@ hypervisor_unregister(Hypervisor) ->
 hypervisor_resource_get(Hypervisor, Resource) ->
     send({hypervisor, resource, get, ensure_binary(Hypervisor), ensure_binary(Resource)}).
 
+-spec hypervisor_resource_get(Hypervisor::binary()) -> any().
+hypervisor_resource_get(Hypervisor) ->
+    send({hypervisor, resource, get, ensure_binary(Hypervisor)}).
+
 -spec hypervisor_resource_set(Hypervisor::binary(), Resource::binary(), Value::any()) -> ok| error.
 hypervisor_resource_set(Hypervisor, Resource, Value) ->
     send({hypervisor, resource, set, ensure_binary(Hypervisor), ensure_binary(Resource), Value}).
+
+-spec hypervisor_resource_set(Hypervisor::binary(), Resources::[term()]) -> ok | error.
+hypervisor_resource_set(Hypervisor, Resources) ->
+    send({hypervisor, resource, set, ensure_binary(Hypervisor), Resources}).
 
 -spec hypervisor_list() -> [hypervisor()].
 hypervisor_list() ->
