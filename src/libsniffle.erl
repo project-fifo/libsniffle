@@ -14,7 +14,11 @@
 	 vm_attribute_set/2,
 	 vm_attribute_set/3,
 	 vm_list/0,
-	 vm_list/1
+	 vm_list/1,
+	 vm_start/1,
+	 vm_stop/1,
+	 vm_reboot/1,
+	 vm_delete/1
 	]).
 
 -export([
@@ -95,6 +99,22 @@ vm_register(VM, Hypervisor) ->
 -spec vm_unregister(VM::binary()) -> ok | error.
 vm_unregister(VM) ->
     send({vm, unregister, ensure_binary(VM)}).
+
+-spec vm_start(VM::binary()) -> ok | error.
+vm_start(VM) ->
+    send({vm, start, ensure_binary(VM)}).
+
+-spec vm_stop(VM::binary()) -> ok | error.
+vm_stop(VM) ->
+    send({vm, stop, ensure_binary(VM)}).
+
+-spec vm_reboot(VM::binary()) -> ok | error.
+vm_reboot(VM) ->
+    send({vm, reboot, ensure_binary(VM)}).
+
+-spec vm_delete(VM::binary()) -> ok | error.
+vm_delete(VM) ->
+    send({vm, delete, ensure_binary(VM)}).
 
 -spec vm_attribute_get(VM::binary(), Attribute::binary()) -> any().
 vm_attribute_get(VM, Attribute) ->
