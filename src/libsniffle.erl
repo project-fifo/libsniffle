@@ -15,6 +15,7 @@
 	 vm_attribute_set/3,
 	 vm_list/0,
 	 vm_list/1,
+	 vm_get/1,
 	 vm_start/1,
 	 vm_stop/1,
 	 vm_reboot/1,
@@ -107,6 +108,10 @@ vm_start(VM) ->
 -spec vm_stop(VM::binary()) -> ok | error.
 vm_stop(VM) ->
     send({vm, stop, ensure_binary(VM)}).
+
+-spec vm_get(VM::binary()) -> ok | error.
+vm_get(VM) ->
+    send({vm, get, ensure_binary(VM)}).
 
 -spec vm_reboot(VM::binary()) -> ok | error.
 vm_reboot(VM) ->
