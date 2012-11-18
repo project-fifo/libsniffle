@@ -282,7 +282,7 @@ iprange_get(Iprange) ->
     send({iprange, get, Iprange}).
 
 iprange_release(Iprange, Ip) ->
-    send({iprange, release, Iprange, Ip}).
+    send({iprange, release, Iprange, ip_to_bin(Ip)}).
 
 iprange_claim(Iprange) ->
     send({iprange, claim, Iprange}).
