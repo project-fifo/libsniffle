@@ -141,9 +141,9 @@ vm_attribute_set(VM, Attributes) ->
 vm_list() ->
     send({vm, list}).
 
--spec vm_list(User::binary()) -> [vm()].
-vm_list(User) ->
-    send({vm, list, ensure_binary(User)}).
+-spec vm_list(Reqs::term()) -> [vm()].
+vm_list(Reqs) ->
+    send({vm, list, Reqs}).
 
 %%%===================================================================
 %%% Hypervisor Functions
@@ -179,7 +179,7 @@ hypervisor_list() ->
 
 -spec hypervisor_list(Requirements::[term()]) -> [hypervisor()].
 hypervisor_list(Requirements) ->
-    send({hypervisor, list, ensure_binary(Requirements)}).
+    send({hypervisor, list, Requirements}).
 
 %%%===================================================================
 %%%  DATASET Functions
@@ -218,9 +218,9 @@ dataset_attribute_set(Dataset, Attribute, Value) ->
 dataset_list() ->
     send({dataset, list}).
 
--spec dataset_list(User::binary()) -> Datasets::[dataset()].
-dataset_list(User) ->
-    send({dataset, list, User}).
+-spec dataset_list(Reqs::term()) -> Datasets::[dataset()].
+dataset_list(Reqs) ->
+    send({dataset, list, Reqs}).
 
 %%%===================================================================
 %%%  PACKAGE Functions
@@ -258,9 +258,9 @@ package_attribute_set(Package, Attribute, Value) ->
 package_list() ->
     send({package, list}).
 
--spec package_list(User::binary()) -> Packages::[package()].
-package_list(User) ->
-    send({package, list, User}).
+-spec package_list(Reqs::term()) -> Packages::[package()].
+package_list(Reqs) ->
+    send({package, list, Reqs}).
 
 %%%===================================================================
 %%%  PACKAGE Functions
@@ -268,11 +268,11 @@ package_list(User) ->
 
 iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) ->
     send({iprange, create, Iprange,
-	  ip_to_bin(Network), 
-	  ip_to_bin(Gateway), 
-	  ip_to_bin(Netmask), 
-	  ip_to_bin(First), 
-	  ip_to_bin(Last), 
+	  ip_to_bin(Network),
+	  ip_to_bin(Gateway),
+	  ip_to_bin(Netmask),
+	  ip_to_bin(First),
+	  ip_to_bin(Last),
 	  Tag}).
 
 iprange_delete(Iprange) ->
@@ -290,8 +290,8 @@ iprange_claim(Iprange) ->
 iprange_list() ->
     send({iprange, list}).
 
-iprange_list(User) ->
-    send({iprange, list, User}).
+iprange_list(Reqs) ->
+    send({iprange, list, Reqs}).
 
 %%%===================================================================
 %%% Internal Functions
@@ -315,10 +315,9 @@ ensure_binary(T) ->
 
 ip_to_bin(IP) ->
     [As, Bs, Cs, Ds] = re:split(IP, "\\.", [{return, list}]),
-    {A, _} = string:to_integer(As), 
-    {B, _} = string:to_integer(Bs), 
-    {C, _} = string:to_integer(Cs), 
+    {A, _} = string:to_integer(As),
+    {B, _} = string:to_integer(Bs),
+    {C, _} = string:to_integer(Cs),
     {D, _} = string:to_integer(Ds),
     <<I:32>> = <<A:8, B:8, C:8, D:8>>,
     I.
-    
