@@ -1,7 +1,7 @@
 -module(libsniffle).
 
 -export([
-	 start/0, 
+	 start/0,
 	 servers/0,
 	 create/3
 	]).
@@ -36,7 +36,6 @@
 -export([
 	 dataset_create/1,
 	 dataset_delete/1,
-	 dataset_get/1,
 	 dataset_attribute_get/1,
 	 dataset_attribute_get/2,
 	 dataset_attribute_set/2,
@@ -67,11 +66,6 @@
 	 iprange_list/1
 	]).
 
--type vm() :: term().
--type hypervisor() :: term().
--type dataset() :: term().
--type package() :: term().
-
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
@@ -85,7 +79,9 @@ start() ->
 servers() ->
     libsniffle_server:servers().
 
--spec create(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) -> {ok, UUID::binary()}.
+-spec create(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) ->
+		    {error, no_servers} |
+		    {ok, UUID::binary()}.
 create(PackageID, DatasetID, Config) ->
     send({vm, create, PackageID, DatasetID, Config}).
 %%%===================================================================
@@ -93,55 +89,88 @@ create(PackageID, DatasetID, Config) ->
 %%%===================================================================
 
 
--spec vm_register(VM::binary(), Hypervisor::binary()) -> ok | error.
-vm_register(VM, Hypervisor) ->
-    send({vm, register, ensure_binary(VM), ensure_binary(Hypervisor)}).
+-spec vm_register(VM::fifo:uuid(), Hypervisor::fifo:hypervisor()) -> {ok, ok} |
+							    {'error','no_servers'}.
+vm_register(VM, Hypervisor) when
+      is_binary(VM),
+      is_binary(Hypervisor) ->
+    send({vm, register, VM, Hypervisor}).
 
--spec vm_unregister(VM::binary()) -> ok | error.
-vm_unregister(VM) ->
-    send({vm, unregister, ensure_binary(VM)}).
+-spec vm_unregister(VM::fifo:uuid()) -> {ok, ok} |
+					{'error','no_servers'}.
+vm_unregister(VM) when
+      is_binary(VM) ->
+    send({vm, unregister, VM}).
 
--spec vm_start(VM::binary()) -> ok | error.
-vm_start(VM) ->
-    send({vm, start, ensure_binary(VM)}).
+-spec vm_start(VM::fifo:uuid()) -> {ok, ok} |
+				   {'error','no_servers'}.
+vm_start(VM) when
+      is_binary(VM) ->
+    send({vm, start, VM}).
 
--spec vm_stop(VM::binary()) -> ok | error.
-vm_stop(VM) ->
-    send({vm, stop, ensure_binary(VM)}).
+-spec vm_stop(VM::fifo:uuid()) -> {ok, ok} |
+				  {'error','no_servers'}.
+vm_stop(VM) when
+      is_binary(VM)->
+    send({vm, stop, VM}).
 
--spec vm_get(VM::binary()) -> ok | error.
-vm_get(VM) ->
-    send({vm, get, ensure_binary(VM)}).
+-spec vm_get(VM::fifo:uuid()) -> {ok, fifo:vm_config()} |
+				 {'error','no_servers'}.
+vm_get(VM) when
+      is_binary(VM) ->
+    send({vm, get, VM}).
 
--spec vm_reboot(VM::binary()) -> ok | error.
-vm_reboot(VM) ->
-    send({vm, reboot, ensure_binary(VM)}).
+-spec vm_reboot(VM::fifo:uuid()) -> {ok, ok} |
+				    {'error','no_servers'}.
+vm_reboot(VM) when
+      is_binary(VM) ->
+    send({vm, reboot, VM}).
 
--spec vm_delete(VM::binary()) -> ok | error.
-vm_delete(VM) ->
-    send({vm, delete, ensure_binary(VM)}).
+-spec vm_delete(VM::fifo:uuid()) -> {ok, ok} |
+				    {'error','no_servers'}.
+vm_delete(VM) when
+      is_binary(VM) ->
+    send({vm, delete, VM}).
 
--spec vm_attribute_get(VM::binary(), Attribute::binary()) -> any().
-vm_attribute_get(VM, Attribute) ->
-    send({vm, attribute, get, ensure_binary(VM), ensure_binary(Attribute)}).
+-spec vm_attribute_get(VM::fifo:uuid(),
+		       Attribute::binary()) -> {ok, fifo:value()} |
+					       {'error','no_servers'}.
+vm_attribute_get(VM, Attribute) when
+      is_binary(VM),
+      is_binary(Attribute) ->
+    send({vm, attribute, get, VM, Attribute}).
 
--spec vm_attribute_set(VM::binary(), Attribute::binary(), Value::any()) -> any().
-vm_attribute_set(VM, Attribute, Value) ->
-    send({vm, attribute, set, ensure_binary(VM), ensure_binary(Attribute), Value}).
+-spec vm_attribute_set(VM::fifo:uuid(),
+		       Attribute::binary(),
+		       Value::any()) -> {ok, ok} |
+					{'error','no_servers'}.
+vm_attribute_set(VM, Attribute, Value) when
+      is_binary(VM),
+      is_binary(Attribute) ->
+    send({vm, attribute, set, VM, Attribute, Value}).
 
--spec vm_attribute_get(VM::binary()) -> [{binary(), any()}].
-vm_attribute_get(VM) ->
-    send({vm, attribute, get, ensure_binary(VM)}).
+-spec vm_attribute_get(VM::fifo:uuid()) -> {ok, fifo:config_list()} |
+					   {'error','no_servers'}.
+vm_attribute_get(VM) when
+      is_binary(VM) ->
+    send({vm, attribute, get, VM}).
 
--spec vm_attribute_set(VM::binary(), [{Attribute::binary(), Value::any()}]) -> any().
-vm_attribute_set(VM, Attributes) ->
-    send({vm, attribute, set, ensure_binary(VM), [{ensure_binary(K), V} || {K, V} <- Attributes]}).
+-spec vm_attribute_set(VM::fifo:uuid(),
+		       Attributes::fifo:config_list()) -> {ok, ok} |
+							  {'error','no_servers'}.
+vm_attribute_set(VM, Attributes) when
+      is_binary(VM) ->
+    send({vm, attribute, set, VM, [{K, V} || {K, V} <- Attributes,
+					     is_binary(K)]}).
 
--spec vm_list() -> [vm()].
+
+-spec vm_list() -> {ok, [fifo:uuid()]} |
+		   {'error','no_servers'}.
 vm_list() ->
     send({vm, list}).
 
--spec vm_list(Reqs::term()) -> [vm()].
+-spec vm_list(Reqs::[fifo:matcher()]) -> {ok, [fifo:uuid()]} |
+					 {'error','no_servers'}.
 vm_list(Reqs) ->
     send({vm, list, Reqs}).
 
@@ -149,35 +178,52 @@ vm_list(Reqs) ->
 %%% Hypervisor Functions
 %%%===================================================================
 
--spec hypervisor_register(Hypervisor::binary(), Host::binary(), Port::integer()) -> ok | error.
-hypervisor_register(Hypervisor, Host, Port) ->
-    send({hypervisor, register, ensure_binary(Hypervisor), Host, Port}).
+-spec hypervisor_register(Hypervisor::binary(), Host::inet:ip_address() | inet:hostname(), Port::inet:port_number()) ->
+				 {ok, ok} |
+				 {'error','no_servers'}.
+hypervisor_register(Hypervisor, Host, Port) when
+      is_binary(Hypervisor),
+      is_integer(Port),
+      Port > 0 ->
+    send({hypervisor, register, Hypervisor, Host, Port}).
 
--spec hypervisor_unregister(Hypervisor::binary()) -> ok | error.
+-spec hypervisor_unregister(Hypervisor::binary()) -> {ok, ok} |
+							      {'error','no_servers'}.
 hypervisor_unregister(Hypervisor) ->
-    send({hypervisor, unregister, ensure_binary(Hypervisor)}).
+    send({hypervisor, unregister, Hypervisor}).
 
--spec hypervisor_resource_get(Hypervisor::binary(), Resource::binary()) -> any().
+-spec hypervisor_resource_get(Hypervisor::binary(), Resource::binary()) ->
+				     {ok, fifo:value()} |
+				     {'error','no_servers'}.
 hypervisor_resource_get(Hypervisor, Resource) ->
-    send({hypervisor, resource, get, ensure_binary(Hypervisor), ensure_binary(Resource)}).
+    send({hypervisor, resource, get, Hypervisor, Resource}).
 
--spec hypervisor_resource_get(Hypervisor::binary()) -> any().
+-spec hypervisor_resource_get(Hypervisor::binary()) ->
+				     {ok, [{binary(), fifo:value()}]} |
+				     {'error','no_servers'}.
+
 hypervisor_resource_get(Hypervisor) ->
-    send({hypervisor, resource, get, ensure_binary(Hypervisor)}).
+    send({hypervisor, resource, get, Hypervisor}).
 
--spec hypervisor_resource_set(Hypervisor::binary(), Resource::binary(), Value::any()) -> ok| error.
+-spec hypervisor_resource_set(Hypervisor::binary(), Resource::binary(), Value::fifo:value()) ->
+				     {ok, ok} |
+				     {'error','no_servers'}.
 hypervisor_resource_set(Hypervisor, Resource, Value) ->
-    send({hypervisor, resource, set, ensure_binary(Hypervisor), ensure_binary(Resource), Value}).
+    send({hypervisor, resource, set, Hypervisor, Resource, Value}).
 
--spec hypervisor_resource_set(Hypervisor::binary(), Resources::[term()]) -> ok | error.
+-spec hypervisor_resource_set(Hypervisor::binary(), Resources::fifo:config_list()) ->
+				     {ok, ok} |
+				     {'error','no_servers'}.
 hypervisor_resource_set(Hypervisor, Resources) ->
-    send({hypervisor, resource, set, ensure_binary(Hypervisor), Resources}).
+    send({hypervisor, resource, set, Hypervisor, Resources}).
 
--spec hypervisor_list() -> [hypervisor()].
+-spec hypervisor_list() -> {ok, [binary()]} |
+			   {'error','no_servers'}.
 hypervisor_list() ->
     send({hypervisor, list}).
 
--spec hypervisor_list(Requirements::[term()]) -> [hypervisor()].
+-spec hypervisor_list(Requirements::[fifo:matcher()]) -> {ok, [binary()]} |
+							 {'error','no_servers'}.
 hypervisor_list(Requirements) ->
     send({hypervisor, list, Requirements}).
 
@@ -185,17 +231,15 @@ hypervisor_list(Requirements) ->
 %%%  DATASET Functions
 %%%===================================================================
 
--spec dataset_create(Dataset::binary()) -> ok.
+-spec dataset_create(Dataset::binary()) -> {ok, ok} |
+				     {'error','no_servers'}.
 dataset_create(Dataset) ->
     send({dataset, create, Dataset}).
 
--spec dataset_delete(Dataset::binary()) -> ok.
+-spec dataset_delete(Dataset::binary()) -> {ok, ok} |
+				     {'error','no_servers'}.
 dataset_delete(Dataset) ->
     send({dataset, delete, Dataset}).
-
--spec dataset_get(Dataset::binary()) -> Dataset::dataset().
-dataset_get(Dataset) ->
-    send({dataset, get, Dataset}).
 
 -spec dataset_attribute_get(Dataset::binary()) -> {ok, [{Key::term(), Key::term()}]}.
 dataset_attribute_get(Dataset) ->
@@ -205,20 +249,22 @@ dataset_attribute_get(Dataset) ->
 dataset_attribute_get(Dataset, Attribute) ->
     send({dataset, attribute, get, Dataset, Attribute}).
 
--spec dataset_attribute_set(Dataset::binary(), Attirbutes::[{Key::term(), Value::term()}]) -> ok.
+-spec dataset_attribute_set(Dataset::binary(), Attirbutes::[{Key::term(), Value::term()}]) -> {ok, ok} |
+				     {'error','no_servers'}.
 dataset_attribute_set(Dataset, Attributes) ->
     send({dataset, attribute, set, Dataset, Attributes}).
 
--spec dataset_attribute_set(Dataset::binary(), Attribute::term(), Value::term()) -> ok.
+-spec dataset_attribute_set(Dataset::binary(), Attribute::term(), Value::term()) -> {ok, ok} |
+				     {'error','no_servers'}.
 dataset_attribute_set(Dataset, Attribute, Value) ->
     send({dataset, attribute, set, Dataset, Attribute, Value}).
 
 
--spec dataset_list() -> Datasets::[dataset()].
+-spec dataset_list() -> {ok, Datasets::[binary()]} | {'error','no_servers'}.
 dataset_list() ->
     send({dataset, list}).
 
--spec dataset_list(Reqs::term()) -> Datasets::[dataset()].
+-spec dataset_list(Reqs::term()) -> {ok, Datasets::[binary()]} | {'error','no_servers'}.
 dataset_list(Reqs) ->
     send({dataset, list, Reqs}).
 
@@ -226,39 +272,67 @@ dataset_list(Reqs) ->
 %%%  PACKAGE Functions
 %%%===================================================================
 
--spec package_create(Package::binary()) -> ok.
-package_create(Package) ->
+-spec package_create(Package::binary()) ->
+			    {ok, ok} |
+			    {'error','no_servers'}.
+package_create(Package) when
+      is_binary(Package) ->
     send({package, create, Package}).
 
--spec package_delete(Package::binary()) -> ok.
-package_delete(Package) ->
+-spec package_delete(Package::binary()) ->
+			    {ok, ok} |
+			    {'error','no_servers'}.
+package_delete(Package) when
+      is_binary(Package) ->
     send({package, delete, Package}).
 
--spec package_get(Package::binary()) -> Package::package().
-package_get(Package) ->
+-spec package_get(Package::binary()) ->
+			 {ok, Package::term()} |
+			 {'error','no_servers'}.
+package_get(Package) when
+      is_binary(Package) ->
     send({package, get, Package}).
 
--spec package_attribute_get(Package::binary()) -> {ok, [{Key::term(), Key::term()}]}.
-package_attribute_get(Package) ->
+-spec package_attribute_get(Package::binary()) ->
+				   {ok, fifo:config_list()} |
+				   {'error','no_servers'}.
+package_attribute_get(Package) when
+      is_binary(Package) ->
     send({package, attribute, get, Package}).
 
--spec package_attribute_get(Package::binary(), Attribute::term()) -> {ok, term()}.
-package_attribute_get(Package, Attribute) ->
+-spec package_attribute_get(Package::binary(),
+			    Attribute::binary()) ->
+				   {ok, fifo:value()} |
+				   {'error','no_servers'}.
+package_attribute_get(Package, Attribute) when
+      is_binary(Package),
+      is_binary(Attribute) ->
     send({package, attribute, get, Package, Attribute}).
 
--spec package_attribute_set(Package::binary(), Attirbutes::[{Key::term(), Value::term()}]) -> ok.
-package_attribute_set(Package, Attributes) ->
+-spec package_attribute_set(Package::binary(),
+			    Attirbutes::fifo:config_list()) -> {ok, ok} |
+							       {'error','no_servers'}.
+package_attribute_set(Package, Attributes) when
+      is_binary(Package),
+      is_list(Attributes) ->
     send({package, attribute, set, Package, Attributes}).
 
--spec package_attribute_set(Package::binary(), Attribute::term(), Value::term()) -> ok.
-package_attribute_set(Package, Attribute, Value) ->
+-spec package_attribute_set(Package::binary(),
+			    Attribute::binary(),
+			    Value::fifo:value()) -> {ok, ok} |
+						    {'error','no_servers'}.
+package_attribute_set(Package, Attribute, Value)  when
+      is_binary(Package),
+      is_binary(Attribute) ->
     send({package, attribute, set, Package, Attribute, Value}).
 
--spec package_list() -> Package::[package()].
+-spec package_list() -> {ok, Packages::[binary()]} |
+			{'error','no_servers'}.
 package_list() ->
     send({package, list}).
 
--spec package_list(Reqs::term()) -> Packages::[package()].
+-spec package_list(Reqs::[fifo:matcher()]) -> {ok, Packages::[binary()]} |
+					      {'error','no_servers'}.
 package_list(Reqs) ->
     send({package, list, Reqs}).
 
@@ -266,54 +340,107 @@ package_list(Reqs) ->
 %%%  PACKAGE Functions
 %%%===================================================================
 
-iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) ->
+-spec iprange_create(Iprange::binary(),
+		     Network::integer() | string() | binary(),
+		     Gateway::integer() | string() | binary(),
+		     Netmask::integer() | string() | binary(),
+		     First::integer() | string() | binary(),
+		     Last::integer() | string() | binary(),
+		     Tag::binary()) ->
+			    {ok, ok} |
+			    {'error','no_servers'}.
+
+
+iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) when
+      is_binary(Iprange),
+      is_binary(Tag),
+      is_integer(Network),
+      is_integer(Gateway), Network =:= (Gateway band Netmask),
+      is_integer(Netmask),
+      is_integer(First), Network =:= (First band Netmask),
+      is_integer(Last), Network =:= (Last band Netmask) ->
     send({iprange, create, Iprange,
-	  ip_to_bin(Network),
-	  ip_to_bin(Gateway),
-	  ip_to_bin(Netmask),
-	  ip_to_bin(First),
-	  ip_to_bin(Last),
-	  Tag}).
+	  Network, Gateway, Netmask,
+	  First, Last,
+	  Tag});
+
+iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) when
+      is_binary(Iprange),
+      is_binary(Tag) ->
+    iprange_create(Iprange,
+		   ip_to_int(Network),
+		   ip_to_int(Gateway),
+		   ip_to_int(Netmask),
+		   ip_to_int(First),
+		   ip_to_int(Last),
+		   Tag).
+
+-spec iprange_delete(Iprange::binary()) ->
+			    {ok, ok} |
+			    {'error','no_servers'}.
 
 iprange_delete(Iprange) ->
     send({iprange, delete, Iprange}).
 
+-spec iprange_get(Iprange::binary()) ->
+			 {ok, term()} |
+			 {'error','no_servers'}.
+
 iprange_get(Iprange) ->
     send({iprange, get, Iprange}).
 
-iprange_release(Iprange, Ip) ->
-    send({iprange, release, Iprange, ip_to_bin(Ip)}).
+-spec iprange_release(Iprange::binary(),
+		      Ip::integer() | string() | binary()) ->
+			     {ok, ok} |
+			     {'error','no_servers'}.
+
+iprange_release(Iprange, Ip) when
+      is_binary(Iprange),
+      is_integer(Ip) ->
+    send({iprange, release, Iprange, ip_to_int(Ip)});
+
+iprange_release(Iprange, Ip) when
+      is_binary(Iprange) ->
+    iprange_release(Iprange, ip_to_int(Ip)).
+
+-spec iprange_claim(Iprange::binary()) ->
+			   {ok, integer()} |
+			   {'error','no_servers'}.
 
 iprange_claim(Iprange) ->
     send({iprange, claim, Iprange}).
 
+-spec iprange_list() -> {ok, [binary()]} |
+			{'error','no_servers'}.
+
 iprange_list() ->
     send({iprange, list}).
 
+-spec iprange_list(Reqs::[fifo:matcher()]) -> {ok, [binary()]} |
+					      {'error','no_servers'}.
 iprange_list(Reqs) ->
     send({iprange, list, Reqs}).
 
 %%%===================================================================
 %%% Internal Functions
 %%%===================================================================
+-spec send(MSG::fifo:sniffle_message()) ->
+		  {ok, Reply::term()} |
+		  {error, no_servers}.
 send(Msg) ->
-    libsniffle_server:send(Msg).
+    case libsniffle_server:send(Msg) of
+	{ok, {reply, Reply}} ->
+	    {ok, Reply};
+	E ->
+	    E
+    end.
 
--spec ensure_binary(any()) -> binary().
-ensure_binary(A) when is_atom(A) ->
-    list_to_binary(atom_to_list(A));
-ensure_binary(L) when is_list(L) ->
-    list_to_binary(L);
-ensure_binary(B) when is_binary(B) ->
-    B;
-ensure_binary(I) when is_integer(I) ->
-    list_to_binary(integer_to_list(I));
-ensure_binary(F) when is_float(F) ->
-    list_to_binary(float_to_list(F));
-ensure_binary(T) ->
-    term_to_binary(T).
+-spec ip_to_int(integer()|string()|binary()) -> integer().
 
-ip_to_bin(IP) ->
+ip_to_int(IP) when is_integer(IP) ->
+    IP;
+
+ip_to_int(IP) ->
     [As, Bs, Cs, Ds] = re:split(IP, "\\.", [{return, list}]),
     {A, _} = string:to_integer(As),
     {B, _} = string:to_integer(Bs),
