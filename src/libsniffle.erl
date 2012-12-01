@@ -451,6 +451,7 @@ iprange_list(Reqs) ->
 %%% Internal Functions
 %%%===================================================================
 -spec send(MSG::fifo:sniffle_message()) ->
+		  atom() |
 		  {ok, Reply::term()} |
 		  {error, no_servers}.
 send(Msg) ->
