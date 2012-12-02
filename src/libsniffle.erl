@@ -66,6 +66,8 @@
 	 iprange_list/1
 	]).
 
+-export([cloud_status/0]).
+
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
@@ -446,6 +448,15 @@ iprange_list() ->
 					      {'error','no_servers'}.
 iprange_list(Reqs) ->
     send({iprange, list, Reqs}).
+
+
+-spec cloud_status() -> {'error','no_servers'} |
+			{Resources::fifo:config_list(),
+			 Warnings::fifo:config_list()}.
+
+cloud_status() ->
+    send({cloud, status}).
+
 
 %%%===================================================================
 %%% Internal Functions
