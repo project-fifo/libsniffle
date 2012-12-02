@@ -211,7 +211,7 @@ hypervisor_resource_get(Hypervisor, Resource) ->
 
 -spec hypervisor_resource_get(Hypervisor::binary()) ->
 				     not_found |
-				     {ok, [{binary(), fifo:value()}]} |
+				     {ok, fifo:config_list()} |
 				     {'error','no_servers'}.
 
 hypervisor_resource_get(Hypervisor) ->
