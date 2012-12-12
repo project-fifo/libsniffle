@@ -1,5 +1,9 @@
 -module(libsniffle).
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 -export([
 	 start/0,
 	 servers/0,
@@ -65,6 +69,9 @@
 	 iprange_list/0,
 	 iprange_list/1
 	]).
+
+-export([ip_to_bin/1,
+	 ip_to_int/1]).
 
 -export([cloud_status/0]).
 
@@ -458,6 +465,26 @@ cloud_status() ->
     send({cloud, status}).
 
 
+
+ip_to_bin(IP) ->
+    <<A, B, C, D>> = <<IP:32>>,
+    list_to_binary(io_lib:format("~p.~p.~p.~p", [A, B, C, D])).
+
+-spec ip_to_int(integer()|string()|binary()) -> integer().
+
+ip_to_int(IP) when is_integer(IP) ->
+    IP;
+
+ip_to_int(IP) ->
+    [As, Bs, Cs, Ds] = re:split(IP, "\\.", [{return, list}]),
+    {A, _} = string:to_integer(As),
+    {B, _} = string:to_integer(Bs),
+    {C, _} = string:to_integer(Cs),
+    {D, _} = string:to_integer(Ds),
+    <<I:32>> = <<A:8, B:8, C:8, D:8>>,
+    I.
+
+
 %%%===================================================================
 %%% Internal Functions
 %%%===================================================================
@@ -475,16 +502,25 @@ send(Msg) ->
 	    E
     end.
 
--spec ip_to_int(integer()|string()|binary()) -> integer().
+-ifdef(TEST).
+ip_convert_test() ->
+    IP1 = <<"192.168.0.0">>,
+    ?assertEqual(ip_to_bin(ip_to_int(IP1)), IP1).
 
-ip_to_int(IP) when is_integer(IP) ->
-    IP;
+ip_to_int_test() ->
+    ?assertEqual(ip_to_int("255.255.255.255"), 16#FFFFFFFF),
+    ?assertEqual(ip_to_int("0.255.255.255"), 16#00FFFFFF),
+    ?assertEqual(ip_to_int("255.0.255.255"), 16#FF00FFFF),
+    ?assertEqual(ip_to_int("255.255.0.255"), 16#FFFF00FF),
+    ?assertEqual(ip_to_int("255.255.255.0"), 16#FFFFFF00),
+    ?assertEqual(ip_to_int("255.255.255.240"), 16#FFFFFFF0).
 
-ip_to_int(IP) ->
-    [As, Bs, Cs, Ds] = re:split(IP, "\\.", [{return, list}]),
-    {A, _} = string:to_integer(As),
-    {B, _} = string:to_integer(Bs),
-    {C, _} = string:to_integer(Cs),
-    {D, _} = string:to_integer(Ds),
-    <<I:32>> = <<A:8, B:8, C:8, D:8>>,
-    I.
+ip_to_bin_test() ->
+    ?assertEqual(ip_to_bin(16#FFFFFFFF), <<"255.255.255.255">>),
+    ?assertEqual(ip_to_bin(16#00FFFFFF), <<"0.255.255.255">>),
+    ?assertEqual(ip_to_bin(16#FF00FFFF), <<"255.0.255.255">>),
+    ?assertEqual(ip_to_bin(16#FFFF00FF), <<"255.255.0.255">>),
+    ?assertEqual(ip_to_bin(16#FFFFFF00), <<"255.255.255.0">>),
+    ?assertEqual(ip_to_bin(16#FFFFFFF0), <<"255.255.255.240">>).
+
+-endif.
