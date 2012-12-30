@@ -7,7 +7,8 @@
 -export([
          start/0,
          servers/0,
-         create/3
+         create/3,
+         version/0
         ]).
 
 -export([
@@ -94,6 +95,22 @@ servers() ->
 -spec create(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) ->
                     {error, no_servers} |
                     {ok, UUID::binary()}.
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc Fetches version
+%% @spec version() -> binary
+%% @end
+%%--------------------------------------------------------------------
+
+-spec version() -> {binary(), binary()} |
+                   not_found |
+                   {error, no_servers}.
+version() ->
+    ServerVersion = send(version),
+    ServerVersion.
+
+
 create(PackageID, DatasetID, Config) ->
     send({vm, create, PackageID, DatasetID, Config}).
 %%%===================================================================
