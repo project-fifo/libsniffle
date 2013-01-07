@@ -31,6 +31,7 @@
 -export([
          hypervisor_register/3,
          hypervisor_unregister/1,
+         hypervisor_get/1,
          hypervisor_resource_get/1,
          hypervisor_resource_get/2,
          hypervisor_resource_set/2,
@@ -233,6 +234,13 @@ hypervisor_register(Hypervisor, Host, Port) when
                                                      {'error','no_servers'}.
 hypervisor_unregister(Hypervisor) ->
     send({hypervisor, unregister, Hypervisor}).
+
+-spec hypervisor_get(Hypervisor::binary()) ->
+                            not_found |
+                            {ok, fifo:hypervisor()} |
+                            {'error','no_servers'}.
+hypervisor_get(Hypervisor) ->
+    send({hypervisor, get, Hypervisor}).
 
 -spec hypervisor_resource_get(Hypervisor::binary(), Resource::binary()) ->
                                      not_found |
