@@ -13,7 +13,7 @@ deps:
 clean:
 	$(REBAR) clean
 
-distclean: clean 
+distclean: clean
 	$(REBAR) delete-deps
 
 test: all
@@ -31,6 +31,9 @@ docs:
 
 xref:
 	$(REBAR) xref skip_deps=true
+
+console: all
+	erl -pa ebin deps/*/ebin -s libsniffle
 
 
 ##
