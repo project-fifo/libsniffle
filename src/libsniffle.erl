@@ -19,6 +19,7 @@
          vm_log/2,
          vm_snapshot/2,
          vm_delete_snapshot/2,
+         vm_rollback_snapshot/2,
          vm_list/0,
          vm_list/1,
          vm_get/1,
@@ -194,6 +195,14 @@ vm_snapshot(Vm, Comment) ->
 
 vm_delete_snapshot(Vm, UUID) ->
     send({vm, snapshot, delete, Vm, UUID}).
+
+
+-spec vm_rollback_snapshot(Vm::fifo:uuid(),
+                           UUID::binary()) -> {ok, fifo:uuid()} |
+                                            {'error','no_servers'}.
+
+vm_rollback_snapshot(Vm, UUID) ->
+    send({vm, snapshot, rollback, Vm, UUID}).
 
 -spec vm_list() -> {ok, [fifo:uuid()]} |
                    {'error','no_servers'}.
