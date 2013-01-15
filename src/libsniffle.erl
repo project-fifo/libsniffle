@@ -17,6 +17,8 @@
          vm_set/2,
          vm_set/3,
          vm_log/2,
+         vm_snapshot/2,
+         vm_delete_snapshot/2,
          vm_list/0,
          vm_list/1,
          vm_get/1,
@@ -175,10 +177,23 @@ vm_set(VM, Attributes) when
                                              is_binary(K)]}).
 
 
--spec vm_log(Vm::fifo:uuid(), Log::term()) -> ok |
-                                              {'error','no_servers'}.
+-spec vm_log(Vm::fifo:uuid(), Log::binary()) -> ok |
+                                                {'error','no_servers'}.
 vm_log(Vm, Log) ->
     send({vm, log, Vm, Log}).
+
+-spec vm_snapshot(Vm::fifo:uuid(), Comment::binary()) -> {ok, fifo:uuid()} |
+                                                         {'error','no_servers'}.
+
+vm_snapshot(Vm, Comment) ->
+    send({vm, snapshot, Vm, Comment}).
+
+-spec vm_delete_snapshot(Vm::fifo:uuid(),
+                         UUID::binary()) -> {ok, fifo:uuid()} |
+                                            {'error','no_servers'}.
+
+vm_delete_snapshot(Vm, UUID) ->
+    send({vm, snapshot, delete, Vm, UUID}).
 
 -spec vm_list() -> {ok, [fifo:uuid()]} |
                    {'error','no_servers'}.
