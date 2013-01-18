@@ -60,7 +60,7 @@
         ]).
 
 -export([
-         iprange_create/7,
+         iprange_create/8,
          iprange_delete/1,
          iprange_get/1,
          iprange_release/2,
@@ -367,34 +367,38 @@ package_list(Reqs) ->
                      Netmask::integer() | string() | binary(),
                      First::integer() | string() | binary(),
                      Last::integer() | string() | binary(),
-                     Tag::binary()) ->
+                     Tag::binary(),
+                     Vlan::pos_integer()) ->
                             ok | doublicate |
                             {'error','no_servers'}.
 
 
-iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) when
+iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
       is_binary(Tag),
       is_integer(Network),
       is_integer(Gateway), Network =:= (Gateway band Netmask),
       is_integer(Netmask),
       is_integer(First), Network =:= (First band Netmask),
-      is_integer(Last), Network =:= (Last band Netmask) ->
+      is_integer(Last), Network =:= (Last band Netmask),
+      is_integer(Vlan), Vlan >= 0 ->
     send({iprange, create, Iprange,
           Network, Gateway, Netmask,
           First, Last,
-          Tag});
+          Tag, Vlan});
 
-iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) when
+iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
-      is_binary(Tag) ->
+      is_binary(Tag),
+      is_integer(Vlan), Vlan >= 0->
     iprange_create(Iprange,
                    ip_to_int(Network),
                    ip_to_int(Gateway),
                    ip_to_int(Netmask),
                    ip_to_int(First),
                    ip_to_int(Last),
-                   Tag).
+                   Tag,
+                   Vlan).
 
 -spec iprange_delete(Iprange::binary()) ->
                             ok | not_found |
