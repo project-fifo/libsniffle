@@ -372,7 +372,6 @@ package_list(Reqs) ->
                             ok | doublicate |
                             {'error','no_servers'}.
 
-
 iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
       is_binary(Tag),
@@ -475,7 +474,6 @@ ip_to_int(IP) ->
     {D, _} = string:to_integer(Ds),
     <<I:32>> = <<A:8, B:8, C:8, D:8>>,
     I.
-
 
 %%%===================================================================
 %%% Internal Functions
