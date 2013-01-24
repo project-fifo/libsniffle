@@ -17,6 +17,9 @@
          vm_set/2,
          vm_set/3,
          vm_log/2,
+         vm_snapshot/2,
+         vm_delete_snapshot/2,
+         vm_rollback_snapshot/2,
          vm_list/0,
          vm_list/1,
          vm_get/1,
@@ -57,7 +60,7 @@
         ]).
 
 -export([
-         iprange_create/7,
+         iprange_create/8,
          iprange_delete/1,
          iprange_get/1,
          iprange_release/2,
@@ -175,10 +178,31 @@ vm_set(VM, Attributes) when
                                              is_binary(K)]}).
 
 
--spec vm_log(Vm::fifo:uuid(), Log::term()) -> ok |
-                                              {'error','no_servers'}.
+-spec vm_log(Vm::fifo:uuid(), Log::binary()) -> ok |
+                                                {'error','no_servers'}.
 vm_log(Vm, Log) ->
     send({vm, log, Vm, Log}).
+
+-spec vm_snapshot(Vm::fifo:uuid(), Comment::binary()) -> {ok, fifo:uuid()} |
+                                                         {'error','no_servers'}.
+
+vm_snapshot(Vm, Comment) ->
+    send({vm, snapshot, Vm, Comment}).
+
+-spec vm_delete_snapshot(Vm::fifo:uuid(),
+                         UUID::binary()) -> {ok, fifo:uuid()} |
+                                            {'error','no_servers'}.
+
+vm_delete_snapshot(Vm, UUID) ->
+    send({vm, snapshot, delete, Vm, UUID}).
+
+
+-spec vm_rollback_snapshot(Vm::fifo:uuid(),
+                           UUID::binary()) -> {ok, fifo:uuid()} |
+                                            {'error','no_servers'}.
+
+vm_rollback_snapshot(Vm, UUID) ->
+    send({vm, snapshot, rollback, Vm, UUID}).
 
 -spec vm_list() -> {ok, [fifo:uuid()]} |
                    {'error','no_servers'}.
@@ -343,34 +367,37 @@ package_list(Reqs) ->
                      Netmask::integer() | string() | binary(),
                      First::integer() | string() | binary(),
                      Last::integer() | string() | binary(),
-                     Tag::binary()) ->
+                     Tag::binary(),
+                     Vlan::pos_integer()) ->
                             ok | doublicate |
                             {'error','no_servers'}.
 
-
-iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) when
+iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
       is_binary(Tag),
       is_integer(Network),
       is_integer(Gateway), Network =:= (Gateway band Netmask),
       is_integer(Netmask),
       is_integer(First), Network =:= (First band Netmask),
-      is_integer(Last), Network =:= (Last band Netmask) ->
+      is_integer(Last), Network =:= (Last band Netmask),
+      is_integer(Vlan), Vlan >= 0 ->
     send({iprange, create, Iprange,
           Network, Gateway, Netmask,
           First, Last,
-          Tag});
+          Tag, Vlan});
 
-iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag) when
+iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
-      is_binary(Tag) ->
+      is_binary(Tag),
+      is_integer(Vlan), Vlan >= 0->
     iprange_create(Iprange,
                    ip_to_int(Network),
                    ip_to_int(Gateway),
                    ip_to_int(Netmask),
                    ip_to_int(First),
                    ip_to_int(Last),
-                   Tag).
+                   Tag,
+                   Vlan).
 
 -spec iprange_delete(Iprange::binary()) ->
                             ok | not_found |
@@ -447,7 +474,6 @@ ip_to_int(IP) ->
     {D, _} = string:to_integer(Ds),
     <<I:32>> = <<A:8, B:8, C:8, D:8>>,
     I.
-
 
 %%%===================================================================
 %%% Internal Functions
