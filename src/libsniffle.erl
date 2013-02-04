@@ -14,6 +14,7 @@
 -export([
          vm_register/2,
          vm_unregister/1,
+         vm_update/3,
          vm_set/2,
          vm_set/3,
          vm_log/2,
@@ -168,6 +169,17 @@ vm_set(VM, Attribute, Value) when
       is_binary(VM),
       is_binary(Attribute) ->
     send({vm, set, VM, Attribute, Value}).
+
+
+-spec vm_update(VM::fifo:uuid(),
+                Package::binary(),
+                Config::fifo:config_list()) -> ok | not_found |
+                              {'error','no_servers'}.
+vm_update(VM, Package, Config) when
+      is_binary(VM),
+      is_binary(Package),
+      is_list(Config) ->
+    send({vm, update, VM, Package, Config}).
 
 -spec vm_set(VM::fifo:uuid(),
              Attributes::fifo:config_list()) -> ok | not_found |
