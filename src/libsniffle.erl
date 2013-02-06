@@ -476,7 +476,6 @@ iprange_set(Iprange, Attribute, Value)  when
       is_binary(Iprange) ->
     send({iprange, set, Iprange, Attribute, Value}).
 
-
 -spec cloud_status() -> {'error','no_servers'} |
                         {Resources::fifo:config_list(),
                          Warnings::fifo:config_list()}.
