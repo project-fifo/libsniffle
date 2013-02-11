@@ -163,6 +163,15 @@ vm_delete(VM) when
       is_binary(VM) ->
     send({vm, delete, VM}).
 
+-spec vm_update(VM::fifo:uuid(),
+                Package::binary() | undefined,
+                Config::fifo:config_list()) -> ok | not_found |
+                              {'error','no_servers'}.
+vm_update(VM, Package, Config) when
+      is_binary(VM),
+      is_list(Config) ->
+    send({vm, update, VM, Package, Config}).
+
 -spec vm_set(VM::fifo:uuid(),
              Attribute::binary(),
              Value::any()) -> ok | not_found |
@@ -171,17 +180,6 @@ vm_set(VM, Attribute, Value) when
       is_binary(VM) ->
     send({vm, set, VM, Attribute, Value}).
 
-
--spec vm_update(VM::fifo:uuid(),
-                Package::binary(),
-                Config::fifo:config_list()) -> ok | not_found |
-                              {'error','no_servers'}.
-vm_update(VM, Package, Config) when
-      is_binary(VM),
-      is_binary(Package),
-      is_list(Config) ->
-    send({vm, update, VM, Package, Config}).
-
 -spec vm_set(VM::fifo:uuid(),
              Attributes::fifo:config_list()) -> ok | not_found |
                                                 {'error','no_servers'}.
@@ -189,7 +187,6 @@ vm_set(VM, Attributes) when
       is_binary(VM) ->
     send({vm, set, VM, [{K, V} || {K, V} <- Attributes,
                                              is_binary(K)]}).
-
 
 -spec vm_log(Vm::fifo:uuid(), Log::binary()) -> ok |
                                                 {'error','no_servers'}.
