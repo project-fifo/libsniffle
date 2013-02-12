@@ -8,8 +8,16 @@
          start/0,
          servers/0,
          create/3,
-         version/0,
-         dtrace/1
+         version/0
+        ]).
+
+-export([
+         dtrace_add/2,
+         dtrace_delete/1,
+         dtrace_get/1,
+         dtrace_list/1,
+         dtrace_list/0,
+         dtrace_run/2
         ]).
 
 -export([
@@ -85,14 +93,36 @@
 %%% Generatl Functions
 %%%===================================================================
 
-dtrace(Script) ->
+
+dtrace_add(Name, Script) when
+      is_binary(Name),
+      is_list(Script)->
+    send({dtrace, add, Name, Script}).
+
+dtrace_delete(ID) when
+      is_binary(ID)->
+    send({dtrace, delete, ID}).
+
+dtrace_get(ID) when
+      is_binary(ID)->
+    send({dtrace, get, ID}).
+
+dtrace_list()->
+    send({dtrace, list}).
+
+dtrace_list(Requirements)->
+    send({dtrace, list, Requirements}).
+
+
+dtrace_run(ID, Servers) when
+      is_binary(ID)->
     case libsniffle_server:get_server() of
         {error, no_server} ->
             {error, no_server};
         {ok, Server, Port} ->
             case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}]) of
                 {ok, Socket} ->
-                    ok = gen_tcp:send(Socket, term_to_binary({trace, Script})),
+                    ok = gen_tcp:send(Socket, term_to_binary({dtrace, run, ID, Servers})),
                     {ok, Socket};
                 E ->
                     E
