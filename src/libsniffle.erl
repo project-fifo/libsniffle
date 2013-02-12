@@ -8,7 +8,8 @@
          start/0,
          servers/0,
          create/3,
-         version/0
+         version/0,
+         dtrace/1
         ]).
 
 -export([
@@ -77,9 +78,26 @@
 
 -export([cloud_status/0]).
 
+
+
+
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
+
+dtrace(Script) ->
+    case libsniffle_server:get_server() of
+        {error, no_server} ->
+            {error, no_server};
+        {ok, Server, Port} ->
+            case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}]) of
+                {ok, Socket} ->
+                    ok = gen_tcp:send(Socket, term_to_binary({trace, Script})),
+                    {ok, Socket};
+                E ->
+                    E
+            end
+    end.
 
 -spec start() -> ok | error.
 start() ->
