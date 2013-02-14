@@ -15,6 +15,8 @@
          dtrace_add/2,
          dtrace_delete/1,
          dtrace_get/1,
+         dtrace_set/2,
+         dtrace_set/3,
          dtrace_list/1,
          dtrace_list/0,
          dtrace_run/2
@@ -113,6 +115,20 @@ dtrace_list()->
 dtrace_list(Requirements)->
     send({dtrace, list, Requirements}).
 
+-spec dtrace_set(Dtrace::fifo:uuid(),
+                 Attribute::binary(),
+                 Value::any()) -> ok | not_found |
+                              {'error','no_servers'}.
+dtrace_set(DTrace, Attribute, Value) when
+      is_binary(DTrace) ->
+    send({dtrace, set, DTrace, Attribute, Value}).
+
+-spec dtrace_set(DTrace::fifo:uuid(),
+                 Attributes::fifo:config_list()) -> ok | not_found |
+                                                {'error','no_servers'}.
+dtrace_set(DTrace, Attributes) when
+      is_binary(DTrace) ->
+    send({dtrace, set, DTrace, Attributes}).
 
 dtrace_run(ID, Servers) when
       is_binary(ID)->
