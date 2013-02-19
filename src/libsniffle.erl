@@ -136,7 +136,7 @@ dtrace_run(ID, Servers) when
         {error, no_server} ->
             {error, no_server};
         {ok, Server, Port} ->
-            case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}]) of
+            case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}], 100) of
                 {ok, Socket} ->
                     ok = gen_tcp:send(Socket, term_to_binary({dtrace, run, ID, Servers})),
                     {ok, Socket};
