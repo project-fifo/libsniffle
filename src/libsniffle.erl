@@ -14,6 +14,7 @@
 -export([
          vm_register/2,
          vm_unregister/1,
+         vm_update/3,
          vm_set/2,
          vm_set/3,
          vm_log/2,
@@ -66,7 +67,9 @@
          iprange_release/2,
          iprange_claim/1,
          iprange_list/0,
-         iprange_list/1
+         iprange_list/1,
+         iprange_set/2,
+         iprange_set/3
         ]).
 
 -export([ip_to_bin/1,
@@ -160,13 +163,21 @@ vm_delete(VM) when
       is_binary(VM) ->
     send({vm, delete, VM}).
 
+-spec vm_update(VM::fifo:uuid(),
+                Package::binary() | undefined,
+                Config::fifo:config_list()) -> ok | not_found |
+                              {'error','no_servers'}.
+vm_update(VM, Package, Config) when
+      is_binary(VM),
+      is_list(Config) ->
+    send({vm, update, VM, Package, Config}).
+
 -spec vm_set(VM::fifo:uuid(),
              Attribute::binary(),
              Value::any()) -> ok | not_found |
                               {'error','no_servers'}.
 vm_set(VM, Attribute, Value) when
-      is_binary(VM),
-      is_binary(Attribute) ->
+      is_binary(VM) ->
     send({vm, set, VM, Attribute, Value}).
 
 -spec vm_set(VM::fifo:uuid(),
@@ -176,7 +187,6 @@ vm_set(VM, Attributes) when
       is_binary(VM) ->
     send({vm, set, VM, [{K, V} || {K, V} <- Attributes,
                                              is_binary(K)]}).
-
 
 -spec vm_log(Vm::fifo:uuid(), Log::binary()) -> ok |
                                                 {'error','no_servers'}.
@@ -343,8 +353,7 @@ package_set(Package, Attributes) when
                   Value::fifo:value()) -> ok | not_found |
                                           {'error','no_servers'}.
 package_set(Package, Attribute, Value)  when
-      is_binary(Package),
-      is_binary(Attribute) ->
+      is_binary(Package) ->
     send({package, set, Package, Attribute, Value}).
 
 -spec package_list() -> {ok, Packages::[binary()]} |
@@ -447,6 +456,22 @@ iprange_list() ->
 iprange_list(Reqs) ->
     send({iprange, list, Reqs}).
 
+
+-spec iprange_set(Iprange::binary(),
+                  Attirbutes::fifo:config_list()) -> ok | not_found |
+                                                     {'error','no_servers'}.
+iprange_set(Iprange, Attributes) when
+      is_binary(Iprange),
+      is_list(Attributes) ->
+    send({iprange, set, Iprange, Attributes}).
+
+-spec iprange_set(Iprange::binary(),
+                  Attribute::binary()|[binary()],
+                  Value::fifo:value()) -> ok | not_found |
+                                          {'error','no_servers'}.
+iprange_set(Iprange, Attribute, Value)  when
+      is_binary(Iprange) ->
+    send({iprange, set, Iprange, Attribute, Value}).
 
 -spec cloud_status() -> {'error','no_servers'} |
                         {Resources::fifo:config_list(),
