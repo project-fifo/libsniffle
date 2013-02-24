@@ -12,6 +12,17 @@
         ]).
 
 -export([
+         dtrace_add/2,
+         dtrace_delete/1,
+         dtrace_get/1,
+         dtrace_set/2,
+         dtrace_set/3,
+         dtrace_list/1,
+         dtrace_list/0,
+         dtrace_run/2
+        ]).
+
+-export([
          vm_register/2,
          vm_unregister/1,
          vm_update/3,
@@ -77,9 +88,62 @@
 
 -export([cloud_status/0]).
 
+
+
+
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
+
+
+dtrace_add(Name, Script) when
+      is_binary(Name),
+      is_list(Script)->
+    send({dtrace, add, Name, Script}).
+
+dtrace_delete(ID) when
+      is_binary(ID)->
+    send({dtrace, delete, ID}).
+
+dtrace_get(ID) when
+      is_binary(ID)->
+    send({dtrace, get, ID}).
+
+dtrace_list()->
+    send({dtrace, list}).
+
+dtrace_list(Requirements)->
+    send({dtrace, list, Requirements}).
+
+-spec dtrace_set(Dtrace::fifo:uuid(),
+                 Attribute::binary(),
+                 Value::any()) -> ok | not_found |
+                              {'error','no_servers'}.
+dtrace_set(DTrace, Attribute, Value) when
+      is_binary(DTrace) ->
+    send({dtrace, set, DTrace, Attribute, Value}).
+
+-spec dtrace_set(DTrace::fifo:uuid(),
+                 Attributes::fifo:config_list()) -> ok | not_found |
+                                                {'error','no_servers'}.
+dtrace_set(DTrace, Attributes) when
+      is_binary(DTrace) ->
+    send({dtrace, set, DTrace, Attributes}).
+
+dtrace_run(ID, Servers) when
+      is_binary(ID)->
+    case libsniffle_server:get_server() of
+        {error, no_server} ->
+            {error, no_server};
+        {ok, Server, Port} ->
+            case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}], 100) of
+                {ok, Socket} ->
+                    ok = gen_tcp:send(Socket, term_to_binary({dtrace, run, ID, Servers})),
+                    {ok, Socket};
+                E ->
+                    E
+            end
+    end.
 
 -spec start() -> ok | error.
 start() ->
