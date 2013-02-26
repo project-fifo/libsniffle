@@ -12,20 +12,21 @@
 
 %% API
 -export([start_link/0,
-	 send/1,
-	 servers/0]).
+         send/1,
+         servers/0]).
 
 %% gen_server callbacks
 -export([
-	 init/1,
-	 handle_call/3,
-	 handle_cast/2,
-	 handle_info/2,
-	 terminate/2,
-	 code_change/3
-	]).
+         init/1,
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2,
+         terminate/2,
+         code_change/3,
+         get_server/0
+        ]).
 
--define(SERVER, ?MODULE). 
+-define(SERVER, ?MODULE).
 
 -record(state, {zmq_worker}).
 
@@ -45,6 +46,9 @@ start_link() ->
 
 send(Msg) ->
     gen_server:call(?SERVER, {send, Msg}).
+
+get_server() ->
+    gen_server:call(?SERVER, get_server).
 
 servers() ->
     gen_server:call(?SERVER, servers).
@@ -83,6 +87,15 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+
+handle_call(get_server, _From, #state{zmq_worker = Pid} = State) ->
+    Reply = case mdns_client_lib_server:get_server(Pid) of
+                {error, no_server} ->
+                    {error, no_server};
+                {ok, {_, Server, Port}} ->
+                    {ok, Server, Port}
+            end,
+    {reply, Reply, State};
 
 handle_call(servers, _From, #state{zmq_worker = Pid} = State) ->
     Reply = mdns_client_lib:servers(Pid),
