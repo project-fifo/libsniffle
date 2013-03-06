@@ -53,6 +53,7 @@
 
 -export([
          dataset_create/1,
+         dataset_import/1,
          dataset_delete/1,
          dataset_get/1,
          dataset_set/2,
@@ -60,6 +61,14 @@
          dataset_list/0,
          dataset_list/1
         ]).
+
+-export([
+         img_create/3,
+         img_delete/2,
+         img_get/2,
+         img_list/0,
+         img_list/1
+         ]).
 
 -export([
          package_create/1,
@@ -346,6 +355,12 @@ hypervisor_list(Requirements) ->
 dataset_create(Dataset) ->
     send({dataset, create, Dataset}).
 
+
+-spec dataset_import(URL::binary()) -> ok |
+                                       {'error','no_servers'}.
+dataset_import(URL) ->
+    send({dataset, import, URL}).
+
 -spec dataset_delete(Dataset::binary()) -> ok | not_found |
                                            {'error','no_servers'}.
 dataset_delete(Dataset) ->
@@ -377,6 +392,36 @@ dataset_list() ->
 -spec dataset_list(Reqs::term()) -> {ok, Datasets::[binary()]} | {'error','no_servers'}.
 dataset_list(Reqs) ->
     send({dataset, list, Reqs}).
+
+
+%%%===================================================================
+%%%  IMG Functions
+%%%===================================================================
+
+-spec img_create(Img::binary(), Idx::pos_integer(), Data::binary()) -> ok |
+                                                                       {'error','no_servers'}.
+img_create(Img, Idx, Data) ->
+    send({img, create, Img, Idx, Data}).
+
+
+-spec img_delete(Img::binary(), Idx::pos_integer()) -> ok | not_found |
+                                           {'error','no_servers'}.
+img_delete(Img, Idx) ->
+    send({img, delete, Img, Idx}).
+
+-spec img_get(Img::binary(), Idx::pos_integer()) -> {'error','no_servers'} |
+                                        not_found |
+                                        {ok, [{Key::term(), Key::term()}]}.
+img_get(Img, Idx) ->
+    send({img, get, Img, Idx}).
+
+-spec img_list() -> {ok, Imgs::[binary()]} | {'error','no_servers'}.
+img_list() ->
+    send({img, list}).
+
+-spec img_list(Img::binary()) -> {ok, Parts::[pos_integer()]} | {'error','no_servers'}.
+img_list(Img) ->
+    send({img, list, Img}).
 
 %%%===================================================================
 %%%  PACKAGE Functions
