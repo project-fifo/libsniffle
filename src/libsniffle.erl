@@ -38,6 +38,8 @@
          vm_start/1,
          vm_stop/1,
          vm_reboot/1,
+         vm_stop/2,
+         vm_reboot/2,
          vm_delete/1
         ]).
 
@@ -212,9 +214,20 @@ vm_start(VM) when
 
 -spec vm_stop(VM::fifo:uuid()) -> ok | not_found |
                                   {'error','no_servers'}.
-vm_stop(VM) when
+vm_stop(VM) when is_binary(VM) ->
+    vm_stop(VM, []).
+
+
+-spec vm_stop(VM::fifo:uuid(),
+              Options::[atom() | {atom(), term()}]) -> ok | not_found |
+                                                       {'error','no_servers'}.
+vm_stop(VM, []) when
       is_binary(VM)->
-    send({vm, stop, VM}).
+    send({vm, stop, VM});
+
+vm_stop(VM, [force]) when
+      is_binary(VM)->
+    send({vm, stop, force, VM}).
 
 -spec vm_get(VM::fifo:uuid()) ->
                     not_found |
@@ -228,7 +241,19 @@ vm_get(VM) when
                                     {'error','no_servers'}.
 vm_reboot(VM) when
       is_binary(VM) ->
-    send({vm, reboot, VM}).
+    vm_reboot(VM, []).
+
+-spec vm_reboot(VM::fifo:uuid(),
+                Options::[atom() | {atom(), term()}]) -> ok | not_found |
+                                                         {'error','no_servers'}.
+vm_reboot(VM, []) when
+      is_binary(VM) ->
+    send({vm, reboot, VM});
+
+vm_reboot(VM, [force]) when
+      is_binary(VM) ->
+    send({vm, reboot, force, VM}).
+
 
 -spec vm_delete(VM::fifo:uuid()) -> ok | not_found |
                                     {'error','no_servers'}.
