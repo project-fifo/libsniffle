@@ -12,6 +12,17 @@
         ]).
 
 -export([
+         dtrace_add/2,
+         dtrace_delete/1,
+         dtrace_get/1,
+         dtrace_set/2,
+         dtrace_set/3,
+         dtrace_list/1,
+         dtrace_list/0,
+         dtrace_run/2
+        ]).
+
+-export([
          vm_register/2,
          vm_unregister/1,
          vm_update/3,
@@ -27,6 +38,8 @@
          vm_start/1,
          vm_stop/1,
          vm_reboot/1,
+         vm_stop/2,
+         vm_reboot/2,
          vm_delete/1
         ]).
 
@@ -42,6 +55,7 @@
 
 -export([
          dataset_create/1,
+         dataset_import/1,
          dataset_delete/1,
          dataset_get/1,
          dataset_set/2,
@@ -49,6 +63,14 @@
          dataset_list/0,
          dataset_list/1
         ]).
+
+-export([
+         img_create/3,
+         img_delete/2,
+         img_get/2,
+         img_list/0,
+         img_list/1
+         ]).
 
 -export([
          package_create/1,
@@ -77,9 +99,62 @@
 
 -export([cloud_status/0]).
 
+
+
+
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
+
+
+dtrace_add(Name, Script) when
+      is_binary(Name),
+      is_list(Script)->
+    send({dtrace, add, Name, Script}).
+
+dtrace_delete(ID) when
+      is_binary(ID)->
+    send({dtrace, delete, ID}).
+
+dtrace_get(ID) when
+      is_binary(ID)->
+    send({dtrace, get, ID}).
+
+dtrace_list()->
+    send({dtrace, list}).
+
+dtrace_list(Requirements)->
+    send({dtrace, list, Requirements}).
+
+-spec dtrace_set(Dtrace::fifo:uuid(),
+                 Attribute::binary(),
+                 Value::any()) -> ok | not_found |
+                              {'error','no_servers'}.
+dtrace_set(DTrace, Attribute, Value) when
+      is_binary(DTrace) ->
+    send({dtrace, set, DTrace, Attribute, Value}).
+
+-spec dtrace_set(DTrace::fifo:uuid(),
+                 Attributes::fifo:config_list()) -> ok | not_found |
+                                                {'error','no_servers'}.
+dtrace_set(DTrace, Attributes) when
+      is_binary(DTrace) ->
+    send({dtrace, set, DTrace, Attributes}).
+
+dtrace_run(ID, Servers) when
+      is_binary(ID)->
+    case libsniffle_server:get_server() of
+        {error, no_server} ->
+            {error, no_server};
+        {ok, Server, Port} ->
+            case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}], 100) of
+                {ok, Socket} ->
+                    ok = gen_tcp:send(Socket, term_to_binary({dtrace, run, ID, Servers})),
+                    {ok, Socket};
+                E ->
+                    E
+            end
+    end.
 
 -spec start() -> ok | error.
 start() ->
@@ -139,9 +214,20 @@ vm_start(VM) when
 
 -spec vm_stop(VM::fifo:uuid()) -> ok | not_found |
                                   {'error','no_servers'}.
-vm_stop(VM) when
+vm_stop(VM) when is_binary(VM) ->
+    vm_stop(VM, []).
+
+
+-spec vm_stop(VM::fifo:uuid(),
+              Options::[atom() | {atom(), term()}]) -> ok | not_found |
+                                                       {'error','no_servers'}.
+vm_stop(VM, []) when
       is_binary(VM)->
-    send({vm, stop, VM}).
+    send({vm, stop, VM});
+
+vm_stop(VM, [force]) when
+      is_binary(VM)->
+    send({vm, stop, force, VM}).
 
 -spec vm_get(VM::fifo:uuid()) ->
                     not_found |
@@ -155,7 +241,19 @@ vm_get(VM) when
                                     {'error','no_servers'}.
 vm_reboot(VM) when
       is_binary(VM) ->
-    send({vm, reboot, VM}).
+    vm_reboot(VM, []).
+
+-spec vm_reboot(VM::fifo:uuid(),
+                Options::[atom() | {atom(), term()}]) -> ok | not_found |
+                                                         {'error','no_servers'}.
+vm_reboot(VM, []) when
+      is_binary(VM) ->
+    send({vm, reboot, VM});
+
+vm_reboot(VM, [force]) when
+      is_binary(VM) ->
+    send({vm, reboot, force, VM}).
+
 
 -spec vm_delete(VM::fifo:uuid()) -> ok | not_found |
                                     {'error','no_servers'}.
@@ -282,6 +380,12 @@ hypervisor_list(Requirements) ->
 dataset_create(Dataset) ->
     send({dataset, create, Dataset}).
 
+
+-spec dataset_import(URL::binary()) -> ok |
+                                       {'error','no_servers'}.
+dataset_import(URL) ->
+    send({dataset, import, URL}).
+
 -spec dataset_delete(Dataset::binary()) -> ok | not_found |
                                            {'error','no_servers'}.
 dataset_delete(Dataset) ->
@@ -313,6 +417,36 @@ dataset_list() ->
 -spec dataset_list(Reqs::term()) -> {ok, Datasets::[binary()]} | {'error','no_servers'}.
 dataset_list(Reqs) ->
     send({dataset, list, Reqs}).
+
+
+%%%===================================================================
+%%%  IMG Functions
+%%%===================================================================
+
+-spec img_create(Img::binary(), Idx::pos_integer(), Data::binary()) -> ok |
+                                                                       {'error','no_servers'}.
+img_create(Img, Idx, Data) ->
+    send({img, create, Img, Idx, Data}).
+
+
+-spec img_delete(Img::binary(), Idx::pos_integer()) -> ok | not_found |
+                                           {'error','no_servers'}.
+img_delete(Img, Idx) ->
+    send({img, delete, Img, Idx}).
+
+-spec img_get(Img::binary(), Idx::pos_integer()) -> {'error','no_servers'} |
+                                        not_found |
+                                        {ok, [{Key::term(), Key::term()}]}.
+img_get(Img, Idx) ->
+    send({img, get, Img, Idx}).
+
+-spec img_list() -> {ok, Imgs::[binary()]} | {'error','no_servers'}.
+img_list() ->
+    send({img, list}).
+
+-spec img_list(Img::binary()) -> {ok, Parts::[pos_integer()]} | {'error','no_servers'}.
+img_list(Img) ->
+    send({img, list, Img}).
 
 %%%===================================================================
 %%%  PACKAGE Functions
