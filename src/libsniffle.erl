@@ -141,8 +141,8 @@ version() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec cloud_status() -> {'error','no_servers'} |
-                        {Resources::fifo:config_list(),
-                         Warnings::fifo:config_list()}.
+                        {ok, {Resources::fifo:object(),
+                              Warnings::fifo:object()}}.
 cloud_status() ->
     send({cloud, status}).
 
@@ -160,6 +160,7 @@ cloud_status() ->
 -spec dtrace_add(Name::binary(),
                  Script::list()) ->
                         {ok, UUID::fifo:uuid()} |
+                        duplicate |
                         {'error','no_servers'}.
 dtrace_add(Name, Script) when
       is_binary(Name),
@@ -842,7 +843,8 @@ package_list(Reqs) ->
                      Last::integer() | binary(),
                      Tag::binary(),
                      Vlan::pos_integer()) ->
-                            ok | duplicate |
+                            {ok, UUID::fifo:iprange_id()} |
+                            duplicate |
                             {'error','no_servers'}.
 
 iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
