@@ -284,7 +284,7 @@ create(PackageID, DatasetID, Config) ->
 %% @doc Registeres an existing VM with sniffle.
 %% @end
 %%--------------------------------------------------------------------
--spec vm_register(VM::fifo:uuid(), Hypervisor::fifo:hypervisor()) ->
+-spec vm_register(VM::fifo:uuid(), Hypervisor::fifo:hypervisor_id()) ->
                          ok |
                          {'error','no_servers'}.
 vm_register(VM, Hypervisor) when
