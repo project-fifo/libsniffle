@@ -216,8 +216,8 @@ dtrace_list(Requirements)->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_set(Dtrace::fifo:uuid(),
-                 Attribute::fifo:keys() | delete,
-                 Value::any()) ->
+                 Attribute::fifo:keys(),
+                 Value::fifo:value() | delete) ->
                         ok | not_found |
                         {'error','no_servers'}.
 dtrace_set(DTrace, Attribute, Value) when
@@ -416,9 +416,10 @@ vm_update(VM, Package, Config) when
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_set(VM::fifo:uuid(),
-             Attribute::fifo:keys() | delete,
-             Value::any()) -> ok | not_found |
-                              {'error','no_servers'}.
+             Attribute::fifo:keys(),
+             Value::fifo:value() | delete) ->
+                    ok | not_found |
+                    {'error','no_servers'}.
 vm_set(VM, Attribute, Value) when
       is_binary(VM) ->
     send({vm, set, VM, Attribute, Value}).
@@ -546,8 +547,8 @@ hypervisor_get(Hypervisor) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec hypervisor_set(Hypervisor::binary(),
-                     Resource::binary() | delete,
-                     Value::fifo:value()) ->
+                     Resource::binary(),
+                     Value::fifo:value() | delete) ->
                             ok | not_found |
                             {'error','no_servers'}.
 hypervisor_set(Hypervisor, Resource, Value) ->
@@ -634,8 +635,8 @@ dataset_get(Dataset) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec dataset_set(Dataset::fifo:dataset_id(),
-                  Attribute::fifo:keys() | delete,
-                  Value::term()) ->
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) ->
                          ok | not_found |
                          {'error','no_servers'}.
 dataset_set(Dataset, Attribute, Value) ->
@@ -782,8 +783,8 @@ package_get(Package) when
 %% @end
 %%--------------------------------------------------------------------
 -spec package_set(Package::fifo:package_id(),
-                  Attribute::fifo:keys() | delete,
-                  Value::fifo:value()) -> ok | not_found |
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) -> ok | not_found |
                                           {'error','no_servers'}.
 package_set(Package, Attribute, Value)  when
       is_binary(Package) ->
@@ -897,8 +898,8 @@ iprange_get(Iprange) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec iprange_set(Iprange::fifo:iprange_id(),
-                  Attribute::fifo:keys() | delete,
-                  Value::fifo:value()) ->
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) ->
                          ok | not_found |
                          {'error','no_servers'}.
 iprange_set(Iprange, Attribute, Value)  when
