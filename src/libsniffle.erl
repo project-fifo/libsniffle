@@ -129,8 +129,7 @@ servers() ->
 %% @spec version() -> binary
 %% @end
 %%--------------------------------------------------------------------
--spec version() -> {binary(), binary()} |
-                   not_found |
+-spec version() -> binary() |
                    {error, no_servers}.
 version() ->
     ServerVersion = send(version),
