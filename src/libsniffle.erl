@@ -750,7 +750,8 @@ img_list(Img) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec package_create(Name::binary()) ->
-                            {ok, UUID::fifo:uuid()} | not_found |
+                            {ok, UUID::fifo:uuid()} |
+                            duplicate |
                             {'error','no_servers'}.
 package_create(Name) when
       is_binary(Name) ->
