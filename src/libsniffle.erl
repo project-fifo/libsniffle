@@ -158,7 +158,7 @@ cloud_status() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_add(Name::binary(),
-                 Script::binary()) ->
+                 Script::list()) ->
                         {ok, UUID::fifo:uuid()} |
                         {'error','no_servers'}.
 dtrace_add(Name, Script) when
@@ -1009,6 +1009,7 @@ ip_to_int(IP) ->
 %%%===================================================================
 
 -spec send(MSG::fifo:sniffle_message()) ->
+                  ok |
                   atom() |
                   {ok, Reply::term()} |
                   {error, no_servers}.
