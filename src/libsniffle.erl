@@ -547,7 +547,7 @@ hypervisor_get(Hypervisor) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec hypervisor_set(Hypervisor::binary(),
-                     Resource::binary(),
+                     Resource::fifo:keys(),
                      Value::fifo:value() | delete) ->
                             ok | not_found |
                             {'error','no_servers'}.
@@ -558,9 +558,10 @@ hypervisor_set(Hypervisor, Resource, Value) ->
 %% @doc Sets multiple attributes of the hypervisor.
 %% @end
 %%--------------------------------------------------------------------
--spec hypervisor_set(Hypervisor::binary(), Resources::fifo:config_list()) ->
-                                     ok | not_found |
-                                     {'error','no_servers'}.
+-spec hypervisor_set(Hypervisor::binary(),
+                     Resources::fifo:config_list()) ->
+                            ok | not_found |
+                            {'error','no_servers'}.
 hypervisor_set(Hypervisor, Resources) ->
     send({hypervisor, set, Hypervisor, Resources}).
 
