@@ -462,7 +462,7 @@ vm_snapshot(Vm, Comment) ->
 %%--------------------------------------------------------------------
 -spec vm_delete_snapshot(Vm::fifo:uuid(),
                          UUID::binary()) ->
-                                {ok, fifo:uuid()} |
+                                ok |
                                 {'error','no_servers'}.
 vm_delete_snapshot(Vm, UUID) ->
     send({vm, snapshot, delete, Vm, UUID}).
@@ -474,7 +474,7 @@ vm_delete_snapshot(Vm, UUID) ->
 %%--------------------------------------------------------------------
 -spec vm_rollback_snapshot(Vm::fifo:uuid(),
                            UUID::binary()) ->
-                                  {ok, fifo:uuid()} |
+                                  ok |
                                   {'error','no_servers'}.
 vm_rollback_snapshot(Vm, UUID) ->
     send({vm, snapshot, rollback, Vm, UUID}).
