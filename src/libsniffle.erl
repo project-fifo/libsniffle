@@ -216,7 +216,7 @@ dtrace_list(Requirements)->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_set(Dtrace::fifo:uuid(),
-                 Attribute::binary(),
+                 Attribute::fifo:keys(),
                  Value::any()) ->
                         ok | not_found |
                         {'error','no_servers'}.
@@ -416,7 +416,7 @@ vm_update(VM, Package, Config) when
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_set(VM::fifo:uuid(),
-             Attribute::binary(),
+             Attribute::fifo:keys(),
              Value::any()) -> ok | not_found |
                               {'error','no_servers'}.
 vm_set(VM, Attribute, Value) when
@@ -779,7 +779,7 @@ package_get(Package) when
 %% @end
 %%--------------------------------------------------------------------
 -spec package_set(Package::binary(),
-                  Attribute::binary(),
+                  Attribute::fifo:keys(),
                   Value::fifo:value()) -> ok | not_found |
                                           {'error','no_servers'}.
 package_set(Package, Attribute, Value)  when
@@ -894,7 +894,7 @@ iprange_get(Iprange) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec iprange_set(Iprange::binary(),
-                  Attribute::binary()|[binary()],
+                  Attribute::fifo:keys()|[binary()],
                   Value::fifo:value()) ->
                          ok | not_found |
                          {'error','no_servers'}.
