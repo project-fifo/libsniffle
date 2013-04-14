@@ -216,7 +216,7 @@ dtrace_list(Requirements)->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_set(Dtrace::fifo:uuid(),
-                 Attribute::fifo:keys(),
+                 Attribute::fifo:keys() | delete,
                  Value::any()) ->
                         ok | not_found |
                         {'error','no_servers'}.
@@ -416,7 +416,7 @@ vm_update(VM, Package, Config) when
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_set(VM::fifo:uuid(),
-             Attribute::fifo:keys(),
+             Attribute::fifo:keys() | delete,
              Value::any()) -> ok | not_found |
                               {'error','no_servers'}.
 vm_set(VM, Attribute, Value) when
@@ -546,7 +546,7 @@ hypervisor_get(Hypervisor) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec hypervisor_set(Hypervisor::binary(),
-                     Resource::binary(),
+                     Resource::binary() | delete,
                      Value::fifo:value()) ->
                             ok | not_found |
                             {'error','no_servers'}.
@@ -633,7 +633,9 @@ dataset_get(Dataset) ->
 %% @doc Sets a attribute of a dataset.
 %% @end
 %%--------------------------------------------------------------------
--spec dataset_set(Dataset::binary(), Attribute::term(), Value::term()) ->
+-spec dataset_set(Dataset::fifo:dataset_id(),
+                  Attribute::fifo:keys() | delete,
+                  Value::term()) ->
                          ok | not_found |
                          {'error','no_servers'}.
 dataset_set(Dataset, Attribute, Value) ->
@@ -643,7 +645,8 @@ dataset_set(Dataset, Attribute, Value) ->
 %% @doc Sets multiple attributes of a dataset.
 %% @end
 %%--------------------------------------------------------------------
--spec dataset_set(Dataset::binary(), Attirbutes::[{Key::term(), Value::term()}]) ->
+-spec dataset_set(Dataset::fifo:dataset_id(),
+                  Attirbutes::fifo:attr_list()) ->
                          ok |
                          not_found |
                          {'error','no_servers'}.
@@ -778,8 +781,8 @@ package_get(Package) when
 %% @doc Sets a attribute on the pacakge.
 %% @end
 %%--------------------------------------------------------------------
--spec package_set(Package::binary(),
-                  Attribute::fifo:keys(),
+-spec package_set(Package::fifo:package_id(),
+                  Attribute::fifo:keys() | delete,
                   Value::fifo:value()) -> ok | not_found |
                                           {'error','no_servers'}.
 package_set(Package, Attribute, Value)  when
@@ -790,7 +793,7 @@ package_set(Package, Attribute, Value)  when
 %% @doc Sets multiple attributes on the pacakge.
 %% @end
 %%--------------------------------------------------------------------
--spec package_set(Package::binary(),
+-spec package_set(Package::fifo:package_id(),
                   Attirbutes::fifo:config_list()) ->
                          ok | not_found |
                          {'error','no_servers'}.
@@ -893,8 +896,8 @@ iprange_get(Iprange) ->
 %% @doc Sets a attribute on the iprange.
 %% @end
 %%--------------------------------------------------------------------
--spec iprange_set(Iprange::binary(),
-                  Attribute::fifo:keys()|[binary()],
+-spec iprange_set(Iprange::fifo:iprange_id(),
+                  Attribute::fifo:keys() | delete,
                   Value::fifo:value()) ->
                          ok | not_found |
                          {'error','no_servers'}.
@@ -906,7 +909,7 @@ iprange_set(Iprange, Attribute, Value)  when
 %% @doc Sets multiple attributes on the iprange.
 %% @end
 %%--------------------------------------------------------------------
--spec iprange_set(Iprange::binary(),
+-spec iprange_set(Iprange::fifo:iprange_id(),
                   Attirbutes::fifo:config_list()) ->
                          ok | not_found |
                          {'error','no_servers'}.
