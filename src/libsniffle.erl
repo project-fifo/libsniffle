@@ -511,7 +511,7 @@ vm_list(Reqs) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec hypervisor_register(Hypervisor::binary(),
-                          Host::inet:ip_address() | inet:hostname(),
+                          Host::binary(),
                           Port::inet:port_number()) ->
                                  ok |
                                  {'error','no_servers'}.
