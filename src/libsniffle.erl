@@ -129,8 +129,7 @@ servers() ->
 %% @spec version() -> binary
 %% @end
 %%--------------------------------------------------------------------
--spec version() -> {binary(), binary()} |
-                   not_found |
+-spec version() -> binary() |
                    {error, no_servers}.
 version() ->
     ServerVersion = send(version),
@@ -141,8 +140,8 @@ version() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec cloud_status() -> {'error','no_servers'} |
-                        {Resources::fifo:config_list(),
-                         Warnings::fifo:config_list()}.
+                        {ok, {Resources::fifo:object(),
+                              Warnings::fifo:object()}}.
 cloud_status() ->
     send({cloud, status}).
 
@@ -158,8 +157,9 @@ cloud_status() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_add(Name::binary(),
-                 Script::binary()) ->
+                 Script::list()) ->
                         {ok, UUID::fifo:uuid()} |
+                        duplicate |
                         {'error','no_servers'}.
 dtrace_add(Name, Script) when
       is_binary(Name),
@@ -216,8 +216,8 @@ dtrace_list(Requirements)->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_set(Dtrace::fifo:uuid(),
-                 Attribute::binary(),
-                 Value::any()) ->
+                 Attribute::fifo:keys(),
+                 Value::fifo:value() | delete) ->
                         ok | not_found |
                         {'error','no_servers'}.
 dtrace_set(DTrace, Attribute, Value) when
@@ -284,7 +284,7 @@ create(PackageID, DatasetID, Config) ->
 %% @doc Registeres an existing VM with sniffle.
 %% @end
 %%--------------------------------------------------------------------
--spec vm_register(VM::fifo:uuid(), Hypervisor::fifo:hypervisor()) ->
+-spec vm_register(VM::fifo:uuid(), Hypervisor::fifo:hypervisor_id()) ->
                          ok |
                          {'error','no_servers'}.
 vm_register(VM, Hypervisor) when
@@ -416,9 +416,10 @@ vm_update(VM, Package, Config) when
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_set(VM::fifo:uuid(),
-             Attribute::binary(),
-             Value::any()) -> ok | not_found |
-                              {'error','no_servers'}.
+             Attribute::fifo:keys(),
+             Value::fifo:value() | delete) ->
+                    ok | not_found |
+                    {'error','no_servers'}.
 vm_set(VM, Attribute, Value) when
       is_binary(VM) ->
     send({vm, set, VM, Attribute, Value}).
@@ -462,7 +463,7 @@ vm_snapshot(Vm, Comment) ->
 %%--------------------------------------------------------------------
 -spec vm_delete_snapshot(Vm::fifo:uuid(),
                          UUID::binary()) ->
-                                {ok, fifo:uuid()} |
+                                ok |
                                 {'error','no_servers'}.
 vm_delete_snapshot(Vm, UUID) ->
     send({vm, snapshot, delete, Vm, UUID}).
@@ -474,7 +475,7 @@ vm_delete_snapshot(Vm, UUID) ->
 %%--------------------------------------------------------------------
 -spec vm_rollback_snapshot(Vm::fifo:uuid(),
                            UUID::binary()) ->
-                                  {ok, fifo:uuid()} |
+                                  ok |
                                   {'error','no_servers'}.
 vm_rollback_snapshot(Vm, UUID) ->
     send({vm, snapshot, rollback, Vm, UUID}).
@@ -546,8 +547,8 @@ hypervisor_get(Hypervisor) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec hypervisor_set(Hypervisor::binary(),
-                     Resource::binary(),
-                     Value::fifo:value()) ->
+                     Resource::fifo:keys(),
+                     Value::fifo:value() | delete) ->
                             ok | not_found |
                             {'error','no_servers'}.
 hypervisor_set(Hypervisor, Resource, Value) ->
@@ -557,9 +558,10 @@ hypervisor_set(Hypervisor, Resource, Value) ->
 %% @doc Sets multiple attributes of the hypervisor.
 %% @end
 %%--------------------------------------------------------------------
--spec hypervisor_set(Hypervisor::binary(), Resources::fifo:config_list()) ->
-                                     ok | not_found |
-                                     {'error','no_servers'}.
+-spec hypervisor_set(Hypervisor::binary(),
+                     Resources::fifo:config_list()) ->
+                            ok | not_found |
+                            {'error','no_servers'}.
 hypervisor_set(Hypervisor, Resources) ->
     send({hypervisor, set, Hypervisor, Resources}).
 
@@ -633,7 +635,9 @@ dataset_get(Dataset) ->
 %% @doc Sets a attribute of a dataset.
 %% @end
 %%--------------------------------------------------------------------
--spec dataset_set(Dataset::binary(), Attribute::term(), Value::term()) ->
+-spec dataset_set(Dataset::fifo:dataset_id(),
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) ->
                          ok | not_found |
                          {'error','no_servers'}.
 dataset_set(Dataset, Attribute, Value) ->
@@ -643,7 +647,8 @@ dataset_set(Dataset, Attribute, Value) ->
 %% @doc Sets multiple attributes of a dataset.
 %% @end
 %%--------------------------------------------------------------------
--spec dataset_set(Dataset::binary(), Attirbutes::[{Key::term(), Value::term()}]) ->
+-spec dataset_set(Dataset::fifo:dataset_id(),
+                  Attirbutes::fifo:attr_list()) ->
                          ok |
                          not_found |
                          {'error','no_servers'}.
@@ -745,7 +750,8 @@ img_list(Img) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec package_create(Name::binary()) ->
-                            {ok, UUID::fifo:uuid()} | not_found |
+                            {ok, UUID::fifo:uuid()} |
+                            duplicate |
                             {'error','no_servers'}.
 package_create(Name) when
       is_binary(Name) ->
@@ -778,9 +784,9 @@ package_get(Package) when
 %% @doc Sets a attribute on the pacakge.
 %% @end
 %%--------------------------------------------------------------------
--spec package_set(Package::binary(),
-                  Attribute::binary(),
-                  Value::fifo:value()) -> ok | not_found |
+-spec package_set(Package::fifo:package_id(),
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) -> ok | not_found |
                                           {'error','no_servers'}.
 package_set(Package, Attribute, Value)  when
       is_binary(Package) ->
@@ -790,7 +796,7 @@ package_set(Package, Attribute, Value)  when
 %% @doc Sets multiple attributes on the pacakge.
 %% @end
 %%--------------------------------------------------------------------
--spec package_set(Package::binary(),
+-spec package_set(Package::fifo:package_id(),
                   Attirbutes::fifo:config_list()) ->
                          ok | not_found |
                          {'error','no_servers'}.
@@ -836,7 +842,8 @@ package_list(Reqs) ->
                      Last::integer() | binary(),
                      Tag::binary(),
                      Vlan::pos_integer()) ->
-                            ok | duplicate |
+                            {ok, UUID::fifo:iprange_id()} |
+                            duplicate |
                             {'error','no_servers'}.
 
 iprange_create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
@@ -893,9 +900,9 @@ iprange_get(Iprange) ->
 %% @doc Sets a attribute on the iprange.
 %% @end
 %%--------------------------------------------------------------------
--spec iprange_set(Iprange::binary(),
-                  Attribute::binary()|[binary()],
-                  Value::fifo:value()) ->
+-spec iprange_set(Iprange::fifo:iprange_id(),
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) ->
                          ok | not_found |
                          {'error','no_servers'}.
 iprange_set(Iprange, Attribute, Value)  when
@@ -906,7 +913,7 @@ iprange_set(Iprange, Attribute, Value)  when
 %% @doc Sets multiple attributes on the iprange.
 %% @end
 %%--------------------------------------------------------------------
--spec iprange_set(Iprange::binary(),
+-spec iprange_set(Iprange::fifo:iprange_id(),
                   Attirbutes::fifo:config_list()) ->
                          ok | not_found |
                          {'error','no_servers'}.
@@ -1009,6 +1016,7 @@ ip_to_int(IP) ->
 %%%===================================================================
 
 -spec send(MSG::fifo:sniffle_message()) ->
+                  ok |
                   atom() |
                   {ok, Reply::term()} |
                   {error, no_servers}.
