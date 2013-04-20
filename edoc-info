@@ -1,0 +1,3 @@
+{application,libsniffle}.
+{packages,[]}.
+{modules,[libsniffle,libsniffle_app,libsniffle_server,libsniffle_sup]}.

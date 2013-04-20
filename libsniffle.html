@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Module libsniffle</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module libsniffle</h1>
+<ul class="index"><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#cloud_status-0">cloud_status/0</a></td><td>Reads the overall cloud status.</td></tr>
+<tr><td valign="top"><a href="#create-3">create/3</a></td><td>Initiates the creating a new VM, this will just return the
+    UUID progress is directy written to the object in the database.</td></tr>
+<tr><td valign="top"><a href="#dataset_create-1">dataset_create/1</a></td><td>Creates a new dataset with the given UUID.</td></tr>
+<tr><td valign="top"><a href="#dataset_delete-1">dataset_delete/1</a></td><td>Deletes a dataset from the server, this will also delete the
+    image from the database.</td></tr>
+<tr><td valign="top"><a href="#dataset_get-1">dataset_get/1</a></td><td>Gets a dataset from the database.</td></tr>
+<tr><td valign="top"><a href="#dataset_import-1">dataset_import/1</a></td><td>Tries to import a dataset from a dsapi server URL.</td></tr>
+<tr><td valign="top"><a href="#dataset_list-0">dataset_list/0</a></td><td>Lists all datasets known to the system.</td></tr>
+<tr><td valign="top"><a href="#dataset_list-1">dataset_list/1</a></td><td>Lists all datasets known to the system filtered by
+    given matchers.</td></tr>
+<tr><td valign="top"><a href="#dataset_set-2">dataset_set/2</a></td><td>Sets multiple attributes of a dataset.</td></tr>
+<tr><td valign="top"><a href="#dataset_set-3">dataset_set/3</a></td><td>Sets a attribute of a dataset.</td></tr>
+<tr><td valign="top"><a href="#dtrace_add-2">dtrace_add/2</a></td><td>Adds a new dtrace script to sniffle, the name is a plain
+    binary while the script is a string that can contain placeholders
+    encapsulated in $ signs.</td></tr>
+<tr><td valign="top"><a href="#dtrace_delete-1">dtrace_delete/1</a></td><td>Deletes a dtrace script from the library.</td></tr>
+<tr><td valign="top"><a href="#dtrace_get-1">dtrace_get/1</a></td><td>Reads a dtrace script and returns the jsx object for it.</td></tr>
+<tr><td valign="top"><a href="#dtrace_list-0">dtrace_list/0</a></td><td>Lists the ID's of all scripts in the database.</td></tr>
+<tr><td valign="top"><a href="#dtrace_list-1">dtrace_list/1</a></td><td>Lists the ID's of all scripts in the database filtered by
+    the passed requirements.</td></tr>
+<tr><td valign="top"><a href="#dtrace_run-2">dtrace_run/2</a></td><td>Starts a dtrace script on the given hypervisors, returns an
+    opened tcp socket that will stream incoming data every second and
+    allows some interaction.</td></tr>
+<tr><td valign="top"><a href="#dtrace_set-2">dtrace_set/2</a></td><td>Sets options on a dtace script.</td></tr>
+<tr><td valign="top"><a href="#dtrace_set-3">dtrace_set/3</a></td><td>Lists the ID's of all scripts in the database filtered by
+    the passed requirements.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_get-1">hypervisor_get/1</a></td><td>Reads the hypervisor object from the database.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_list-0">hypervisor_list/0</a></td><td>Lists all hypervisors known to the system.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_list-1">hypervisor_list/1</a></td><td>Lists all hypervisors known to the system filtered by
+    given matchers.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_register-3">hypervisor_register/3</a></td><td>Registeres a hypervisor with sniffle, passing it's ID
+    (usually the hostname) the ip and the Port of the chunter server
+    running on it.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_set-2">hypervisor_set/2</a></td><td>Sets multiple attributes of the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_set-3">hypervisor_set/3</a></td><td>Sets a attribute of the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#hypervisor_unregister-1">hypervisor_unregister/1</a></td><td>Removes a hypervisor form sniffle.</td></tr>
+<tr><td valign="top"><a href="#img_create-3">img_create/3</a></td><td>Creates a new image part on the server.</td></tr>
+<tr><td valign="top"><a href="#img_delete-1">img_delete/1</a></td><td>Deletes an entire image form the server.</td></tr>
+<tr><td valign="top"><a href="#img_delete-2">img_delete/2</a></td><td>Deletes a image part from the server.</td></tr>
+<tr><td valign="top"><a href="#img_get-2">img_get/2</a></td><td>Reads a image part from the server.</td></tr>
+<tr><td valign="top"><a href="#img_list-0">img_list/0</a></td><td>Lists all images on the server.</td></tr>
+<tr><td valign="top"><a href="#img_list-1">img_list/1</a></td><td>Lists all parts for a images on the server.</td></tr>
+<tr><td valign="top"><a href="#ip_to_bin-1">ip_to_bin/1</a></td><td>This function convers an integer to the human readable ip
+    format as <pre>AAA.BBB.CCC.DDD</pre>.</td></tr>
+<tr><td valign="top"><a href="#ip_to_int-1">ip_to_int/1</a></td><td>This function an human readable ip format
+     <pre>AAA.BBB.CCC.DDD</pre> to an integer.</td></tr>
+<tr><td valign="top"><a href="#iprange_claim-1">iprange_claim/1</a></td><td>Claims a ipaddress and returns the address and the relevant
+    network information.</td></tr>
+<tr><td valign="top"><a href="#iprange_create-8">iprange_create/8</a></td><td>Creates a new IP range on the server.</td></tr>
+<tr><td valign="top"><a href="#iprange_delete-1">iprange_delete/1</a></td><td>Deletes a iprange from the server.</td></tr>
+<tr><td valign="top"><a href="#iprange_get-1">iprange_get/1</a></td><td>Reads all the info of a iprange from the server.</td></tr>
+<tr><td valign="top"><a href="#iprange_list-0">iprange_list/0</a></td><td>Lists all ip ranges known to the system.</td></tr>
+<tr><td valign="top"><a href="#iprange_list-1">iprange_list/1</a></td><td>Lists all ip ranges known to the system filtered by
+    given matchers.</td></tr>
+<tr><td valign="top"><a href="#iprange_release-2">iprange_release/2</a></td><td>Tries to release a claimed ip address from a range.</td></tr>
+<tr><td valign="top"><a href="#iprange_set-2">iprange_set/2</a></td><td>Sets multiple attributes on the iprange.</td></tr>
+<tr><td valign="top"><a href="#iprange_set-3">iprange_set/3</a></td><td>Sets a attribute on the iprange.</td></tr>
+<tr><td valign="top"><a href="#package_create-1">package_create/1</a></td><td>Creates a new package and returns it's UUID.</td></tr>
+<tr><td valign="top"><a href="#package_delete-1">package_delete/1</a></td><td>Deletes a package from the database.</td></tr>
+<tr><td valign="top"><a href="#package_get-1">package_get/1</a></td><td>Reads a package from the database.</td></tr>
+<tr><td valign="top"><a href="#package_list-0">package_list/0</a></td><td>Lists all packages known to the system.</td></tr>
+<tr><td valign="top"><a href="#package_list-1">package_list/1</a></td><td>Lists all packages known to the system filtered by
+    given matchers.</td></tr>
+<tr><td valign="top"><a href="#package_set-2">package_set/2</a></td><td>Sets multiple attributes on the pacakge.</td></tr>
+<tr><td valign="top"><a href="#package_set-3">package_set/3</a></td><td>Sets a attribute on the pacakge.</td></tr>
+<tr><td valign="top"><a href="#servers-0">servers/0</a></td><td>Lists the currently available servers.</td></tr>
+<tr><td valign="top"><a href="#start-0">start/0</a></td><td>Starts the libsniffle application.</td></tr>
+<tr><td valign="top"><a href="#vm_delete-1">vm_delete/1</a></td><td>Triggers a delete, this does not remove the VM from the
+    database instead just pokes the hypervisor which, when the delete
+    was successful calls a unregister.</td></tr>
+<tr><td valign="top"><a href="#vm_delete_snapshot-2">vm_delete_snapshot/2</a></td><td>Deletes a ZFS snapshot from the VM.</td></tr>
+<tr><td valign="top"><a href="#vm_get-1">vm_get/1</a></td><td>Reads the VM attribute from the database.</td></tr>
+<tr><td valign="top"><a href="#vm_list-0">vm_list/0</a></td><td>Lists the UUID's of all VM's known to the server.</td></tr>
+<tr><td valign="top"><a href="#vm_list-1">vm_list/1</a></td><td>Lists the UUID's of all VM's known to the server filtered by
+    given matchers.</td></tr>
+<tr><td valign="top"><a href="#vm_log-2">vm_log/2</a></td><td>Adds a log to the VM that will be timestamped on the server.</td></tr>
+<tr><td valign="top"><a href="#vm_reboot-1">vm_reboot/1</a></td><td>Restarts a VM on the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#vm_reboot-2">vm_reboot/2</a></td><td>Restarts a VM on the hypervisor and allows passing options like
+    forced restart.</td></tr>
+<tr><td valign="top"><a href="#vm_register-2">vm_register/2</a></td><td>Registeres an existing VM with sniffle.</td></tr>
+<tr><td valign="top"><a href="#vm_rollback_snapshot-2">vm_rollback_snapshot/2</a></td><td>Rolls back a snapshot of a VM, this will <b>delete</b> all
+    snapshots between the current state and the rolled back snapshot!</td></tr>
+<tr><td valign="top"><a href="#vm_set-2">vm_set/2</a></td><td>Sets some attributes on the VM object in the database - this
+     does not change the VM on the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#vm_set-3">vm_set/3</a></td><td>Sets a attribute on the VM object in the database - this does
+    not change the VM on the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#vm_snapshot-2">vm_snapshot/2</a></td><td>Creates a ZFS new snapshot of a given VM.</td></tr>
+<tr><td valign="top"><a href="#vm_start-1">vm_start/1</a></td><td>Starts a VM on the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#vm_stop-1">vm_stop/1</a></td><td>Stops a VM on the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#vm_stop-2">vm_stop/2</a></td><td>Stops a VM on the hypervisor and allows passing options like
+    forced stop.</td></tr>
+<tr><td valign="top"><a href="#vm_unregister-1">vm_unregister/1</a></td><td>Unregisteres a VM from the database, this does not include
+    deleting it from the hypervisor.</td></tr>
+<tr><td valign="top"><a href="#vm_update-3">vm_update/3</a></td><td>Updates a VM by attempting to resize it from package
+    perspective and changing some of the config values.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="cloud_status-0">cloud_status/0</a></h3>
+<div class="spec">
+<p><tt>cloud_status() -&gt; {error, no_servers} | {ok, {Resources::<a href="fifo.html#type-object">fifo:object()</a>, Warnings::<a href="fifo.html#type-object">fifo:object()</a>}}</tt><br></p>
+</div><p>Reads the overall cloud status.</p>
+
+<h3 class="function"><a name="create-3">create/3</a></h3>
+<div class="spec">
+<p><tt>create(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) -&gt; {error, no_servers} | {ok, UUID::binary()}</tt><br></p>
+</div><p>Initiates the creating a new VM, this will just return the
+    UUID progress is directy written to the object in the database.</p>
+
+<h3 class="function"><a name="dataset_create-1">dataset_create/1</a></h3>
+<div class="spec">
+<p><tt>dataset_create(Dataset::binary()) -&gt; ok | duplicate | {error, no_servers}</tt><br></p>
+</div><p>Creates a new dataset with the given UUID.</p>
+
+<h3 class="function"><a name="dataset_delete-1">dataset_delete/1</a></h3>
+<div class="spec">
+<p><tt>dataset_delete(Dataset::binary()) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Deletes a dataset from the server, this will also delete the
+    image from the database.</p>
+
+<h3 class="function"><a name="dataset_get-1">dataset_get/1</a></h3>
+<div class="spec">
+<p><tt>dataset_get(Dataset::binary()) -&gt; {error, no_servers} | not_found | {ok, [{Key::term(), Key::term()}]}</tt><br></p>
+</div><p>Gets a dataset from the database.</p>
+
+<h3 class="function"><a name="dataset_import-1">dataset_import/1</a></h3>
+<div class="spec">
+<p><tt>dataset_import(URL::binary()) -&gt; {ok, UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>} | {error, Reason::term()} | {error, no_servers}</tt><br></p>
+</div><p>Tries to import a dataset from a dsapi server URL.</p>
+
+<h3 class="function"><a name="dataset_list-0">dataset_list/0</a></h3>
+<div class="spec">
+<p><tt>dataset_list() -&gt; {ok, Datasets::[binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all datasets known to the system.</p>
+
+<h3 class="function"><a name="dataset_list-1">dataset_list/1</a></h3>
+<div class="spec">
+<p><tt>dataset_list(Reqs::term()) -&gt; {ok, Datasets::[binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all datasets known to the system filtered by
+    given matchers.</p>
+
+<h3 class="function"><a name="dataset_set-2">dataset_set/2</a></h3>
+<div class="spec">
+<p><tt>dataset_set(Dataset::<a href="fifo.html#type-dataset_id">fifo:dataset_id()</a>, Attirbutes::<a href="fifo.html#type-attr_list">fifo:attr_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets multiple attributes of a dataset.</p>
+
+<h3 class="function"><a name="dataset_set-3">dataset_set/3</a></h3>
+<div class="spec">
+<p><tt>dataset_set(Dataset::<a href="fifo.html#type-dataset_id">fifo:dataset_id()</a>, Attribute::<a href="fifo.html#type-keys">fifo:keys()</a>, Value::<a href="fifo.html#type-value">fifo:value()</a> | delete) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets a attribute of a dataset.</p>
+
+<h3 class="function"><a name="dtrace_add-2">dtrace_add/2</a></h3>
+<div class="spec">
+<p><tt>dtrace_add(Name::binary(), Script::list()) -&gt; {ok, UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>} | duplicate | {error, no_servers}</tt><br></p>
+</div><p>Adds a new dtrace script to sniffle, the name is a plain
+    binary while the script is a string that can contain placeholders
+    encapsulated in $ signs.
+    A UUID is returned.</p>
+
+<h3 class="function"><a name="dtrace_delete-1">dtrace_delete/1</a></h3>
+<div class="spec">
+<p><tt>dtrace_delete(UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Deletes a dtrace script from the library</p>
+
+<h3 class="function"><a name="dtrace_get-1">dtrace_get/1</a></h3>
+<div class="spec">
+<p><tt>dtrace_get(UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; {ok, Data::<a href="fifo.html#type-config_list">fifo:config_list()</a>} | not_found | {error, no_servers}</tt><br></p>
+</div><p>Reads a dtrace script and returns the jsx object for it.</p>
+
+<h3 class="function"><a name="dtrace_list-0">dtrace_list/0</a></h3>
+<div class="spec">
+<p><tt>dtrace_list() -&gt; {ok, [UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>]} | {error, no_servers}</tt><br></p>
+</div><p>Lists the ID's of all scripts in the database.</p>
+
+<h3 class="function"><a name="dtrace_list-1">dtrace_list/1</a></h3>
+<div class="spec">
+<p><tt>dtrace_list(Requirement::[Requirement::<a href="fifo.html#type-matcher">fifo:matcher()</a>]) -&gt; {ok, [UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>]} | {error, no_servers}</tt><br></p>
+</div><p>Lists the ID's of all scripts in the database filtered by
+    the passed requirements.</p>
+
+<h3 class="function"><a name="dtrace_run-2">dtrace_run/2</a></h3>
+<div class="spec">
+<p><tt>dtrace_run(DTrace::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Servers::[<a href="fifo.html#type-hypervisor">fifo:hypervisor()</a>]) -&gt; {ok, Socket::port()} | not_found | {error, no_servers}</tt><br></p>
+</div><p>Starts a dtrace script on the given hypervisors, returns an
+    opened tcp socket that will stream incoming data every second and
+    allows some interaction.</p>
+
+<h3 class="function"><a name="dtrace_set-2">dtrace_set/2</a></h3>
+<div class="spec">
+<p><tt>dtrace_set(DTrace::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Attributes::<a href="fifo.html#type-config_list">fifo:config_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets options on a dtace script. The root key 'config' has a
+    special meaning here since it holds replacement variables.</p>
+
+<h3 class="function"><a name="dtrace_set-3">dtrace_set/3</a></h3>
+<div class="spec">
+<p><tt>dtrace_set(Dtrace::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Attribute::<a href="fifo.html#type-keys">fifo:keys()</a>, Value::<a href="fifo.html#type-value">fifo:value()</a> | delete) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Lists the ID's of all scripts in the database filtered by
+    the passed requirements.</p>
+
+<h3 class="function"><a name="hypervisor_get-1">hypervisor_get/1</a></h3>
+<div class="spec">
+<p><tt>hypervisor_get(Hypervisor::binary()) -&gt; not_found | {ok, <a href="fifo.html#type-hypervisor">fifo:hypervisor()</a>} | {error, no_servers}</tt><br></p>
+</div><p>Reads the hypervisor object from the database.</p>
+
+<h3 class="function"><a name="hypervisor_list-0">hypervisor_list/0</a></h3>
+<div class="spec">
+<p><tt>hypervisor_list() -&gt; {ok, [binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all hypervisors known to the system.</p>
+
+<h3 class="function"><a name="hypervisor_list-1">hypervisor_list/1</a></h3>
+<div class="spec">
+<p><tt>hypervisor_list(Requirements::[<a href="fifo.html#type-matcher">fifo:matcher()</a>]) -&gt; {ok, [<a href="fifo.html#type-hypervisor">fifo:hypervisor()</a>]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all hypervisors known to the system filtered by
+    given matchers.</p>
+
+<h3 class="function"><a name="hypervisor_register-3">hypervisor_register/3</a></h3>
+<div class="spec">
+<p><tt>hypervisor_register(Hypervisor::binary(), Host::binary(), Port::<a href="inet.html#type-port_number">inet:port_number()</a>) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Registeres a hypervisor with sniffle, passing it's ID
+    (usually the hostname) the ip and the Port of the chunter server
+    running on it.</p>
+
+<h3 class="function"><a name="hypervisor_set-2">hypervisor_set/2</a></h3>
+<div class="spec">
+<p><tt>hypervisor_set(Hypervisor::binary(), Resources::<a href="fifo.html#type-config_list">fifo:config_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets multiple attributes of the hypervisor.</p>
+
+<h3 class="function"><a name="hypervisor_set-3">hypervisor_set/3</a></h3>
+<div class="spec">
+<p><tt>hypervisor_set(Hypervisor::binary(), Resource::<a href="fifo.html#type-keys">fifo:keys()</a>, Value::<a href="fifo.html#type-value">fifo:value()</a> | delete) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets a attribute of the hypervisor.</p>
+
+<h3 class="function"><a name="hypervisor_unregister-1">hypervisor_unregister/1</a></h3>
+<div class="spec">
+<p><tt>hypervisor_unregister(Hypervisor::binary()) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Removes a hypervisor form sniffle.</p>
+
+<h3 class="function"><a name="img_create-3">img_create/3</a></h3>
+<div class="spec">
+<p><tt>img_create(Img::binary(), Idx::pos_integer(), Data::binary()) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Creates a new image part on the server.</p>
+
+<h3 class="function"><a name="img_delete-1">img_delete/1</a></h3>
+<div class="spec">
+<p><tt>img_delete(Img::binary()) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Deletes an entire image form the server</p>
+
+<h3 class="function"><a name="img_delete-2">img_delete/2</a></h3>
+<div class="spec">
+<p><tt>img_delete(Img::binary(), Idx::pos_integer()) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Deletes a image part from the server</p>
+
+<h3 class="function"><a name="img_get-2">img_get/2</a></h3>
+<div class="spec">
+<p><tt>img_get(Img::binary(), Idx::pos_integer()) -&gt; {error, no_servers} | not_found | {ok, binary()}</tt><br></p>
+</div><p>Reads a image part from the server</p>
+
+<h3 class="function"><a name="img_list-0">img_list/0</a></h3>
+<div class="spec">
+<p><tt>img_list() -&gt; {ok, Imgs::[<a href="fifo.html#type-uuid">fifo:uuid()</a>]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all images on the server.</p>
+
+<h3 class="function"><a name="img_list-1">img_list/1</a></h3>
+<div class="spec">
+<p><tt>img_list(Img::binary()) -&gt; {ok, Parts::[pos_integer()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all parts for a images on the server.</p>
+
+<h3 class="function"><a name="ip_to_bin-1">ip_to_bin/1</a></h3>
+<div class="spec">
+<p><tt>ip_to_bin(IP::integer()) -&gt; binary()</tt><br></p>
+</div><p>This function convers an integer to the human readable ip
+    format as <pre>AAA.BBB.CCC.DDD</pre>.</p>
+
+<h3 class="function"><a name="ip_to_int-1">ip_to_int/1</a></h3>
+<div class="spec">
+<p><tt>ip_to_int(IP::integer() | string() | binary()) -&gt; integer()</tt><br></p>
+</div><p>This function an human readable ip format
+     <pre>AAA.BBB.CCC.DDD</pre> to an integer.</p>
+
+<h3 class="function"><a name="iprange_claim-1">iprange_claim/1</a></h3>
+<div class="spec">
+<p><tt>iprange_claim(Iprange::binary()) -&gt; not_found | {ok, {Tag::binary(), IP::pos_integer(), Netmask::pos_integer(), Gateway::pos_integer()}} | {error, failed} | {error, no_servers}</tt><br></p>
+</div><p>Claims a ipaddress and returns the address and the relevant
+    network information.</p>
+
+<h3 class="function"><a name="iprange_create-8">iprange_create/8</a></h3>
+<div class="spec">
+<p><tt>iprange_create(Iprange::binary(), Network::integer() | binary(), Gateway::integer() | binary(), Netmask::integer() | binary(), First::integer() | binary(), Last::integer() | binary(), Tag::binary(), Vlan::pos_integer()) -&gt; {ok, UUID::<a href="fifo.html#type-iprange_id">fifo:iprange_id()</a>} | duplicate | {error, no_servers}</tt><br></p>
+</div><p>Creates a new IP range on the server. All ips are passed as
+    integer or binary.</p>
+
+<h3 class="function"><a name="iprange_delete-1">iprange_delete/1</a></h3>
+<div class="spec">
+<p><tt>iprange_delete(Iprange::binary()) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Deletes a iprange from the server.</p>
+
+<h3 class="function"><a name="iprange_get-1">iprange_get/1</a></h3>
+<div class="spec">
+<p><tt>iprange_get(Iprange::binary()) -&gt; not_found | {ok, <a href="fifo.html#type-config_list">fifo:config_list()</a>} | {error, no_servers}</tt><br></p>
+</div><p>Reads all the info of a iprange from the server.</p>
+
+<h3 class="function"><a name="iprange_list-0">iprange_list/0</a></h3>
+<div class="spec">
+<p><tt>iprange_list() -&gt; {ok, [binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all ip ranges known to the system.</p>
+
+<h3 class="function"><a name="iprange_list-1">iprange_list/1</a></h3>
+<div class="spec">
+<p><tt>iprange_list(Reqs::[<a href="fifo.html#type-matcher">fifo:matcher()</a>]) -&gt; {ok, [binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all ip ranges known to the system filtered by
+    given matchers.</p>
+
+<h3 class="function"><a name="iprange_release-2">iprange_release/2</a></h3>
+<div class="spec">
+<p><tt>iprange_release(Iprange::binary(), Ip::integer() | string() | binary()) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Tries to release a claimed ip address from a range.</p>
+
+<h3 class="function"><a name="iprange_set-2">iprange_set/2</a></h3>
+<div class="spec">
+<p><tt>iprange_set(Iprange::<a href="fifo.html#type-iprange_id">fifo:iprange_id()</a>, Attirbutes::<a href="fifo.html#type-config_list">fifo:config_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets multiple attributes on the iprange.</p>
+
+<h3 class="function"><a name="iprange_set-3">iprange_set/3</a></h3>
+<div class="spec">
+<p><tt>iprange_set(Iprange::<a href="fifo.html#type-iprange_id">fifo:iprange_id()</a>, Attribute::<a href="fifo.html#type-keys">fifo:keys()</a>, Value::<a href="fifo.html#type-value">fifo:value()</a> | delete) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets a attribute on the iprange.</p>
+
+<h3 class="function"><a name="package_create-1">package_create/1</a></h3>
+<div class="spec">
+<p><tt>package_create(Name::binary()) -&gt; {ok, UUID::<a href="fifo.html#type-uuid">fifo:uuid()</a>} | duplicate | {error, no_servers}</tt><br></p>
+</div><p>Creates a new package and returns it's UUID.</p>
+
+<h3 class="function"><a name="package_delete-1">package_delete/1</a></h3>
+<div class="spec">
+<p><tt>package_delete(Package::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Deletes a package from the database</p>
+
+<h3 class="function"><a name="package_get-1">package_get/1</a></h3>
+<div class="spec">
+<p><tt>package_get(Package::binary()) -&gt; not_found | {ok, Package::<a href="fifo.html#type-config_list">fifo:config_list()</a>} | {error, no_servers}</tt><br></p>
+</div><p>Reads a package from the database</p>
+
+<h3 class="function"><a name="package_list-0">package_list/0</a></h3>
+<div class="spec">
+<p><tt>package_list() -&gt; {ok, Packages::[binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all packages known to the system.</p>
+
+<h3 class="function"><a name="package_list-1">package_list/1</a></h3>
+<div class="spec">
+<p><tt>package_list(Reqs::[<a href="fifo.html#type-matcher">fifo:matcher()</a>]) -&gt; {ok, Packages::[binary()]} | {error, no_servers}</tt><br></p>
+</div><p>Lists all packages known to the system filtered by
+    given matchers.</p>
+
+<h3 class="function"><a name="package_set-2">package_set/2</a></h3>
+<div class="spec">
+<p><tt>package_set(Package::<a href="fifo.html#type-package_id">fifo:package_id()</a>, Attirbutes::<a href="fifo.html#type-config_list">fifo:config_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets multiple attributes on the pacakge.</p>
+
+<h3 class="function"><a name="package_set-3">package_set/3</a></h3>
+<div class="spec">
+<p><tt>package_set(Package::<a href="fifo.html#type-package_id">fifo:package_id()</a>, Attribute::<a href="fifo.html#type-keys">fifo:keys()</a>, Value::<a href="fifo.html#type-value">fifo:value()</a> | delete) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets a attribute on the pacakge.</p>
+
+<h3 class="function"><a name="servers-0">servers/0</a></h3>
+<div class="spec">
+<p><tt>servers() -&gt; [{{string(), [{atom(), binary()}]}, string(), integer()}]</tt><br></p>
+</div><p>Lists the currently available servers.</p>
+
+<h3 class="function"><a name="start-0">start/0</a></h3>
+<div class="spec">
+<p><tt>start() -&gt; ok | error</tt><br></p>
+</div><p>Starts the libsniffle application</p>
+
+<h3 class="function"><a name="vm_delete-1">vm_delete/1</a></h3>
+<div class="spec">
+<p><tt>vm_delete(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Triggers a delete, this does not remove the VM from the
+    database instead just pokes the hypervisor which, when the delete
+    was successful calls a unregister.</p>
+
+<h3 class="function"><a name="vm_delete_snapshot-2">vm_delete_snapshot/2</a></h3>
+<div class="spec">
+<p><tt>vm_delete_snapshot(Vm::<a href="fifo.html#type-uuid">fifo:uuid()</a>, UUID::binary()) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Deletes a ZFS snapshot from the VM.</p>
+
+<h3 class="function"><a name="vm_get-1">vm_get/1</a></h3>
+<div class="spec">
+<p><tt>vm_get(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; not_found | {ok, term()} | {error, no_servers}</tt><br></p>
+</div><p>Reads the VM attribute from the database.</p>
+
+<h3 class="function"><a name="vm_list-0">vm_list/0</a></h3>
+<div class="spec">
+<p><tt>vm_list() -&gt; {ok, [<a href="fifo.html#type-uuid">fifo:uuid()</a>]} | {error, no_servers}</tt><br></p>
+</div><p>Lists the UUID's of all VM's known to the server.</p>
+
+<h3 class="function"><a name="vm_list-1">vm_list/1</a></h3>
+<div class="spec">
+<p><tt>vm_list(Reqs::[<a href="fifo.html#type-matcher">fifo:matcher()</a>]) -&gt; {ok, [<a href="fifo.html#type-uuid">fifo:uuid()</a>]} | {error, no_servers}</tt><br></p>
+</div><p>Lists the UUID's of all VM's known to the server filtered by
+    given matchers.</p>
+
+<h3 class="function"><a name="vm_log-2">vm_log/2</a></h3>
+<div class="spec">
+<p><tt>vm_log(Vm::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Log::binary()) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Adds a log to the VM that will be timestamped on the server.</p>
+
+<h3 class="function"><a name="vm_reboot-1">vm_reboot/1</a></h3>
+<div class="spec">
+<p><tt>vm_reboot(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Restarts a VM on the hypervisor</p>
+
+<h3 class="function"><a name="vm_reboot-2">vm_reboot/2</a></h3>
+<div class="spec">
+<p><tt>vm_reboot(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Options::[atom() | {atom(), term()}]) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Restarts a VM on the hypervisor and allows passing options like
+    forced restart.</p>
+
+<h3 class="function"><a name="vm_register-2">vm_register/2</a></h3>
+<div class="spec">
+<p><tt>vm_register(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Hypervisor::<a href="fifo.html#type-hypervisor_id">fifo:hypervisor_id()</a>) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Registeres an existing VM with sniffle.</p>
+
+<h3 class="function"><a name="vm_rollback_snapshot-2">vm_rollback_snapshot/2</a></h3>
+<div class="spec">
+<p><tt>vm_rollback_snapshot(Vm::<a href="fifo.html#type-uuid">fifo:uuid()</a>, UUID::binary()) -&gt; ok | {error, no_servers}</tt><br></p>
+</div><p>Rolls back a snapshot of a VM, this will <b>delete</b> all
+    snapshots between the current state and the rolled back snapshot!</p>
+
+<h3 class="function"><a name="vm_set-2">vm_set/2</a></h3>
+<div class="spec">
+<p><tt>vm_set(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Attributes::<a href="fifo.html#type-config_list">fifo:config_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets some attributes on the VM object in the database - this
+     does not change the VM on the hypervisor.</p>
+
+<h3 class="function"><a name="vm_set-3">vm_set/3</a></h3>
+<div class="spec">
+<p><tt>vm_set(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Attribute::<a href="fifo.html#type-keys">fifo:keys()</a>, Value::<a href="fifo.html#type-value">fifo:value()</a> | delete) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Sets a attribute on the VM object in the database - this does
+    not change the VM on the hypervisor.</p>
+
+<h3 class="function"><a name="vm_snapshot-2">vm_snapshot/2</a></h3>
+<div class="spec">
+<p><tt>vm_snapshot(Vm::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Comment::binary()) -&gt; {ok, <a href="fifo.html#type-uuid">fifo:uuid()</a>} | {error, no_servers}</tt><br></p>
+</div><p>Creates a ZFS new snapshot of a given VM.</p>
+
+<h3 class="function"><a name="vm_start-1">vm_start/1</a></h3>
+<div class="spec">
+<p><tt>vm_start(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Starts a VM on the hypervisor.</p>
+
+<h3 class="function"><a name="vm_stop-1">vm_stop/1</a></h3>
+<div class="spec">
+<p><tt>vm_stop(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Stops a VM on the hypervisor.</p>
+
+<h3 class="function"><a name="vm_stop-2">vm_stop/2</a></h3>
+<div class="spec">
+<p><tt>vm_stop(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Options::[atom() | {atom(), term()}]) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Stops a VM on the hypervisor and allows passing options like
+    forced stop.</p>
+
+<h3 class="function"><a name="vm_unregister-1">vm_unregister/1</a></h3>
+<div class="spec">
+<p><tt>vm_unregister(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Unregisteres a VM from the database, this does not include
+    deleting it from the hypervisor.</p>
+
+<h3 class="function"><a name="vm_update-3">vm_update/3</a></h3>
+<div class="spec">
+<p><tt>vm_update(VM::<a href="fifo.html#type-uuid">fifo:uuid()</a>, Package::binary() | undefined, Config::<a href="fifo.html#type-config_list">fifo:config_list()</a>) -&gt; ok | not_found | {error, no_servers}</tt><br></p>
+</div><p>Updates a VM by attempting to resize it from package
+    perspective and changing some of the config values.</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Apr 20 2013, 22:14:16.</i></p>
+</body>
+</html>
