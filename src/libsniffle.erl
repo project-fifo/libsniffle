@@ -21,7 +21,6 @@
          dtrace_list/0,
          dtrace_run/2
         ]).
-
 -export([
          vm_register/2,
          vm_unregister/1,
@@ -32,6 +31,7 @@
          vm_snapshot/2,
          vm_delete_snapshot/2,
          vm_rollback_snapshot/2,
+         vm_promote_snapshot/3,
          vm_list/0,
          vm_list/1,
          vm_get/1,
@@ -474,12 +474,26 @@ vm_delete_snapshot(Vm, UUID) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_rollback_snapshot(Vm::fifo:uuid(),
-                           UUID::binary()) ->
+                           UUID::fifo:uuid()) ->
                                   ok |
                                   {'error','no_servers'}.
 vm_rollback_snapshot(Vm, UUID) ->
     send({vm, snapshot, rollback, Vm, UUID}).
 
+
+%%--------------------------------------------------------------------
+%% @doc Rolls back a snapshot of a VM, this will <b>delete</b> all
+%%   snapshots between the current state and the rolled back snapshot!
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_promote_snapshot(Vm::fifo:uuid(),
+                          UUID::fifo:uuid(),
+                          UUID::binary()) ->
+                                  ok |
+                                  {'error','no_servers'}.
+
+vm_promote_snapshot(Vm, UUID, Config) ->
+    send({vm, snapshot, promote, Vm, UUID, Config}).
 %%--------------------------------------------------------------------
 %% @doc Lists the UUID's of all VM's known to the server.
 %% @end
