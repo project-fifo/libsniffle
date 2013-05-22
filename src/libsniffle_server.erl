@@ -90,8 +90,8 @@ init([]) ->
 
 handle_call(get_server, _From, #state{zmq_worker = Pid} = State) ->
     Reply = case mdns_client_lib_server:get_server(Pid) of
-                {error, no_server} ->
-                    {error, no_server};
+                {error, no_servers} ->
+                    {error, no_servers};
                 {ok, {_, Server, Port}} ->
                     {ok, Server, Port}
             end,
