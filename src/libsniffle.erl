@@ -25,6 +25,9 @@
          vm_register/2,
          vm_unregister/1,
          vm_update/3,
+         vm_add_nic/2,
+         vm_remove_nic/2,
+         vm_primary_nic/2,
          vm_set/2,
          vm_set/3,
          vm_log/2,
@@ -409,6 +412,51 @@ vm_update(VM, Package, Config) when
       is_binary(VM),
       is_list(Config) ->
     send({vm, update, VM, Package, Config}).
+
+%%--------------------------------------------------------------------
+%% @doc Adds a new interface to a VM.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_add_nic(VM::fifo:uuid(),
+                 IPRange::fifo:iprange_id()) -> ok | not_found |
+                                                {'error','no_servers'|
+                                                 'update_failed'|
+                                                 'claim_failed'|
+                                                 'not_stopped'|_Reason}.
+vm_add_nic(VM, IPRange) when
+      is_binary(VM),
+      is_binary(IPRange) ->
+    send({vm, nic, add, VM, IPRange}).
+
+%%--------------------------------------------------------------------
+%% @doc Remove a interface from a VM.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_remove_nic(VM::fifo:uuid(),
+                    Mac::binary()) -> ok | not_found |
+                                         {'error','no_servers'|
+                                          'update_failed'|
+                                          'not_found'|
+                                          'not_stopped'|_Reason}.
+vm_remove_nic(VM, Mac) when
+      is_binary(VM),
+      is_binary(Mac) ->
+    send({vm, nic, remove, VM, Mac}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets a NIC as primary interface.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_primary_nic(VM::fifo:uuid(),
+                    Mac::binary()) -> ok | not_found |
+                                         {'error','no_servers'|
+                                          'update_failed'|
+                                          'not_found'|
+                                          'not_stopped'|_Reason}.
+vm_primary_nic(VM, Mac) when
+      is_binary(VM),
+      is_binary(Mac) ->
+    send({vm, nic, primary, VM, Mac}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a attribute on the VM object in the database - this does
