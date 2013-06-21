@@ -103,6 +103,9 @@
 
 -export([cloud_status/0]).
 
+-define(UUID, <<UUID:36/binary>>).
+
+
 %%%===================================================================
 %%% Generatl Functions
 %%%===================================================================
@@ -536,8 +539,8 @@ vm_rollback_snapshot(Vm, UUID) ->
 %%--------------------------------------------------------------------
 -spec vm_promote_snapshot(Vm::fifo:uuid(),
                           UUID::fifo:uuid(),
-                          UUID::binary()) ->
-                                  ok |
+                          Config::fifo:object()) ->
+                                  {ok, UUID::fifo:dataset_id()} |
                                   {'error','no_servers'}.
 
 vm_promote_snapshot(Vm, UUID, Config) ->
@@ -746,42 +749,43 @@ dataset_list(Reqs) ->
 %% @doc Creates a new image part on the server.
 %% @end
 %%--------------------------------------------------------------------
--spec img_create(Img::binary(), Idx::pos_integer(), Data::binary()) ->
+-spec img_create(Img::fifo:dataset_id(), Idx::integer(), Data::binary()) ->
                         ok |
                         {'error','no_servers'}.
-img_create(Img, Idx, Data) ->
-    send({img, create, Img, Idx, Data}).
+img_create(?UUID, Idx, Data) when Idx >= 0,
+                                  is_binary(Data) ->
+    send({img, create, UUID, Idx, Data}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes an entire image form the server
 %% @end
 %%--------------------------------------------------------------------
--spec img_delete(Img::binary()) ->
+-spec img_delete(Img::fifo:dataset_id()) ->
                         ok | not_found |
                         {'error','no_servers'}.
-img_delete(Img) ->
-    send({img, delete, Img}).
+img_delete(?UUID) ->
+    send({img, delete, UUID}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes a image part from the server
 %% @end
 %%--------------------------------------------------------------------
--spec img_delete(Img::binary(), Idx::pos_integer()) ->
+-spec img_delete(Img::fifo:dataset_id(), Idx::integer()) ->
                         ok | not_found |
                         {'error','no_servers'}.
-img_delete(Img, Idx) ->
-    send({img, delete, Img, Idx}).
+img_delete(?UUID, Idx) when Idx >= 0 ->
+    send({img, delete, UUID, Idx}).
 
 %%--------------------------------------------------------------------
 %% @doc Reads a image part from the server
 %% @end
 %%--------------------------------------------------------------------
--spec img_get(Img::binary(), Idx::pos_integer()) ->
+-spec img_get(Img::fifo:dataset_id(), Idx::integer()) ->
                      {'error','no_servers'} |
                      not_found |
                      {ok, binary()}.
-img_get(Img, Idx) ->
-    send({img, get, Img, Idx}).
+img_get(?UUID, Idx) when Idx >= 0 ->
+    send({img, get, UUID, Idx}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists all images on the server.
@@ -797,11 +801,11 @@ img_list() ->
 %% @doc Lists all parts for a images on the server.
 %% @end
 %%--------------------------------------------------------------------
--spec img_list(Img::binary()) ->
+-spec img_list(Img::fifo:dataset_id()) ->
                       {ok, Parts::[pos_integer()]} |
                       {'error','no_servers'}.
-img_list(Img) ->
-    send({img, list, Img}).
+img_list(?UUID) ->
+    send({img, list, ?UUID}).
 
 %%%===================================================================
 %%%  PACKAGE Functions
