@@ -536,8 +536,8 @@ vm_rollback_snapshot(Vm, UUID) ->
 %%--------------------------------------------------------------------
 -spec vm_promote_snapshot(Vm::fifo:uuid(),
                           UUID::fifo:uuid(),
-                          UUID::binary()) ->
-                                  ok |
+                          Config::fifo:object()) ->
+                                  {ok, UUID::fifo:dataset_id()} |
                                   {'error','no_servers'}.
 
 vm_promote_snapshot(Vm, UUID, Config) ->
