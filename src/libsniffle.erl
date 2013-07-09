@@ -74,7 +74,7 @@
          img_get/2,
          img_list/0,
          img_list/1
-         ]).
+        ]).
 
 -export([
          package_create/1,
@@ -84,6 +84,18 @@
          package_set/3,
          package_list/0,
          package_list/1
+        ]).
+
+-export([
+         network_create/1,
+         network_delete/1,
+         network_get/1,
+         network_add_iprange/2,
+         network_remove_iprange/2,
+         network_set/2,
+         network_set/3,
+         network_list/0,
+         network_list/1
         ]).
 
 -export([
@@ -104,7 +116,6 @@
 -export([cloud_status/0]).
 
 -define(UUID, <<UUID:36/binary>>).
-
 
 %%%===================================================================
 %%% Generatl Functions
@@ -410,7 +421,7 @@ vm_delete(VM) when
 -spec vm_update(VM::fifo:uuid(),
                 Package::binary() | undefined,
                 Config::fifo:config_list()) -> ok | not_found |
-                              {'error','no_servers'}.
+                                               {'error','no_servers'}.
 vm_update(VM, Package, Config) when
       is_binary(VM),
       is_list(Config) ->
@@ -437,10 +448,10 @@ vm_add_nic(VM, IPRange) when
 %%--------------------------------------------------------------------
 -spec vm_remove_nic(VM::fifo:uuid(),
                     Mac::binary()) -> ok | not_found |
-                                         {'error','no_servers'|
-                                          'update_failed'|
-                                          'not_found'|
-                                          'not_stopped'|_Reason}.
+                                      {'error','no_servers'|
+                                       'update_failed'|
+                                       'not_found'|
+                                       'not_stopped'|_Reason}.
 vm_remove_nic(VM, Mac) when
       is_binary(VM),
       is_binary(Mac) ->
@@ -451,11 +462,11 @@ vm_remove_nic(VM, Mac) when
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_primary_nic(VM::fifo:uuid(),
-                    Mac::binary()) -> ok | not_found |
-                                         {'error','no_servers'|
-                                          'update_failed'|
-                                          'not_found'|
-                                          'not_stopped'|_Reason}.
+                     Mac::binary()) -> ok | not_found |
+                                       {'error','no_servers'|
+                                        'update_failed'|
+                                        'not_found'|
+                                        'not_stopped'|_Reason}.
 vm_primary_nic(VM, Mac) when
       is_binary(VM),
       is_binary(Mac) ->
@@ -487,7 +498,7 @@ vm_set(VM, Attribute, Value) when
 vm_set(VM, Attributes) when
       is_binary(VM) ->
     send({vm, set, VM, [{K, V} || {K, V} <- Attributes,
-                                             is_binary(K)]}).
+                                  is_binary(K)]}).
 
 %%--------------------------------------------------------------------
 %% @doc Adds a log to the VM that will be timestamped on the server.
@@ -540,8 +551,8 @@ vm_rollback_snapshot(Vm, UUID) ->
 -spec vm_promote_snapshot(Vm::fifo:uuid(),
                           UUID::fifo:uuid(),
                           Config::fifo:object()) ->
-                                  {ok, UUID::fifo:dataset_id()} |
-                                  {'error','no_servers'}.
+                                 {ok, UUID::fifo:dataset_id()} |
+                                 {'error','no_servers'}.
 
 vm_promote_snapshot(Vm, UUID, Config) ->
     send({vm, snapshot, promote, Vm, UUID, Config}).
@@ -853,7 +864,7 @@ package_get(Package) when
 -spec package_set(Package::fifo:package_id(),
                   Attribute::fifo:keys(),
                   Value::fifo:value() | delete) -> ok | not_found |
-                                          {'error','no_servers'}.
+                                                   {'error','no_servers'}.
 package_set(Package, Attribute, Value)  when
       is_binary(Package) ->
     send({package, set, Package, Attribute, Value}).
@@ -890,6 +901,117 @@ package_list() ->
                                               {'error','no_servers'}.
 package_list(Reqs) ->
     send({package, list, Reqs}).
+
+
+%%%===================================================================
+%%%  NETWORK Functions
+%%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @doc Creates a new network and returns it's UUID.
+%% @end
+%%--------------------------------------------------------------------
+-spec network_create(Name::binary()) ->
+                            {ok, UUID::fifo:uuid()} |
+                            duplicate |
+                            {'error','no_servers'}.
+network_create(Name) when
+      is_binary(Name) ->
+    send({network, create, Name}).
+
+%%--------------------------------------------------------------------
+%% @doc Deletes a network from the database
+%% @end
+%%--------------------------------------------------------------------
+-spec network_delete(Network::fifo:uuid()) ->
+                            ok | not_found |
+                            {'error','no_servers'}.
+network_delete(Network) when
+      is_binary(Network) ->
+    send({network, delete, Network}).
+
+%%--------------------------------------------------------------------
+%% @doc Reads a network from the database
+%% @end
+%%--------------------------------------------------------------------
+-spec network_get(Network::binary()) ->
+                         not_found |
+                         {ok, Network::fifo:config_list()} |
+                         {'error','no_servers'}.
+network_get(Network) when
+      is_binary(Network) ->
+    send({network, get, Network}).
+
+%%--------------------------------------------------------------------
+%% @doc Adds a iprange to a network
+%% @end
+%%--------------------------------------------------------------------
+-spec network_add_iprange(Network::binary(), IPrange::binary()) ->
+                                 not_found |
+                                 ok |
+                                 {'error','no_servers'}.
+network_add_iprange(Network, IPRange) when
+      is_binary(Network),
+      is_binary(IPRange) ->
+    send({network, add_iprange, Network, IPRange}).
+
+%%--------------------------------------------------------------------
+%% @doc Adds a iprange to a network
+%% @end
+%%--------------------------------------------------------------------
+-spec network_remove_iprange(Network::binary(), IPrange::binary()) ->
+                                 not_found |
+                                 ok |
+                                 {'error','no_servers'}.
+network_remove_iprange(Network, IPRange) when
+      is_binary(Network),
+      is_binary(IPRange) ->
+    send({network, remove_iprange, Network, IPRange}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets a attribute on the pacakge.
+%% @end
+%%--------------------------------------------------------------------
+-spec network_set(Network::fifo:network_id(),
+                  Attribute::fifo:keys(),
+                  Value::fifo:value() | delete) -> ok | not_found |
+                                                   {'error','no_servers'}.
+network_set(Network, Attribute, Value)  when
+      is_binary(Network) ->
+    send({network, set, Network, Attribute, Value}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets multiple attributes on the pacakge.
+%% @end
+%%--------------------------------------------------------------------
+-spec network_set(Network::fifo:network_id(),
+                  Attirbutes::fifo:config_list()) ->
+                         ok | not_found |
+                         {'error','no_servers'}.
+network_set(Network, Attributes) when
+      is_binary(Network),
+      is_list(Attributes) ->
+    send({network, set, Network, Attributes}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all networks known to the system.
+%% @end
+%%--------------------------------------------------------------------
+-spec network_list() ->
+                          {ok, Networks::[binary()]} |
+                          {'error','no_servers'}.
+network_list() ->
+    send({network, list}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all networks known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec network_list(Reqs::[fifo:matcher()]) -> {ok, Networks::[binary()]} |
+                                              {'error','no_servers'}.
+network_list(Reqs) ->
+    send({network, list, Reqs}).
 
 %%%===================================================================
 %%%  Iprange Functions
