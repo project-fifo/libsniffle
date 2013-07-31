@@ -222,7 +222,8 @@ dtrace_list()->
 %% @end
 %%--------------------------------------------------------------------
 -spec dtrace_list([Requirement::fifo:matcher()]) ->
-                         {ok, [UUID::fifo:uuid()]} |
+                         {ok, [{Ranking::integer(),
+                                ID::fifo:dtrace_id()}]} |
                          {'error','no_servers'}.
 dtrace_list(Requirements)->
     send({dtrace, list, Requirements}).
@@ -571,7 +572,8 @@ vm_list() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec vm_list(Reqs::[fifo:matcher()]) ->
-                     {ok, [fifo:uuid()]} |
+                     {ok, [{Ranking::integer(),
+                            ID::fifo:vm_id()}]} |
                      {'error','no_servers'}.
 vm_list(Reqs) ->
     send({vm, list, Reqs}).
@@ -656,7 +658,8 @@ hypervisor_list() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec hypervisor_list(Requirements::[fifo:matcher()]) ->
-                             {ok, [fifo:hypervisor()]} |
+                             {ok, [{Ranking::integer(),
+                                    ID::fifo:hypervisor_id()}]} |
                              {'error','no_servers'}.
 hypervisor_list(Requirements) ->
     send({hypervisor, list, Requirements}).
@@ -747,7 +750,8 @@ dataset_list() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec dataset_list(Reqs::term()) ->
-                          {ok, Datasets::[binary()]} |
+                          {ok, Datasets::[{Ranking::integer(),
+                                           ID::fifo:dataset_id()}]} |
                           {'error','no_servers'}.
 dataset_list(Reqs) ->
     send({dataset, list, Reqs}).
@@ -897,8 +901,10 @@ package_list() ->
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec package_list(Reqs::[fifo:matcher()]) -> {ok, Packages::[binary()]} |
-                                              {'error','no_servers'}.
+-spec package_list(Reqs::[fifo:matcher()]) ->
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:package_id()}]} |
+                          {'error','no_servers'}.
 package_list(Reqs) ->
     send({package, list, Reqs}).
 
@@ -1008,8 +1014,10 @@ network_list() ->
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec network_list(Reqs::[fifo:matcher()]) -> {ok, Networks::[binary()]} |
-                                              {'error','no_servers'}.
+-spec network_list(Reqs::[fifo:matcher()]) ->
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:network_id()}]} |
+                          {'error','no_servers'}.
 network_list(Reqs) ->
     send({network, list, Reqs}).
 
@@ -1160,7 +1168,8 @@ iprange_list() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec iprange_list(Reqs::[fifo:matcher()]) ->
-                          {ok, [binary()]} |
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:iprange_id()}]} |
                           {'error','no_servers'}.
 iprange_list(Reqs) ->
     send({iprange, list, Reqs}).
