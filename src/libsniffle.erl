@@ -966,9 +966,9 @@ network_add_iprange(Network, IPRange) when
 %% @end
 %%--------------------------------------------------------------------
 -spec network_remove_iprange(Network::binary(), IPrange::binary()) ->
-                                 not_found |
-                                 ok |
-                                 {'error','no_servers'}.
+                                    not_found |
+                                    ok |
+                                    {'error','no_servers'}.
 network_remove_iprange(Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
