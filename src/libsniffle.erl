@@ -43,7 +43,8 @@
          vm_reboot/1,
          vm_stop/2,
          vm_reboot/2,
-         vm_delete/1
+         vm_delete/1,
+         vm_owner/2
         ]).
 
 -export([
@@ -413,6 +414,16 @@ vm_reboot(VM, [force]) when
 vm_delete(VM) when
       is_binary(VM) ->
     send({vm, delete, VM}).
+
+%%--------------------------------------------------------------------
+%% @doc Changes the owner of a VM.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_owner(VM::fifo:uuid(), Owner::fifo:uuid()) ->
+                      ok | not_found |
+                      {'error','no_servers'}.
+vm_owner(VM, Owner) ->
+    send({vm, owner, VM, Owner}).
 
 %%--------------------------------------------------------------------
 %% @doc Updates a VM by attempting to resize it from package
