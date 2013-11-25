@@ -34,6 +34,7 @@
          vm_snapshot/2,
          vm_delete_snapshot/2,
          vm_rollback_snapshot/2,
+         vm_commit_snapshot_rollback/2,
          vm_promote_snapshot/3,
          vm_list/0,
          vm_list/1,
@@ -554,6 +555,17 @@ vm_delete_snapshot(Vm, UUID) ->
 vm_rollback_snapshot(Vm, UUID) ->
     send({vm, snapshot, rollback, Vm, UUID}).
 
+%%--------------------------------------------------------------------
+%% @doc Confirms the rollback of a snapshot, this will delete all
+%%   snapshots between the current state and the rolled back snapshot!
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_commit_snapshot_rollback(Vm::fifo:uuid(),
+                                  UUID::fifo:uuid()) ->
+                                         ok |
+                                         {'error','no_servers'}.
+vm_commit_snapshot_rollback(Vm, UUID) ->
+    send({vm, snapshot, commit_rollback, Vm, UUID}).
 
 %%--------------------------------------------------------------------
 %% @doc Rolls back a snapshot of a VM, this will <b>delete</b> all
@@ -977,9 +989,9 @@ network_add_iprange(Network, IPRange) when
 %% @end
 %%--------------------------------------------------------------------
 -spec network_remove_iprange(Network::binary(), IPrange::binary()) ->
-                                 not_found |
-                                 ok |
-                                 {'error','no_servers'}.
+                                    not_found |
+                                    ok |
+                                    {'error','no_servers'}.
 network_remove_iprange(Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
