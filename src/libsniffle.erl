@@ -70,7 +70,7 @@
         ]).
 
 -export([
-         img_create/3,
+         img_create/4,
          img_delete/1,
          img_delete/2,
          img_get/2,
@@ -787,12 +787,13 @@ dataset_list(Reqs) ->
 %% @doc Creates a new image part on the server.
 %% @end
 %%--------------------------------------------------------------------
--spec img_create(Img::fifo:dataset_id(), Idx::integer(), Data::binary()) ->
-                        ok |
+-spec img_create(Img::fifo:dataset_id(), Idx::integer()|done,
+                 Data::binary(), Ref::term()) ->
+                        {ok, Ref1::term()} |
                         {'error','no_servers'}.
-img_create(?UUID, Idx, Data) when Idx >= 0,
+img_create(?UUID, Idx, Data, Ref) when Idx >= 0,
                                   is_binary(Data) ->
-    send({img, create, UUID, Idx, Data}).
+    send({img, create, UUID, Idx, Data, Ref}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes an entire image form the server
