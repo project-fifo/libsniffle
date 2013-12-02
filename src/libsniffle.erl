@@ -34,6 +34,7 @@
          vm_snapshot/2,
          vm_delete_snapshot/2,
          vm_rollback_snapshot/2,
+         vm_commit_snapshot_rollback/2,
          vm_promote_snapshot/3,
          vm_list/0,
          vm_list/1,
@@ -43,7 +44,8 @@
          vm_reboot/1,
          vm_stop/2,
          vm_reboot/2,
-         vm_delete/1
+         vm_delete/1,
+         vm_owner/2
         ]).
 
 -export([
@@ -68,7 +70,7 @@
         ]).
 
 -export([
-         img_create/3,
+         img_create/4,
          img_delete/1,
          img_delete/2,
          img_get/2,
@@ -415,6 +417,16 @@ vm_delete(VM) when
     send({vm, delete, VM}).
 
 %%--------------------------------------------------------------------
+%% @doc Changes the owner of a VM.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_owner(VM::fifo:uuid(), Owner::fifo:uuid()) ->
+                      ok | not_found |
+                      {'error','no_servers'}.
+vm_owner(VM, Owner) ->
+    send({vm, owner, VM, Owner}).
+
+%%--------------------------------------------------------------------
 %% @doc Updates a VM by attempting to resize it from package
 %%   perspective and changing some of the config values.
 %% @end
@@ -543,6 +555,17 @@ vm_delete_snapshot(Vm, UUID) ->
 vm_rollback_snapshot(Vm, UUID) ->
     send({vm, snapshot, rollback, Vm, UUID}).
 
+%%--------------------------------------------------------------------
+%% @doc Confirms the rollback of a snapshot, this will delete all
+%%   snapshots between the current state and the rolled back snapshot!
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_commit_snapshot_rollback(Vm::fifo:uuid(),
+                                  UUID::fifo:uuid()) ->
+                                         ok |
+                                         {'error','no_servers'}.
+vm_commit_snapshot_rollback(Vm, UUID) ->
+    send({vm, snapshot, commit_rollback, Vm, UUID}).
 
 %%--------------------------------------------------------------------
 %% @doc Rolls back a snapshot of a VM, this will <b>delete</b> all
@@ -764,12 +787,13 @@ dataset_list(Reqs) ->
 %% @doc Creates a new image part on the server.
 %% @end
 %%--------------------------------------------------------------------
--spec img_create(Img::fifo:dataset_id(), Idx::integer(), Data::binary()) ->
-                        ok |
+-spec img_create(Img::fifo:dataset_id(), Idx::integer()|done,
+                 Data::binary(), Ref::term()) ->
+                        {ok, Ref1::term()} |
                         {'error','no_servers'}.
-img_create(?UUID, Idx, Data) when Idx >= 0,
+img_create(?UUID, Idx, Data, Ref) when Idx >= 0,
                                   is_binary(Data) ->
-    send({img, create, UUID, Idx, Data}).
+    send({img, create, UUID, Idx, Data, Ref}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes an entire image form the server
