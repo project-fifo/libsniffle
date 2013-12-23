@@ -21,6 +21,7 @@
          dtrace_list/0,
          dtrace_run/2
         ]).
+
 -export([
          vm_register/2,
          vm_unregister/1,
@@ -36,6 +37,11 @@
          vm_rollback_snapshot/2,
          vm_commit_snapshot_rollback/2,
          vm_promote_snapshot/3,
+         vm_incremental_backup/4,
+         vm_full_backup/3,
+         vm_restore_backup/2,
+         vm_restore_backup/3,
+         vm_delete_backup/3,
          vm_list/0,
          vm_list/1,
          vm_get/1,
@@ -521,6 +527,41 @@ vm_set(VM, Attributes) when
                                                 {'error','no_servers'}.
 vm_log(Vm, Log) ->
     send({vm, log, Vm, Log}).
+
+%%--------------------------------------------------------------------
+%% @doc Creates a full backup of a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_incremental_backup(Vm, Parent, Comment, Opts) ->
+    send({vm, backup, incremental, Vm, Parent, Comment, Opts}).
+
+%%--------------------------------------------------------------------
+%% @doc Creates a full backup of a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_full_backup(Vm, Comment, Opts) ->
+    send({vm, backup, full, Vm, Comment, Opts}).
+
+%%--------------------------------------------------------------------
+%% @doc Restores a VM from a backup.
+%% @end
+%%--------------------------------------------------------------------
+vm_restore_backup(Vm, Backup) ->
+    send({vm, backup, restore, Vm, Backup}).
+
+%%--------------------------------------------------------------------
+%% @doc Restores a VM from a backup to a specific hypervisor.
+%% @end
+%%--------------------------------------------------------------------
+vm_restore_backup(Vm, Backup, Hypervisor) ->
+    send({vm, backup, restore, Vm, Backup, Hypervisor}).
+
+%%--------------------------------------------------------------------
+%% @doc Restores a VM from a backup.
+%% @end
+%%--------------------------------------------------------------------
+vm_delete_backup(Vm, Backup, Where) ->
+    send({vm, backup, delete, Vm, Backup, Where}).
 
 %%--------------------------------------------------------------------
 %% @doc Creates a ZFS new snapshot of a given VM.
