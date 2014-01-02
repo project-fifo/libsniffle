@@ -51,6 +51,7 @@
          vm_stop/2,
          vm_reboot/2,
          vm_delete/1,
+         vm_store/1,
          vm_owner/2
         ]).
 
@@ -421,6 +422,13 @@ vm_reboot(VM, [force]) when
 vm_delete(VM) when
       is_binary(VM) ->
     send({vm, delete, VM}).
+
+-spec vm_store(VM::fifo:uuid()) ->
+                      ok | not_found |
+                      {'error','no_servers'}.
+vm_store(VM) when
+      is_binary(VM) ->
+    send({vm, store, VM}).
 
 %%--------------------------------------------------------------------
 %% @doc Changes the owner of a VM.
