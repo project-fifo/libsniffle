@@ -17,6 +17,7 @@
          dtrace_get/1,
          dtrace_set/2,
          dtrace_set/3,
+         dtrace_list/2,
          dtrace_list/1,
          dtrace_list/0,
          dtrace_run/2
@@ -44,6 +45,7 @@
          vm_delete_backup/3,
          vm_list/0,
          vm_list/1,
+         vm_list/2,
          vm_get/1,
          vm_start/1,
          vm_stop/1,
@@ -62,7 +64,8 @@
          hypervisor_set/2,
          hypervisor_set/3,
          hypervisor_list/0,
-         hypervisor_list/1
+         hypervisor_list/1,
+         hypervisor_list/2
         ]).
 
 -export([
@@ -73,7 +76,8 @@
          dataset_set/2,
          dataset_set/3,
          dataset_list/0,
-         dataset_list/1
+         dataset_list/1,
+         dataset_list/2
         ]).
 
 -export([
@@ -92,7 +96,8 @@
          package_set/2,
          package_set/3,
          package_list/0,
-         package_list/1
+         package_list/1,
+         package_list/2
         ]).
 
 -export([
@@ -104,7 +109,8 @@
          network_set/2,
          network_set/3,
          network_list/0,
-         network_list/1
+         network_list/1,
+         network_list/2
         ]).
 
 -export([
@@ -115,6 +121,7 @@
          iprange_claim/1,
          iprange_list/0,
          iprange_list/1,
+         iprange_list/2,
          iprange_set/2,
          iprange_set/3
         ]).
@@ -236,6 +243,18 @@ dtrace_list()->
                          {'error','no_servers'}.
 dtrace_list(Requirements)->
     send({dtrace, list, Requirements}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the ID's of all scripts in the database filtered by
+%%   the passed requirements.
+%% @end
+%%--------------------------------------------------------------------
+-spec dtrace_list([Requirement::fifo:matcher()], boolean()) ->
+                         {ok, [{Ranking::integer(),
+                                ID::fifo:dtrace_id()}]} |
+                         {'error','no_servers'}.
+dtrace_list(Requirements, Full)->
+    send({dtrace, list, Requirements, Full}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists the ID's of all scripts in the database filtered by
@@ -650,6 +669,18 @@ vm_list() ->
 vm_list(Reqs) ->
     send({vm, list, Reqs}).
 
+%%--------------------------------------------------------------------
+%% @doc Lists the UUID's of all VM's known to the server filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_list(Reqs::[fifo:matcher()], boolean()) ->
+                     {ok, [{Ranking::integer(),
+                            ID::fifo:vm_id()}]} |
+                     {'error','no_servers'}.
+vm_list(Reqs, Full) ->
+    send({vm, list, Reqs, Full}).
+
 %%%===================================================================
 %%% Hypervisor Functions
 %%%===================================================================
@@ -735,6 +766,18 @@ hypervisor_list() ->
                              {'error','no_servers'}.
 hypervisor_list(Requirements) ->
     send({hypervisor, list, Requirements}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all hypervisors known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec hypervisor_list(Requirements::[fifo:matcher()], boolean()) ->
+                             {ok, [{Ranking::integer(),
+                                    ID::fifo:hypervisor_id()}]} |
+                             {'error','no_servers'}.
+hypervisor_list(Requirements, Full) ->
+    send({hypervisor, list, Requirements, Full}).
 
 %%%===================================================================
 %%%  DATASET Functions
@@ -827,6 +870,18 @@ dataset_list() ->
                           {'error','no_servers'}.
 dataset_list(Reqs) ->
     send({dataset, list, Reqs}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all datasets known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec dataset_list(Reqs::term(), boolean()) ->
+                          {ok, Datasets::[{Ranking::integer(),
+                                           ID::fifo:dataset_id()}]} |
+                          {'error','no_servers'}.
+dataset_list(Reqs, Full) ->
+    send({dataset, list, Reqs, Full}).
 
 %%%===================================================================
 %%%  IMG Functions
@@ -981,6 +1036,18 @@ package_list() ->
 package_list(Reqs) ->
     send({package, list, Reqs}).
 
+%%--------------------------------------------------------------------
+%% @doc Lists all packages known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec package_list(Reqs::[fifo:matcher()], boolean()) ->
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:package_id()}]} |
+                          {'error','no_servers'}.
+package_list(Reqs, Full) ->
+    send({package, list, Reqs, Full}).
+
 
 %%%===================================================================
 %%%  NETWORK Functions
@@ -1093,6 +1160,18 @@ network_list() ->
                           {'error','no_servers'}.
 network_list(Reqs) ->
     send({network, list, Reqs}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all networks known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec network_list(Reqs::[fifo:matcher()], boolean()) ->
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:network_id()}]} |
+                          {'error','no_servers'}.
+network_list(Reqs, Full) ->
+    send({network, list, Reqs, Full}).
 
 %%%===================================================================
 %%%  Iprange Functions
@@ -1246,6 +1325,18 @@ iprange_list() ->
                           {'error','no_servers'}.
 iprange_list(Reqs) ->
     send({iprange, list, Reqs}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all ip ranges known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec iprange_list(Reqs::[fifo:matcher()], boolean()) ->
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:iprange_id()}]} |
+                          {'error','no_servers'}.
+iprange_list(Reqs, Full) ->
+    send({iprange, list, Reqs, Full}).
 
 %%%===================================================================
 %%% Utility functions
