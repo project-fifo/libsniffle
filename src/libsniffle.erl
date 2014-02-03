@@ -43,6 +43,9 @@
          vm_restore_backup/2,
          vm_restore_backup/3,
          vm_delete_backup/3,
+         vm_service_enable/2,
+         vm_service_disable/2,
+         vm_service_clear/2,
          vm_list/0,
          vm_list/1,
          vm_list/2,
@@ -584,11 +587,32 @@ vm_restore_backup(Vm, Backup, Hypervisor) ->
     send({vm, backup, restore, Vm, Backup, Hypervisor}).
 
 %%--------------------------------------------------------------------
-%% @doc Restores a VM from a backup.
+%% @doc Deletes the backup of a VM.
 %% @end
 %%--------------------------------------------------------------------
 vm_delete_backup(Vm, Backup, Where) ->
     send({vm, backup, delete, Vm, Backup, Where}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_service_enable(Vm, Service) ->
+    send({vm, service, enable, Vm, Service}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_service_disable(Vm, Service) ->
+    send({vm, service, disable, Vm, Service}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_service_clear(Vm, Service) ->
+    send({vm, service, clear, Vm, Service}).
 
 %%--------------------------------------------------------------------
 %% @doc Creates a ZFS new snapshot of a given VM.
