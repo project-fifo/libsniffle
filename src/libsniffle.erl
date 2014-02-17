@@ -105,6 +105,7 @@
 
 -export([
          network_create/1,
+         network_create/2,
          network_delete/1,
          network_get/1,
          network_add_iprange/2,
@@ -122,9 +123,8 @@
          iprange_get/1,
          iprange_release/2,
          iprange_claim/1,
-         iprange_list/0,
-         iprange_list/1,
          iprange_list/2,
+         iprange_list/3,
          iprange_set/2,
          iprange_set/3
         ]).
@@ -1085,9 +1085,12 @@ package_list(Reqs, Full) ->
                             {ok, UUID::fifo:uuid()} |
                             duplicate |
                             {'error','no_servers'}.
-network_create(Name) when
+network_create(Name) ->
+    network_create(mdns, Name).
+
+network_create(Sniffle, Name) when
       is_binary(Name) ->
-    send({network, create, Name}).
+    send(Sniffle, {network, create, Name}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes a network from the database
@@ -1313,28 +1316,6 @@ iprange_claim(Iprange) ->
     send({iprange, claim, Iprange}).
 
 %%--------------------------------------------------------------------
-%% @doc Lists all ip ranges known to the system.
-%% @end
-%%--------------------------------------------------------------------
--spec iprange_list() ->
-                          {ok, [binary()]} |
-                          {'error','no_servers'}.
-iprange_list() ->
-    send({iprange, list}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists all ip ranges known to the system filtered by
-%%   given matchers.
-%% @end
-%%--------------------------------------------------------------------
--spec iprange_list(Reqs::[fifo:matcher()]) ->
-                          {ok, [{Ranking::integer(),
-                                 ID::fifo:iprange_id()}]} |
-                          {'error','no_servers'}.
-iprange_list(Reqs) ->
-    send({iprange, list, Reqs}).
-
-%%--------------------------------------------------------------------
 %% @doc Lists all ip ranges known to the system filtered by
 %%   given matchers.
 %% @end
@@ -1344,7 +1325,10 @@ iprange_list(Reqs) ->
                                  ID::fifo:iprange_id()}]} |
                           {'error','no_servers'}.
 iprange_list(Reqs, Full) ->
-    send({iprange, list, Reqs, Full}).
+    iprange_list(mdns, Reqs, Full).
+
+iprange_list(Sniffle, Reqs, Full) ->
+    send(Sniffle, {iprange, list, Reqs, Full}).
 
 %%%===================================================================
 %%% Utility functions
