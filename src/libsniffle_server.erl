@@ -12,7 +12,7 @@
 
 %% API
 -export([start_link/0,
-         send/1,
+         send/2,
          servers/0]).
 
 %% gen_server callbacks
@@ -44,8 +44,8 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-send(Msg) ->
-    gen_server:call(?SERVER, {send, Msg}).
+send(Sniffle, Msg) ->
+    gen_server:call(?SERVER, {send, Sniffle, Msg}).
 
 get_server() ->
     gen_server:call(?SERVER, get_server).
@@ -96,9 +96,35 @@ handle_call(servers, _From, #state{zmq_worker = Pid} = State) ->
     Reply = mdns_client_lib:servers(Pid),
     {reply, Reply, State};
 
-handle_call({send, Msg}, _From, #state{zmq_worker = Pid} = State) ->
+handle_call({send, mdns, Msg}, _From, #state{zmq_worker = Pid} = State) ->
     Reply = mdns_client_lib:call(Pid, Msg),
     {reply, Reply, State};
+
+handle_call({send, {IP, Port}, Msg}, _From, State) ->
+    case gen_tcp:connect(IP, Port, [binary, {active,false}, {packet,4}], 100) of
+        {ok, Socket} ->
+            R = case gen_tcp:send(Socket, term_to_binary(Msg)) of
+                    ok ->
+                        case gen_tcp:recv(Socket, 3000) of
+                            {ok, Repl} ->
+                                case binary_to_term(Repl) of
+                                    {reply, Reply} ->
+                                        Reply;
+                                    _ ->
+                                        {error, reply}
+                                end;
+                            _ ->
+                                {error, recv}
+                        end;
+                    _ ->
+                        {error, send}
+                end,
+            gen_tcp:close(Socket),
+            {reply, R, State};
+        _ ->
+            {reply, {error, connect}, State}
+    end;
+
 
 handle_call(_Request, _From, State) ->
     Reply = ok,

@@ -108,12 +108,12 @@
          network_delete/1,
          network_get/1,
          network_add_iprange/2,
+         network_add_iprange/3,
          network_remove_iprange/2,
          network_set/2,
          network_set/3,
-         network_list/0,
-         network_list/1,
-         network_list/2
+         network_list/2,
+         network_list/3
         ]).
 
 -export([
@@ -1120,10 +1120,13 @@ network_get(Network) when
                                  not_found |
                                  ok |
                                  {'error','no_servers'}.
-network_add_iprange(Network, IPRange) when
+network_add_iprange(Network, IPRange) ->
+      network_add_iprange(mdns, Network, IPRange).
+
+network_add_iprange(Sniffle, Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
-    send({network, add_iprange, Network, IPRange}).
+    send(Sniffle, {network, add_iprange, Network, IPRange}).
 
 %%--------------------------------------------------------------------
 %% @doc Adds a iprange to a network
@@ -1164,28 +1167,6 @@ network_set(Network, Attributes) when
     send({network, set, Network, Attributes}).
 
 %%--------------------------------------------------------------------
-%% @doc Lists all networks known to the system.
-%% @end
-%%--------------------------------------------------------------------
--spec network_list() ->
-                          {ok, Networks::[binary()]} |
-                          {'error','no_servers'}.
-network_list() ->
-    send({network, list}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists all networks known to the system filtered by
-%%   given matchers.
-%% @end
-%%--------------------------------------------------------------------
--spec network_list(Reqs::[fifo:matcher()]) ->
-                          {ok, [{Ranking::integer(),
-                                 ID::fifo:network_id()}]} |
-                          {'error','no_servers'}.
-network_list(Reqs) ->
-    send({network, list, Reqs}).
-
-%%--------------------------------------------------------------------
 %% @doc Lists all networks known to the system filtered by
 %%   given matchers.
 %% @end
@@ -1195,7 +1176,10 @@ network_list(Reqs) ->
                                  ID::fifo:network_id()}]} |
                           {'error','no_servers'}.
 network_list(Reqs, Full) ->
-    send({network, list, Reqs, Full}).
+    network_list(mdns, Reqs, Full).
+
+network_list(Sniffle, Reqs, Full) ->
+    send(Sniffle, {network, list, Reqs, Full}).
 
 %%%===================================================================
 %%%  Iprange Functions
@@ -1406,7 +1390,9 @@ ip_to_int(IP) ->
                   {ok, Reply::term()} |
                   {error, no_servers}.
 send(Msg) ->
-    case libsniffle_server:send(Msg) of
+    send(mdns, Msg).
+send(Sniffle, Msg) ->
+    case libsniffle_server:send(Sniffle, Msg) of
         {reply, Reply} ->
             Reply;
         noreply ->
