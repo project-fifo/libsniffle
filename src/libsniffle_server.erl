@@ -105,7 +105,7 @@ handle_call({send, {IP, Port}, Msg}, _From, State) ->
         {ok, Socket} ->
             R = case gen_tcp:send(Socket, term_to_binary(Msg)) of
                     ok ->
-                        case gen_tcp:recv(Socket, 3000) of
+                        case gen_tcp:recv(Socket, 0) of
                             {ok, Repl} ->
                                 case binary_to_term(Repl) of
                                     {reply, Reply} ->
