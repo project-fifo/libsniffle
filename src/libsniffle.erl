@@ -17,10 +17,12 @@
          dtrace_get/1,
          dtrace_set/2,
          dtrace_set/3,
+         dtrace_list/2,
          dtrace_list/1,
          dtrace_list/0,
          dtrace_run/2
         ]).
+
 -export([
          vm_register/2,
          vm_unregister/1,
@@ -36,8 +38,17 @@
          vm_rollback_snapshot/2,
          vm_commit_snapshot_rollback/2,
          vm_promote_snapshot/3,
+         vm_incremental_backup/4,
+         vm_full_backup/3,
+         vm_restore_backup/2,
+         vm_restore_backup/3,
+         vm_delete_backup/3,
+         vm_service_enable/2,
+         vm_service_disable/2,
+         vm_service_clear/2,
          vm_list/0,
          vm_list/1,
+         vm_list/2,
          vm_get/1,
          vm_start/1,
          vm_stop/1,
@@ -45,6 +56,7 @@
          vm_stop/2,
          vm_reboot/2,
          vm_delete/1,
+         vm_store/1,
          vm_owner/2
         ]).
 
@@ -55,7 +67,8 @@
          hypervisor_set/2,
          hypervisor_set/3,
          hypervisor_list/0,
-         hypervisor_list/1
+         hypervisor_list/1,
+         hypervisor_list/2
         ]).
 
 -export([
@@ -66,7 +79,8 @@
          dataset_set/2,
          dataset_set/3,
          dataset_list/0,
-         dataset_list/1
+         dataset_list/1,
+         dataset_list/2
         ]).
 
 -export([
@@ -85,19 +99,22 @@
          package_set/2,
          package_set/3,
          package_list/0,
-         package_list/1
+         package_list/1,
+         package_list/2
         ]).
 
 -export([
          network_create/1,
+         network_create/2,
          network_delete/1,
          network_get/1,
          network_add_iprange/2,
+         network_add_iprange/3,
          network_remove_iprange/2,
          network_set/2,
          network_set/3,
-         network_list/0,
-         network_list/1
+         network_list/2,
+         network_list/3
         ]).
 
 -export([
@@ -106,8 +123,8 @@
          iprange_get/1,
          iprange_release/2,
          iprange_claim/1,
-         iprange_list/0,
-         iprange_list/1,
+         iprange_list/2,
+         iprange_list/3,
          iprange_set/2,
          iprange_set/3
         ]).
@@ -229,6 +246,18 @@ dtrace_list()->
                          {'error','no_servers'}.
 dtrace_list(Requirements)->
     send({dtrace, list, Requirements}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the ID's of all scripts in the database filtered by
+%%   the passed requirements.
+%% @end
+%%--------------------------------------------------------------------
+-spec dtrace_list([Requirement::fifo:matcher()], boolean()) ->
+                         {ok, [{Ranking::integer(),
+                                ID::fifo:dtrace_id()}]} |
+                         {'error','no_servers'}.
+dtrace_list(Requirements, Full)->
+    send({dtrace, list, Requirements, Full}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists the ID's of all scripts in the database filtered by
@@ -416,6 +445,13 @@ vm_delete(VM) when
       is_binary(VM) ->
     send({vm, delete, VM}).
 
+-spec vm_store(VM::fifo:uuid()) ->
+                      ok | not_found |
+                      {'error','no_servers'}.
+vm_store(VM) when
+      is_binary(VM) ->
+    send({vm, store, VM}).
+
 %%--------------------------------------------------------------------
 %% @doc Changes the owner of a VM.
 %% @end
@@ -523,6 +559,62 @@ vm_log(Vm, Log) ->
     send({vm, log, Vm, Log}).
 
 %%--------------------------------------------------------------------
+%% @doc Creates a full backup of a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_incremental_backup(Vm, Parent, Comment, Opts) ->
+    send({vm, backup, incremental, Vm, Parent, Comment, Opts}).
+
+%%--------------------------------------------------------------------
+%% @doc Creates a full backup of a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_full_backup(Vm, Comment, Opts) ->
+    send({vm, backup, full, Vm, Comment, Opts}).
+
+%%--------------------------------------------------------------------
+%% @doc Restores a VM from a backup.
+%% @end
+%%--------------------------------------------------------------------
+vm_restore_backup(Vm, Backup) ->
+    send({vm, backup, restore, Vm, Backup}).
+
+%%--------------------------------------------------------------------
+%% @doc Restores a VM from a backup to a specific hypervisor.
+%% @end
+%%--------------------------------------------------------------------
+vm_restore_backup(Vm, Backup, Hypervisor) ->
+    send({vm, backup, restore, Vm, Backup, Hypervisor}).
+
+%%--------------------------------------------------------------------
+%% @doc Deletes the backup of a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_delete_backup(Vm, Backup, Where) ->
+    send({vm, backup, delete, Vm, Backup, Where}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_service_enable(Vm, Service) ->
+    send({vm, service, enable, Vm, Service}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_service_disable(Vm, Service) ->
+    send({vm, service, disable, Vm, Service}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+vm_service_clear(Vm, Service) ->
+    send({vm, service, clear, Vm, Service}).
+
+%%--------------------------------------------------------------------
 %% @doc Creates a ZFS new snapshot of a given VM.
 %% @end
 %%--------------------------------------------------------------------
@@ -600,6 +692,18 @@ vm_list() ->
                      {'error','no_servers'}.
 vm_list(Reqs) ->
     send({vm, list, Reqs}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the UUID's of all VM's known to the server filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec vm_list(Reqs::[fifo:matcher()], boolean()) ->
+                     {ok, [{Ranking::integer(),
+                            ID::fifo:vm_id()}]} |
+                     {'error','no_servers'}.
+vm_list(Reqs, Full) ->
+    send({vm, list, Reqs, Full}).
 
 %%%===================================================================
 %%% Hypervisor Functions
@@ -686,6 +790,18 @@ hypervisor_list() ->
                              {'error','no_servers'}.
 hypervisor_list(Requirements) ->
     send({hypervisor, list, Requirements}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all hypervisors known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec hypervisor_list(Requirements::[fifo:matcher()], boolean()) ->
+                             {ok, [{Ranking::integer(),
+                                    ID::fifo:hypervisor_id()}]} |
+                             {'error','no_servers'}.
+hypervisor_list(Requirements, Full) ->
+    send({hypervisor, list, Requirements, Full}).
 
 %%%===================================================================
 %%%  DATASET Functions
@@ -778,6 +894,18 @@ dataset_list() ->
                           {'error','no_servers'}.
 dataset_list(Reqs) ->
     send({dataset, list, Reqs}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists all datasets known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec dataset_list(Reqs::term(), boolean()) ->
+                          {ok, Datasets::[{Ranking::integer(),
+                                           ID::fifo:dataset_id()}]} |
+                          {'error','no_servers'}.
+dataset_list(Reqs, Full) ->
+    send({dataset, list, Reqs, Full}).
 
 %%%===================================================================
 %%%  IMG Functions
@@ -932,6 +1060,18 @@ package_list() ->
 package_list(Reqs) ->
     send({package, list, Reqs}).
 
+%%--------------------------------------------------------------------
+%% @doc Lists all packages known to the system filtered by
+%%   given matchers.
+%% @end
+%%--------------------------------------------------------------------
+-spec package_list(Reqs::[fifo:matcher()], boolean()) ->
+                          {ok, [{Ranking::integer(),
+                                 ID::fifo:package_id()}]} |
+                          {'error','no_servers'}.
+package_list(Reqs, Full) ->
+    send({package, list, Reqs, Full}).
+
 
 %%%===================================================================
 %%%  NETWORK Functions
@@ -945,9 +1085,12 @@ package_list(Reqs) ->
                             {ok, UUID::fifo:uuid()} |
                             duplicate |
                             {'error','no_servers'}.
-network_create(Name) when
+network_create(Name) ->
+    network_create(mdns, Name).
+
+network_create(Sniffle, Name) when
       is_binary(Name) ->
-    send({network, create, Name}).
+    send(Sniffle, {network, create, Name}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes a network from the database
@@ -980,10 +1123,13 @@ network_get(Network) when
                                  not_found |
                                  ok |
                                  {'error','no_servers'}.
-network_add_iprange(Network, IPRange) when
+network_add_iprange(Network, IPRange) ->
+      network_add_iprange(mdns, Network, IPRange).
+
+network_add_iprange(Sniffle, Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
-    send({network, add_iprange, Network, IPRange}).
+    send(Sniffle, {network, add_iprange, Network, IPRange}).
 
 %%--------------------------------------------------------------------
 %% @doc Adds a iprange to a network
@@ -1024,26 +1170,19 @@ network_set(Network, Attributes) when
     send({network, set, Network, Attributes}).
 
 %%--------------------------------------------------------------------
-%% @doc Lists all networks known to the system.
-%% @end
-%%--------------------------------------------------------------------
--spec network_list() ->
-                          {ok, Networks::[binary()]} |
-                          {'error','no_servers'}.
-network_list() ->
-    send({network, list}).
-
-%%--------------------------------------------------------------------
 %% @doc Lists all networks known to the system filtered by
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec network_list(Reqs::[fifo:matcher()]) ->
+-spec network_list(Reqs::[fifo:matcher()], boolean()) ->
                           {ok, [{Ranking::integer(),
                                  ID::fifo:network_id()}]} |
                           {'error','no_servers'}.
-network_list(Reqs) ->
-    send({network, list, Reqs}).
+network_list(Reqs, Full) ->
+    network_list(mdns, Reqs, Full).
+
+network_list(Sniffle, Reqs, Full) ->
+    send(Sniffle, {network, list, Reqs, Full}).
 
 %%%===================================================================
 %%%  Iprange Functions
@@ -1177,26 +1316,19 @@ iprange_claim(Iprange) ->
     send({iprange, claim, Iprange}).
 
 %%--------------------------------------------------------------------
-%% @doc Lists all ip ranges known to the system.
-%% @end
-%%--------------------------------------------------------------------
--spec iprange_list() ->
-                          {ok, [binary()]} |
-                          {'error','no_servers'}.
-iprange_list() ->
-    send({iprange, list}).
-
-%%--------------------------------------------------------------------
 %% @doc Lists all ip ranges known to the system filtered by
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec iprange_list(Reqs::[fifo:matcher()]) ->
+-spec iprange_list(Reqs::[fifo:matcher()], boolean()) ->
                           {ok, [{Ranking::integer(),
                                  ID::fifo:iprange_id()}]} |
                           {'error','no_servers'}.
-iprange_list(Reqs) ->
-    send({iprange, list, Reqs}).
+iprange_list(Reqs, Full) ->
+    iprange_list(mdns, Reqs, Full).
+
+iprange_list(Sniffle, Reqs, Full) ->
+    send(Sniffle, {iprange, list, Reqs, Full}).
 
 %%%===================================================================
 %%% Utility functions
@@ -1242,7 +1374,9 @@ ip_to_int(IP) ->
                   {ok, Reply::term()} |
                   {error, no_servers}.
 send(Msg) ->
-    case libsniffle_server:send(Msg) of
+    send(mdns, Msg).
+send(Sniffle, Msg) ->
+    case libsniffle_server:send(Sniffle, Msg) of
         {reply, Reply} ->
             Reply;
         noreply ->
