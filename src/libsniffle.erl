@@ -761,7 +761,11 @@ hypervisor_service_disable(Hypervisor, Service) ->
 hypervisor_service_clear(Hypervisor, Service) ->
     hypervisor_service_action(Hypervisor, clear, Service).
 
-hypervisor_service_action(Hypervisor, Action, Service) ->
+hypervisor_service_action(Hypervisor, Action, Service) when
+      Action =:= enable;
+      Action =:= disable;
+      Action =:= clear;
+      ->
     send({vm, service, Hypervisor, Action, Service}).
 
 
