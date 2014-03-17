@@ -63,6 +63,10 @@
 -export([
          hypervisor_register/3,
          hypervisor_unregister/1,
+         hypervisor_service_enable/2,
+         hypervisor_service_disable/2,
+         hypervisor_service_clear/2,
+         hypervisor_service_action/3,
          hypervisor_get/1,
          hypervisor_set/2,
          hypervisor_set/3,
@@ -254,7 +258,7 @@ dtrace_list(Requirements)->
 %%--------------------------------------------------------------------
 -spec dtrace_list([Requirement::fifo:matcher()], boolean()) ->
                          {ok, [{Ranking::integer(),
-                                ID::fifo:dtrace_id()}]} |
+                                ID::fifo:dtrace_id()|fifo:object()}]} |
                          {'error','no_servers'}.
 dtrace_list(Requirements, Full)->
     send({dtrace, list, Requirements, Full}).
@@ -700,7 +704,7 @@ vm_list(Reqs) ->
 %%--------------------------------------------------------------------
 -spec vm_list(Reqs::[fifo:matcher()], boolean()) ->
                      {ok, [{Ranking::integer(),
-                            ID::fifo:vm_id()}]} |
+                            ID::fifo:vm_id()|fifo:object()}]} |
                      {'error','no_servers'}.
 vm_list(Reqs, Full) ->
     send({vm, list, Reqs, Full}).
@@ -735,6 +739,32 @@ hypervisor_register(Hypervisor, Host, Port) when
                                    {'error','no_servers'}.
 hypervisor_unregister(Hypervisor) ->
     send({hypervisor, unregister, Hypervisor}).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a hypervisor.
+%% @end
+%%--------------------------------------------------------------------
+hypervisor_service_enable(Hypervisor, Service) ->
+    hypervisor_service_action(Hypervisor, enable, Service).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+hypervisor_service_disable(Hypervisor, Service) ->
+    hypervisor_service_action(Hypervisor, disable, Service).
+
+%%--------------------------------------------------------------------
+%% @doc Enables a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+hypervisor_service_clear(Hypervisor, Service) ->
+    hypervisor_service_action(Hypervisor, clear, Service).
+
+hypervisor_service_action(Hypervisor, Action, Service) ->
+    send({vm, service, Hypervisor, Action, Service}).
+
+
 
 %%--------------------------------------------------------------------
 %% @doc Reads the hypervisor object from the database.
@@ -798,7 +828,7 @@ hypervisor_list(Requirements) ->
 %%--------------------------------------------------------------------
 -spec hypervisor_list(Requirements::[fifo:matcher()], boolean()) ->
                              {ok, [{Ranking::integer(),
-                                    ID::fifo:hypervisor_id()}]} |
+                                    ID::fifo:hypervisor_id()|fifo:object()}]} |
                              {'error','no_servers'}.
 hypervisor_list(Requirements, Full) ->
     send({hypervisor, list, Requirements, Full}).
@@ -902,7 +932,7 @@ dataset_list(Reqs) ->
 %%--------------------------------------------------------------------
 -spec dataset_list(Reqs::term(), boolean()) ->
                           {ok, Datasets::[{Ranking::integer(),
-                                           ID::fifo:dataset_id()}]} |
+                                           ID::fifo:dataset_id()|fifo:object()}]} |
                           {'error','no_servers'}.
 dataset_list(Reqs, Full) ->
     send({dataset, list, Reqs, Full}).
@@ -1067,7 +1097,7 @@ package_list(Reqs) ->
 %%--------------------------------------------------------------------
 -spec package_list(Reqs::[fifo:matcher()], boolean()) ->
                           {ok, [{Ranking::integer(),
-                                 ID::fifo:package_id()}]} |
+                                 ID::fifo:package_id()|fifo:object()}]} |
                           {'error','no_servers'}.
 package_list(Reqs, Full) ->
     send({package, list, Reqs, Full}).
@@ -1176,7 +1206,7 @@ network_set(Network, Attributes) when
 %%--------------------------------------------------------------------
 -spec network_list(Reqs::[fifo:matcher()], boolean()) ->
                           {ok, [{Ranking::integer(),
-                                 ID::fifo:network_id()}]} |
+                                 ID::fifo:network_id()|fifo:object()}]} |
                           {'error','no_servers'}.
 network_list(Reqs, Full) ->
     network_list(mdns, Reqs, Full).
@@ -1322,7 +1352,7 @@ iprange_claim(Iprange) ->
 %%--------------------------------------------------------------------
 -spec iprange_list(Reqs::[fifo:matcher()], boolean()) ->
                           {ok, [{Ranking::integer(),
-                                 ID::fifo:iprange_id()}]} |
+                                 ID::fifo:iprange_id()|fifo:object()}]} |
                           {'error','no_servers'}.
 iprange_list(Reqs, Full) ->
     iprange_list(mdns, Reqs, Full).
