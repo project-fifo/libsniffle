@@ -63,9 +63,6 @@
 -export([
          hypervisor_register/3,
          hypervisor_unregister/1,
-         hypervisor_service_enable/2,
-         hypervisor_service_disable/2,
-         hypervisor_service_clear/2,
          hypervisor_service_action/3,
          hypervisor_get/1,
          hypervisor_set/2,
@@ -745,6 +742,12 @@ hypervisor_unregister(Hypervisor) ->
 %% @end
 %%--------------------------------------------------------------------
 
+-spec hypervisor_service_action(
+        Hypervisor::fifo:uuid(),
+        Action::enable|disable|clear,
+        Service::binary()) ->
+                                       ok | not_found |
+                                       {'error','no_servers'}.
 hypervisor_service_action(Hypervisor, Action, Service) when
       Action =:= enable;
       Action =:= disable;
