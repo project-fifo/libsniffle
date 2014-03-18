@@ -744,29 +744,12 @@ hypervisor_unregister(Hypervisor) ->
 %% @doc Enables a service on a hypervisor.
 %% @end
 %%--------------------------------------------------------------------
-hypervisor_service_enable(Hypervisor, Service) ->
-    hypervisor_service_action(Hypervisor, enable, Service).
-
-%%--------------------------------------------------------------------
-%% @doc Enables a service on a VM.
-%% @end
-%%--------------------------------------------------------------------
-hypervisor_service_disable(Hypervisor, Service) ->
-    hypervisor_service_action(Hypervisor, disable, Service).
-
-%%--------------------------------------------------------------------
-%% @doc Enables a service on a VM.
-%% @end
-%%--------------------------------------------------------------------
-hypervisor_service_clear(Hypervisor, Service) ->
-    hypervisor_service_action(Hypervisor, clear, Service).
 
 hypervisor_service_action(Hypervisor, Action, Service) when
       Action =:= enable;
       Action =:= disable;
       Action =:= clear ->
-    send({vm, service, Action, Hypervisor, Service}).
-
+    send({hypervisor, service, Hypervisor, Action, Service}).
 
 
 %%--------------------------------------------------------------------
