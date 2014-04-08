@@ -547,8 +547,7 @@ vm_set(VM, Attribute, Value) when
                                                 {'error','no_servers'}.
 vm_set(VM, Attributes) when
       is_binary(VM) ->
-    send({vm, set, VM, [{K, V} || {K, V} <- Attributes,
-                                  is_binary(K)]}).
+    send({vm, set, VM, [{K, V} || {K, V} <- Attributes]}).
 
 %%--------------------------------------------------------------------
 %% @doc Adds a log to the VM that will be timestamped on the server.
