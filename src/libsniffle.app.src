@@ -1,7 +1,7 @@
 {application, libsniffle,
  [
   {description, ""},
-  {vsn, "0.2.33"},
+  {vsn, "0.2.33p1"},
   {registered, []},
   {applications, [
                   kernel,
