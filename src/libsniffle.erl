@@ -11,6 +11,22 @@
          version/0
         ]).
 
+
+-export([
+         grouping_add/2,
+         grouping_delete/1,
+         grouping_get/1,
+         grouping_metadata_set/2,
+         grouping_metadata_set/3,
+         grouping_list/2,
+         grouping_list/1,
+         grouping_list/0,
+         grouping_add_element/2,
+         grouping_remove_element/2,
+         grouping_add_grouping/2,
+         grouping_remove_grouping/2
+        ]).
+
 -export([
          dtrace_add/2,
          dtrace_delete/1,
@@ -182,6 +198,129 @@ version() ->
 cloud_status() ->
     send({cloud, status}).
 
+%%%===================================================================
+%%% Grouping Functions
+%%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @doc Adds a new grouping to sniffle, the name is a plain
+%%   binary, the type is the atom cluster or stack
+%%   encapsulated in $ signs.
+%%   A UUID is returned.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_add(Name::binary(),
+                   Type::atom()) ->
+                          {ok, UUID::fifo:uuid()} |
+                          duplicate |
+                          {'error','no_servers'}.
+grouping_add(Name, cluster) when
+      is_binary(Name)->
+    send({grouping, add, Name, cluster});
+grouping_add(Name, stack) when
+      is_binary(Name)->
+    send({grouping, add, Name, stack}).
+
+%%--------------------------------------------------------------------
+%% @doc Deletes a grouping script from the library
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_delete(UUID::fifo:uuid()) ->
+                           ok |
+                           {'error','no_servers'}.
+grouping_delete(ID) when
+      is_binary(ID)->
+    send({grouping, delete, ID}).
+
+%%--------------------------------------------------------------------
+%% @doc Reads a grouping script and returns the jsx object for it.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_get(UUID::fifo:uuid()) ->
+                        {ok, Data::fifo:config_list()} |
+                        not_found |
+                        {'error','no_servers'}.
+grouping_get(ID) when
+      is_binary(ID)->
+    send({grouping, get, ID}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the ID's of all scripts in the database.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_list() ->
+                         {ok, [UUID::fifo:uuid()]} |
+                         {'error','no_servers'}.
+grouping_list()->
+    send({grouping, list}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the ID's of all scripts in the database filtered by
+%%   the passed requirements.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_list([Requirement::fifo:matcher()]) ->
+                         {ok, [{Ranking::integer(),
+                                ID::fifo:grouping_id()}]} |
+                         {'error','no_servers'}.
+grouping_list(Requirements)->
+    send({grouping, list, Requirements}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the ID's of all scripts in the database filtered by
+%%   the passed requirements.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_list([Requirement::fifo:matcher()], boolean()) ->
+                         {ok, [{Ranking::integer(),
+                                ID::fifo:grouping_id()|fifo:object()}]} |
+                         {'error','no_servers'}.
+grouping_list(Requirements, Full)->
+    send({grouping, list, Requirements, Full}).
+
+%%--------------------------------------------------------------------
+%% @doc Lists the ID's of all scripts in the database filtered by
+%%   the passed requirements.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_metadata_set(Grouping::fifo:uuid(),
+                 Attribute::fifo:keys(),
+                 Value::fifo:value() | delete) ->
+                        ok | not_found |
+                        {'error','no_servers'}.
+grouping_metadata_set(Grouping, Attribute, Value) when
+      is_binary(Grouping) ->
+    send({grouping, metadata, set, Grouping, Attribute, Value}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets options on a dtace script. The root key 'config' has a
+%%   special meaning here since it holds replacement variables.
+%% @end
+%%--------------------------------------------------------------------
+-spec grouping_metadata_set(Grouping::fifo:uuid(),
+                 Attributes::fifo:config_list()) ->
+                        ok | not_found |
+                        {'error','no_servers'}.
+grouping_metadata_set(Grouping, Attributes) when
+      is_binary(Grouping) ->
+    send({grouping, metadata, set, Grouping, Attributes}).
+
+
+grouping_add_element(Grouping, Element)
+  when is_binary(Grouping), is_binary(Element) ->
+    send({grouping, element, add, Grouping, Element}).
+
+grouping_remove_element(Grouping, Element)
+  when is_binary(Grouping), is_binary(Element) ->
+    send({grouping, element, remove, Grouping, Element}).
+
+grouping_add_grouping(Grouping, Element)
+  when is_binary(Grouping), is_binary(Element) ->
+    send({grouping, grouping, add, Grouping, Element}).
+
+grouping_remove_grouping(Grouping, Element)
+  when is_binary(Grouping), is_binary(Element) ->
+    send({grouping, grouping, remove, Grouping, Element}).
 %%%===================================================================
 %%% DTrace Functions
 %%%===================================================================
