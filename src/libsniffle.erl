@@ -217,6 +217,9 @@ cloud_status() ->
 grouping_add(Name, cluster) when
       is_binary(Name)->
     send({grouping, add, Name, cluster});
+grouping_add(Name, none) when
+      is_binary(Name)->
+    send({grouping, add, Name, none});
 grouping_add(Name, stack) when
       is_binary(Name)->
     send({grouping, add, Name, stack}).
