@@ -8,6 +8,7 @@
          start/0,
          servers/0,
          create/3,
+         dry_run/3,
          version/0
         ]).
 
@@ -471,6 +472,18 @@ dtrace_run(ID, Servers) when
 
 create(PackageID, DatasetID, Config) ->
     send({vm, create, PackageID, DatasetID, Config}).
+
+%%--------------------------------------------------------------------
+%% @doc Initiates the creating a new VM, this will just return the
+%%   UUID progress is directy written to the object in the database.
+%% @end
+%%--------------------------------------------------------------------
+-spec dry_run(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) ->
+                     {error, no_servers} |
+                     {ok, success|failed}.
+
+dry_run(PackageID, DatasetID, Config) ->
+    send({vm, dry_run, PackageID, DatasetID, Config}).
 
 %%--------------------------------------------------------------------
 %% @doc Registeres an existing VM with sniffle.
