@@ -16,6 +16,9 @@
          state/2,
          set/2,
          set_config/3,
+         set_service/3,
+         set_backup/3,
+         set_snapshot/3,
          set_metadata/3,
          set/3,
          log/2,
@@ -287,12 +290,25 @@ set(VM, Attribute, Value) when
 %% @end
 %%--------------------------------------------------------------------
 -spec state(VM::fifo:uuid(),
-            state::binary()) ->
+            State::binary()) ->
                    ok | not_found |
                    {'error','no_servers'}.
 state(VM, State) when
       is_binary(VM) ->
     send({vm, state, VM, State}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets a service attribute on the VM object in the database
+%% @end
+%%--------------------------------------------------------------------
+-spec set_service(VM::fifo:uuid(),
+             Attribute::fifo:keys(),
+             Value::fifo:value() | delete) ->
+                    ok | not_found |
+                    {'error','no_servers'}.
+set_service(VM, Attribute, Value) when
+      is_binary(VM) ->
+    send({vm, set_service, VM, Attribute, Value}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a backup attribute on the VM object in the database
