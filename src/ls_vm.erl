@@ -12,12 +12,12 @@
          update/3,
          add_nic/2, remove_nic/2, primary_nic/2,
          set/2, set/3,
-         set_config/3,
-         set_info/3,
-         set_service/3,
-         set_backup/3,
-         set_snapshot/3,
-         set_metadata/3,
+         set_config/2,
+         set_info/2,
+         set_service/2,
+         set_backup/2,
+         set_snapshot/2,
+         set_metadata/2,
          log/2,
          snapshot/2, delete_snapshot/2, rollback_snapshot/2,
          commit_snapshot_rollback/2, promote_snapshot/3,
@@ -283,78 +283,78 @@ state(VM, State) when
 %% @end
 %%--------------------------------------------------------------------
 -spec set_service(VM::fifo:uuid(),
-             Attribute::fifo:keys(),
-             Value::fifo:value() | delete) ->
-                    ok | not_found |
-                    {'error','no_servers'}.
-set_service(VM, Attribute, Value) when
+                  [{Attribute::fifo:keys(),
+                    Value::fifo:value() | delete}]) ->
+                         ok | not_found |
+                         {'error','no_servers'}.
+set_service(VM, AVs) when
       is_binary(VM) ->
-    send({vm, set_service, VM, Attribute, Value}).
+    send({vm, set_service, VM, AVs}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a backup attribute on the VM object in the database
 %% @end
 %%--------------------------------------------------------------------
 -spec set_backup(VM::fifo:uuid(),
-             Attribute::fifo:keys(),
-             Value::fifo:value() | delete) ->
+                 [{Attribute::fifo:keys(),
+                   Value::fifo:value() | delete}]) ->
                     ok | not_found |
                     {'error','no_servers'}.
-set_backup(VM, Attribute, Value) when
+set_backup(VM, AVs) when
       is_binary(VM) ->
-    send({vm, set_backup, VM, Attribute, Value}).
+    send({vm, set_backup, VM, AVs}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a backup attribute on the VM object in the database
 %% @end
 %%--------------------------------------------------------------------
 -spec set_snapshot(VM::fifo:uuid(),
-                   Attribute::fifo:keys(),
-                   Value::fifo:value() | delete) ->
+                   [{Attribute::fifo:keys(),
+                     Value::fifo:value() | delete}]) ->
                           ok | not_found |
                           {'error','no_servers'}.
-set_snapshot(VM, Attribute, Value) when
+set_snapshot(VM, AVs) when
       is_binary(VM) ->
-    send({vm, set_snapshot, VM, Attribute, Value}).
+    send({vm, set_snapshot, VM, AVs}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a metadata attribute on the VM object in the database
 %% @end
 %%--------------------------------------------------------------------
 -spec set_metadata(VM::fifo:uuid(),
-             Attribute::fifo:keys(),
-             Value::fifo:value() | delete) ->
+                   [{Attribute::fifo:keys(),
+                     Value::fifo:value() | delete}]) ->
                     ok | not_found |
                     {'error','no_servers'}.
-set_metadata(VM, Attribute, Value) when
+set_metadata(VM, AVs) when
       is_binary(VM) ->
-    send({vm, set_metadata, VM, Attribute, Value}).
+    send({vm, set_metadata, VM, AVs}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a config attribute on the VM object in the database
 %% @end
 %%--------------------------------------------------------------------
 -spec set_config(VM::fifo:uuid(),
-             Attribute::fifo:keys(),
-             Value::fifo:value() | delete) ->
+                 [{Attribute::fifo:keys(),
+                   Value::fifo:value() | delete}]) ->
                     ok | not_found |
                     {'error','no_servers'}.
-set_config(VM, Attribute, Value) when
+set_config(VM, AVs) when
       is_binary(VM) ->
-    send({vm, set_config, VM, Attribute, Value}).
+    send({vm, set_config, VM, AVs}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a info attribute on the VM object in the database
 %% @end
 %%--------------------------------------------------------------------
 -spec set_info(VM::fifo:uuid(),
-             Attribute::fifo:keys(),
-             Value::fifo:value() | delete) ->
+               [{Attribute::fifo:keys(),
+                 Value::fifo:value() | delete}]) ->
                     ok | not_found |
                     {'error','no_servers'}.
-set_info(VM, Attribute, Value) when
+set_info(VM, AVs) when
       is_binary(VM) ->
-    send({vm, set_info, VM, Attribute, Value}).
+    send({vm, set_info, VM, AVs}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets some attributes on the VM object in the database - this
