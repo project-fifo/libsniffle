@@ -5,47 +5,28 @@
 -endif.
 
 -export([
-         create/3,
-         dry_run/3,
-         register/2,
-         unregister/1,
-         update/3,
-         add_nic/2,
-         remove_nic/2,
-         primary_nic/2,
+         get/1,
+         dry_run/3, create/3, delete/1, store/1,
+         register/2, unregister/1,
          state/2,
-         set/2,
+         update/3,
+         add_nic/2, remove_nic/2, primary_nic/2,
+         set/2, set/3,
          set_config/3,
+         set_info/3,
          set_service/3,
          set_backup/3,
          set_snapshot/3,
          set_metadata/3,
-         set/3,
          log/2,
-         snapshot/2,
-         delete_snapshot/2,
-         rollback_snapshot/2,
-         commit_snapshot_rollback/2,
-         promote_snapshot/3,
-         incremental_backup/4,
-         full_backup/3,
-         restore_backup/2,
-         restore_backup/3,
-         delete_backup/3,
-         service_enable/2,
-         service_disable/2,
-         service_clear/2,
-         list/0,
-         list/1,
-         list/2,
-         get/1,
-         start/1,
-         stop/1,
-         reboot/1,
-         stop/2,
-         reboot/2,
-         delete/1,
-         store/1,
+         snapshot/2, delete_snapshot/2, rollback_snapshot/2,
+         commit_snapshot_rollback/2, promote_snapshot/3,
+         incremental_backup/4, full_backup/3,
+         restore_backup/2, restore_backup/3, delete_backup/3,
+         service_enable/2, service_disable/2, service_clear/2,
+         list/0, list/1, list/2,
+         start/1, stop/1, stop/2,
+         reboot/1, reboot/2,
          owner/2
         ]).
 
@@ -362,6 +343,18 @@ set_config(VM, Attribute, Value) when
       is_binary(VM) ->
     send({vm, set_config, VM, Attribute, Value}).
 
+%%--------------------------------------------------------------------
+%% @doc Sets a info attribute on the VM object in the database
+%% @end
+%%--------------------------------------------------------------------
+-spec set_info(VM::fifo:uuid(),
+             Attribute::fifo:keys(),
+             Value::fifo:value() | delete) ->
+                    ok | not_found |
+                    {'error','no_servers'}.
+set_info(VM, Attribute, Value) when
+      is_binary(VM) ->
+    send({vm, set_info, VM, Attribute, Value}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets some attributes on the VM object in the database - this
