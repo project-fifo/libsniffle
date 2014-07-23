@@ -13,6 +13,7 @@
          add_nic/2,
          remove_nic/2,
          primary_nic/2,
+         state/2,
          set/2,
          set_config/3,
          set_metadata/3,
@@ -281,6 +282,43 @@ set(VM, Attribute, Value) when
       is_binary(VM) ->
     send({vm, set, VM, Attribute, Value}).
 
+%%--------------------------------------------------------------------
+%% @doc Sets the state of a VM.
+%% @end
+%%--------------------------------------------------------------------
+-spec state(VM::fifo:uuid(),
+            state::binary()) ->
+                   ok | not_found |
+                   {'error','no_servers'}.
+state(VM, State) when
+      is_binary(VM) ->
+    send({vm, state, VM, State}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets a backup attribute on the VM object in the database
+%% @end
+%%--------------------------------------------------------------------
+-spec set_backup(VM::fifo:uuid(),
+             Attribute::fifo:keys(),
+             Value::fifo:value() | delete) ->
+                    ok | not_found |
+                    {'error','no_servers'}.
+set_backup(VM, Attribute, Value) when
+      is_binary(VM) ->
+    send({vm, set_backup, VM, Attribute, Value}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets a backup attribute on the VM object in the database
+%% @end
+%%--------------------------------------------------------------------
+-spec set_snapshot(VM::fifo:uuid(),
+                   Attribute::fifo:keys(),
+                   Value::fifo:value() | delete) ->
+                          ok | not_found |
+                          {'error','no_servers'}.
+set_snapshot(VM, Attribute, Value) when
+      is_binary(VM) ->
+    send({vm, set_snapshot, VM, Attribute, Value}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a metadata attribute on the VM object in the database
