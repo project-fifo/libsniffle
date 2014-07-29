@@ -149,6 +149,7 @@ list(Reqs, Full) ->
 ?HS(os).
 ?HS(users).
 ?HS(version).
+?HS(set_metadata).
 
 %%%===================================================================
 %%% Internal Functions
