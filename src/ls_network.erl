@@ -9,6 +9,7 @@
          add_iprange/3,
          remove_iprange/2,
          set/2,
+         set_metadata/2,
          set/3,
          list/2,
          list/3,
@@ -130,9 +131,9 @@ list(Sniffle, Reqs, Full) ->
 -define(HS(F),
         F(DTRace, Val) ->
                send({network, F, DTRace, Val})).
-
-?HS(name).
 ?HS(uuid).
+?HS(name).
+?HS(set_metadata).
 
 %%%===================================================================
 %%% Internal Functions
