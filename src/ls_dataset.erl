@@ -14,6 +14,8 @@
 
 -export([
          dataset/2,
+         imported/2,
+         status/2,
          description/2,
          disk_driver/2,
          homepage/2,
@@ -135,6 +137,8 @@ list(Reqs, Full) ->
                send({dataset, F, Dataset, Val})).
 
 ?HS(dataset).
+?HS(status).
+?HS(imported).
 ?HS(description).
 ?HS(disk_driver).
 ?HS(homepage).
