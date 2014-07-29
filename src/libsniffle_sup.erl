@@ -1,4 +1,3 @@
-
 -module(libsniffle_sup).
 
 -behaviour(supervisor).
