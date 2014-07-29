@@ -13,6 +13,7 @@
         ]).
 
 -export([
+         set_metadata/2,
          dataset/2,
          imported/2,
          status/2,
