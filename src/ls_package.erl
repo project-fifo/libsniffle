@@ -12,21 +12,21 @@
         ]).
 
 
--ignore_xref([
-              set_metadata/2,
-              blocksize/2,
-              compression/2,
-              cpu_cap/2,
-              cpu_shares/2,
-              max_swap/2,
-              name/2,
-              quota/2,
-              ram/2,
-              uuid/2,
-              zfs_io_priority/2,
-              remove_requirement/2,
-              add_requirement/2
-             ]).
+-export([
+         set_metadata/2,
+         blocksize/2,
+         compression/2,
+         cpu_cap/2,
+         cpu_shares/2,
+         max_swap/2,
+         name/2,
+         quota/2,
+         ram/2,
+         uuid/2,
+         zfs_io_priority/2,
+         remove_requirement/2,
+         add_requirement/2
+        ]).
 
 -define(UUID, <<UUID:36/binary>>).
 
