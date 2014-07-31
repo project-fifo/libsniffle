@@ -14,7 +14,6 @@
 
 -export([
          set_metadata/2,
-         dataset/2,
          imported/2,
          status/2,
          description/2,
@@ -137,7 +136,6 @@ list(Reqs, Full) ->
         F(Dataset, Val) ->
                send({dataset, F, Dataset, Val})).
 
-?HS(dataset).
 ?HS(status).
 ?HS(imported).
 ?HS(description).
