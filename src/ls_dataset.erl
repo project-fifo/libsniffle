@@ -22,6 +22,7 @@
          networks/2,
          nic_driver/2,
          os/2,
+         type/2,
          users/2,
          version/2
         ]).
@@ -121,6 +122,7 @@ list(Reqs, Full) ->
 ?HS(networks).
 ?HS(nic_driver).
 ?HS(os).
+?HS(type).
 ?HS(users).
 ?HS(version).
 ?HS(set_metadata).
