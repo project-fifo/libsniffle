@@ -5,8 +5,6 @@
          import/1,
          delete/1,
          get/1,
-         set/2,
-         set/3,
          list/0,
          list/1,
          list/2
