@@ -74,29 +74,6 @@ delete(Dataset) ->
                          {ok, [{Key::term(), Key::term()}]}.
 get(Dataset) ->
     send({dataset, get, Dataset}).
-%%--------------------------------------------------------------------
-%% @doc Sets a attribute of a dataset.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Dataset::fifo:id(),
-                  Attribute::fifo:keys(),
-                  Value::fifo:value() | delete) ->
-                         ok | not_found |
-                         {'error','no_servers'}.
-set(Dataset, Attribute, Value) ->
-    send({dataset, set, Dataset, Attribute, Value}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets multiple attributes of a dataset.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Dataset::fifo:id(),
-                  Attirbutes::fifo:attr_list()) ->
-                         ok |
-                         not_found |
-                         {'error','no_servers'}.
-set(Dataset, Attributes) ->
-    send({dataset, set, Dataset, Attributes}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists all datasets known to the system.
