@@ -20,11 +20,11 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec create(Img::fifo:dataset_id(), Idx::integer()|done,
-                 Data::binary(), Ref::term()) ->
-                        {ok, Ref1::term()} |
-                        {'error','no_servers'}.
+             Data::binary(), Ref::term()) ->
+                    {ok, Ref1::term()} |
+                    {'error','no_servers'}.
 create(?UUID, Idx, Data, Ref) when Idx >= 0,
-                                  is_binary(Data) ->
+                                   is_binary(Data) ->
     send({img, create, UUID, Idx, Data, Ref}).
 
 %%--------------------------------------------------------------------
@@ -32,8 +32,8 @@ create(?UUID, Idx, Data, Ref) when Idx >= 0,
 %% @end
 %%--------------------------------------------------------------------
 -spec delete(Img::fifo:dataset_id()) ->
-                        ok | not_found |
-                        {'error','no_servers'}.
+                    ok | not_found |
+                    {'error','no_servers'}.
 delete(?UUID) ->
     send({img, delete, UUID}).
 
@@ -42,8 +42,8 @@ delete(?UUID) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec delete(Img::fifo:dataset_id(), Idx::integer()) ->
-                        ok | not_found |
-                        {'error','no_servers'}.
+                    ok | not_found |
+                    {'error','no_servers'}.
 delete(?UUID, Idx) when Idx >= 0 ->
     send({img, delete, UUID, Idx}).
 
@@ -52,9 +52,9 @@ delete(?UUID, Idx) when Idx >= 0 ->
 %% @end
 %%--------------------------------------------------------------------
 -spec get(Img::fifo:dataset_id(), Idx::integer()) ->
-                     {'error','no_servers'} |
-                     not_found |
-                     {ok, binary()}.
+                 {'error','no_servers'} |
+                 not_found |
+                 {ok, binary()}.
 get(?UUID, Idx) when Idx >= 0 ->
     send({img, get, UUID, Idx}).
 
@@ -64,11 +64,6 @@ get(?UUID, Idx) when Idx >= 0 ->
 %%--------------------------------------------------------------------
 -spec list() ->
                   {ok, Imgs :: [fifo:uuid()]} |
-                  {ok, AKey :: string(), SKey :: string(),
-                   S3Host :: inet:hostname() | inet:ip_address(),
-                   S3Port :: inet:port_number(),
-                   Bucket :: string(),
-                   Target :: binary()} |
                   {'error','no_servers'}.
 list() ->
     send({img, list}).
@@ -78,8 +73,13 @@ list() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list(Img::fifo:dataset_id()) ->
-                      {ok, Parts::[pos_integer()]} |
-                      {'error','no_servers'}.
+                  {ok, Parts::[pos_integer()]} |
+                  {ok, AKey :: string(), SKey :: string(),
+                   S3Host :: inet:hostname() | inet:ip_address(),
+                   S3Port :: inet:port_number(),
+                   Bucket :: string(),
+                   Target :: binary()} |
+                  {'error','no_servers'}.
 list(?UUID) ->
     send({img, list, ?UUID}).
 
