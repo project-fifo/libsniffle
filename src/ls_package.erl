@@ -4,10 +4,7 @@
          create/1,
          delete/1,
          get/1,
-         set/2,
-         set/3,
          list/0,
-         list/1,
          list/2
         ]).
 
@@ -39,7 +36,7 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec create(Name::binary()) ->
-                            {ok, UUID::fifo:uuid()} |
+                            {ok, UUID::fifo:package_id()} |
                             duplicate |
                             {'error','no_servers'}.
 create(Name) when
@@ -63,44 +60,19 @@ delete(Package) when
 %%--------------------------------------------------------------------
 -spec get(Package::binary()) ->
                          not_found |
-                         {ok, Package::fifo:config_list()} |
+                         {ok, Package::fifo:package()} |
                          {'error','no_servers'}.
 get(Package) when
       is_binary(Package) ->
     send({package, get, Package}).
 
 %%--------------------------------------------------------------------
-%% @doc Sets a attribute on the pacakge.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Package::fifo:id(),
-                  Attribute::fifo:keys(),
-                  Value::fifo:value() | delete) -> ok | not_found |
-                                                   {'error','no_servers'}.
-set(Package, Attribute, Value)  when
-      is_binary(Package) ->
-    send({package, set, Package, Attribute, Value}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets multiple attributes on the pacakge.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Package::fifo:id(),
-                  Attirbutes::fifo:config_list()) ->
-                         ok | not_found |
-                         {'error','no_servers'}.
-set(Package, Attributes) when
-      is_binary(Package),
-      is_list(Attributes) ->
-    send({package, set, Package, Attributes}).
-
-%%--------------------------------------------------------------------
 %% @doc Lists all packages known to the system.
 %% @end
 %%--------------------------------------------------------------------
 -spec list() ->
-                          {ok, Packages::[binary()]} |
-                          {'error','no_servers'}.
+                  {ok, Packages::[fifo:package_id()]} |
+                  {'error','no_servers'}.
 list() ->
     send({package, list}).
 
@@ -109,22 +81,10 @@ list() ->
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec list(Reqs::[fifo:matcher()]) ->
-                          {ok, [{Ranking::integer(),
-                                 ID::fifo:id()}]} |
-                          {'error','no_servers'}.
-list(Reqs) ->
-    send({package, list, Reqs}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists all packages known to the system filtered by
-%%   given matchers.
-%% @end
-%%--------------------------------------------------------------------
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
-                          {ok, [{Ranking::integer(),
-                                 ID::fifo:id()|fifo:object()}]} |
-                          {'error','no_servers'}.
+                  {ok, [{Ranking::integer(), ID::fifo:package_id()}]} |
+                  {ok, [{Ranking::integer(), ID::fifo:package()}]} |
+                  {'error','no_servers'}.
 list(Reqs, Full) ->
     send({package, list, Reqs, Full}).
 
@@ -150,7 +110,7 @@ list(Reqs, Full) ->
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_package_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

@@ -9,10 +9,7 @@
          unregister/1,
          service_action/3,
          get/1,
-         set/2,
-         set/3,
          list/0,
-         list/1,
          list/2,
          set_resource/2,
          set_characteristic/2,
@@ -42,10 +39,10 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec register(Hypervisor::binary(),
-                          Host::binary(),
-                          Port::inet:port_number()) ->
-                                 ok |
-                                 {'error','no_servers'}.
+               Host::binary(),
+               Port::inet:port_number()) ->
+                      ok |
+                      {'error','no_servers'}.
 register(Hypervisor, Host, Port) when
       is_binary(Hypervisor),
       is_integer(Port),
@@ -57,8 +54,8 @@ register(Hypervisor, Host, Port) when
 %% @end
 %%--------------------------------------------------------------------
 -spec unregister(Hypervisor::binary()) ->
-                                   ok | not_found |
-                                   {'error','no_servers'}.
+                        ok | not_found |
+                        {'error','no_servers'}.
 unregister(Hypervisor) ->
     send({hypervisor, unregister, Hypervisor}).
 
@@ -71,8 +68,8 @@ unregister(Hypervisor) ->
         Hypervisor::fifo:uuid(),
         Action::enable|disable|clear,
         Service::binary()) ->
-                                       ok | not_found |
-                                       {'error','no_servers'}.
+                            ok | not_found |
+                            {'error','no_servers'}.
 service_action(Hypervisor, Action, Service) when
       Action =:= enable;
       Action =:= disable;
@@ -85,41 +82,18 @@ service_action(Hypervisor, Action, Service) when
 %% @end
 %%--------------------------------------------------------------------
 -spec get(Hypervisor::binary()) ->
-                            not_found |
-                            {ok, fifo:hypervisor()} |
-                            {'error','no_servers'}.
+                 not_found |
+                 {ok, fifo:hypervisor()} |
+                 {'error','no_servers'}.
 get(Hypervisor) ->
     send({hypervisor, get, Hypervisor}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets a attribute of the hypervisor.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Hypervisor::binary(),
-                     Resource::fifo:keys(),
-                     Value::fifo:value() | delete) ->
-                            ok | not_found |
-                            {'error','no_servers'}.
-set(Hypervisor, Resource, Value) ->
-    send({hypervisor, set, Hypervisor, Resource, Value}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets multiple attributes of the hypervisor.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Hypervisor::binary(),
-                     Resources::fifo:config_list()) ->
-                            ok | not_found |
-                            {'error','no_servers'}.
-set(Hypervisor, Resources) ->
-    send({hypervisor, set, Hypervisor, Resources}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists all hypervisors known to the system.
 %% @end
 %%--------------------------------------------------------------------
 -spec list() -> {ok, [binary()]} |
-                           {'error','no_servers'}.
+                {'error','no_servers'}.
 list() ->
     send({hypervisor, list}).
 
@@ -128,22 +102,10 @@ list() ->
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec list(Requirements::[fifo:matcher()]) ->
-                             {ok, [{Ranking::integer(),
-                                    ID::fifo:id()}]} |
-                             {'error','no_servers'}.
-list(Requirements) ->
-    send({hypervisor, list, Requirements}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists all hypervisors known to the system filtered by
-%%   given matchers.
-%% @end
-%%--------------------------------------------------------------------
 -spec list(Requirements::[fifo:matcher()], boolean()) ->
-                             {ok, [{Ranking::integer(),
-                                    ID::fifo:id()|fifo:object()}]} |
-                             {'error','no_servers'}.
+                  {ok, [{Ranking::integer(), ID::fifo:hypervisor_id()}]} |
+                  {ok, [{Ranking::integer(), ID::fifo:hypervisor()}]} |
+                  {'error','no_servers'}.
 list(Requirements, Full) ->
     send({hypervisor, list, Requirements, Full}).
 
@@ -156,7 +118,6 @@ list(Requirements, Full) ->
 ?HS(set_metadata).
 ?HS(set_pool).
 ?HS(set_service).
-
 ?HS(alias).
 ?HS(etherstubs).
 ?HS(host).
@@ -173,7 +134,7 @@ list(Requirements, Full) ->
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_hypervisor_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

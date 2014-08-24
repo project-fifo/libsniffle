@@ -6,7 +6,6 @@
          delete/1,
          get/1,
          list/0,
-         list/1,
          list/2
         ]).
 
@@ -36,8 +35,8 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec create(Dataset::binary()) ->
-                            ok | duplicate |
-                            {'error','no_servers'}.
+                    ok | duplicate |
+                    {'error','no_servers'}.
 create(Dataset) ->
     send({dataset, create, Dataset}).
 
@@ -46,9 +45,9 @@ create(Dataset) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec import(URL::binary()) ->
-                            {ok, UUID::fifo:uuid()} |
-                            {error, Reason::term()} |
-                            {'error','no_servers'}.
+                    {ok, UUID::fifo:dataset_id()} |
+                    {error, Reason::term()} |
+                    {'error','no_servers'}.
 import(URL) ->
     send({dataset, import, URL}).
 
@@ -58,8 +57,8 @@ import(URL) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec delete(Dataset::binary()) ->
-                            ok | not_found |
-                            {'error','no_servers'}.
+                    ok | not_found |
+                    {'error','no_servers'}.
 delete(Dataset) ->
     send({dataset, delete, Dataset}).
 
@@ -68,9 +67,9 @@ delete(Dataset) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec get(Dataset::binary()) ->
-                         {'error','no_servers'} |
-                         not_found |
-                         {ok, [{Key::term(), Key::term()}]}.
+                 {'error','no_servers'} |
+                 not_found |
+                 {ok, fifo:dataset()}.
 get(Dataset) ->
     send({dataset, get, Dataset}).
 
@@ -79,8 +78,8 @@ get(Dataset) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list() ->
-                          {ok, Datasets::[binary()]} |
-                          {'error','no_servers'}.
+                  {ok, Datasets::[fifo:dataset_id()]} |
+                  {'error','no_servers'}.
 list() ->
     send({dataset, list}).
 
@@ -89,22 +88,10 @@ list() ->
 %%   given matchers.
 %% @end
 %%--------------------------------------------------------------------
--spec list(Reqs::term()) ->
-                          {ok, Datasets::[{Ranking::integer(),
-                                           ID::fifo:id()}]} |
-                          {'error','no_servers'}.
-list(Reqs) ->
-    send({dataset, list, Reqs}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists all datasets known to the system filtered by
-%%   given matchers.
-%% @end
-%%--------------------------------------------------------------------
 -spec list(Reqs::term(), boolean()) ->
-                          {ok, Datasets::[{Ranking::integer(),
-                                           ID::fifo:id()|fifo:object()}]} |
-                          {'error','no_servers'}.
+                  {ok, Datasets::[{Ranking::integer(), ID::fifo:dataset_id()}]} |
+                  {ok, Datasets::[{Ranking::integer(), Dset::fifo:dataset()}]} |
+                  {'error','no_servers'}.
 list(Reqs, Full) ->
     send({dataset, list, Reqs, Full}).
 
@@ -112,26 +99,67 @@ list(Reqs, Full) ->
         F(Dataset, Val) ->
                send({dataset, F, Dataset, Val})).
 
+-spec status(fifo:dataset_id(), binary()) ->
+                    ok | {error, no_servers}.
 ?HS(status).
+
+-spec imported(fifo:dataset_id(), float()) ->
+                      ok | {error, no_servers}.
 ?HS(imported).
+
+-spec description(fifo:dataset_id(), binary()) ->
+                         ok | {error, no_servers}.
 ?HS(description).
+
+-spec disk_driver(fifo:dataset_id(), binary()) ->
+                         ok | {error, no_servers}.
 ?HS(disk_driver).
+
+-spec homepage(fifo:dataset_id(), binary()) ->
+                      ok | {error, no_servers}.
 ?HS(homepage).
+
+-spec image_size(fifo:dataset_id(), pos_integer()) ->
+                        ok | {error, no_servers}.
 ?HS(image_size).
+
+-spec name(fifo:dataset_id(), binary()) ->
+                  ok | {error, no_servers}.
 ?HS(name).
+
+-spec networks(fifo:dataset_id(), list()) ->
+                    ok | {error, no_servers}.
 ?HS(networks).
+
+-spec nic_driver(fifo:dataset_id(), binary()) ->
+                        ok | {error, no_servers}.
 ?HS(nic_driver).
+
+-spec os(fifo:dataset_id(), binary()) ->
+                ok | {error, no_servers}.
 ?HS(os).
+
+-spec type(fifo:dataset_id(), zone | kvm) ->
+                    ok | {error, no_servers}.
 ?HS(type).
+
+-spec users(fifo:dataset_id(), list()) ->
+                    ok | {error, no_servers}.
 ?HS(users).
+
+-spec version(fifo:dataset_id(), binary()) ->
+                    ok | {error, no_servers}.
 ?HS(version).
+
+-spec set_metadata(fifo:dataset_id(), [{jsxd:key(), jsxd:value()}]) ->
+                          ok | {error, no_servers}.
 ?HS(set_metadata).
 
 %%%===================================================================
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_dataset_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

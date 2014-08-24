@@ -4,10 +4,7 @@
          add/2,
          delete/1,
          get/1,
-         set/2,
-         set/3,
          list/2,
-         list/1,
          list/0,
          run/2
         ]).
@@ -33,10 +30,10 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec add(Name::binary(),
-                 Script::list()) ->
-                        {ok, UUID::fifo:uuid()} |
-                        duplicate |
-                        {'error','no_servers'}.
+          Script::string()) ->
+                 {ok, UUID::fifo:dtrace_id()} |
+                 duplicate |
+                 {'error','no_servers'}.
 add(Name, Script) when
       is_binary(Name),
       is_list(Script)->
@@ -47,8 +44,8 @@ add(Name, Script) when
 %% @end
 %%--------------------------------------------------------------------
 -spec delete(UUID::fifo:uuid()) ->
-                           ok |
-                           {'error','no_servers'}.
+                    ok |
+                    {'error','no_servers'}.
 delete(ID) when
       is_binary(ID)->
     send({dtrace, delete, ID}).
@@ -58,9 +55,9 @@ delete(ID) when
 %% @end
 %%--------------------------------------------------------------------
 -spec get(UUID::fifo:uuid()) ->
-                        {ok, Data::fifo:config_list()} |
-                        not_found |
-                        {'error','no_servers'}.
+                 not_found |
+                 {ok, Data::fifo:dataset()} |
+                 {'error','no_servers'}.
 get(ID) when
       is_binary(ID)->
     send({dtrace, get, ID}).
@@ -70,8 +67,8 @@ get(ID) when
 %% @end
 %%--------------------------------------------------------------------
 -spec list() ->
-                         {ok, [UUID::fifo:uuid()]} |
-                         {'error','no_servers'}.
+                  {ok, [UUID::fifo:dataset_id()]} |
+                  {'error','no_servers'}.
 list()->
     send({dtrace, list}).
 
@@ -80,51 +77,13 @@ list()->
 %%   the passed requirements.
 %% @end
 %%--------------------------------------------------------------------
--spec list([Requirement::fifo:matcher()]) ->
-                         {ok, [{Ranking::integer(),
-                                ID::fifo:id()}]} |
-                         {'error','no_servers'}.
-list(Requirements)->
-    send({dtrace, list, Requirements}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists the ID's of all scripts in the database filtered by
-%%   the passed requirements.
-%% @end
-%%--------------------------------------------------------------------
 -spec list([Requirement::fifo:matcher()], boolean()) ->
-                         {ok, [{Ranking::integer(),
-                                ID::fifo:id()|fifo:object()}]} |
-                         {'error','no_servers'}.
+                  {ok, [{Ranking::integer(), ID::fifo:dataset_id()}]} |
+                  {ok, [{Ranking::integer(), Dataset::fifo:dataset()}]} |
+                  {'error','no_servers'}.
 list(Requirements, Full)->
     send({dtrace, list, Requirements, Full}).
 
-%%--------------------------------------------------------------------
-%% @doc Lists the ID's of all scripts in the database filtered by
-%%   the passed requirements.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Dtrace::fifo:uuid(),
-                 Attribute::fifo:keys(),
-                 Value::fifo:value() | delete) ->
-                        ok | not_found |
-                        {'error','no_servers'}.
-set(DTrace, Attribute, Value) when
-      is_binary(DTrace) ->
-    send({dtrace, set, DTrace, Attribute, Value}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets options on a dtace script. The root key 'config' has a
-%%   special meaning here since it holds replacement variables.
-%% @end
-%%--------------------------------------------------------------------
--spec set(DTrace::fifo:uuid(),
-                 Attributes::fifo:config_list()) ->
-                        ok | not_found |
-                        {'error','no_servers'}.
-set(DTrace, Attributes) when
-      is_binary(DTrace) ->
-    send({dtrace, set, DTrace, Attributes}).
 
 %%--------------------------------------------------------------------
 %% @doc Starts a dtrace script on the given hypervisors, returns an
@@ -133,10 +92,10 @@ set(DTrace, Attributes) when
 %% @end
 %%--------------------------------------------------------------------
 -spec run(DTrace::fifo:uuid(),
-                 Servers::[fifo:hypervisor()]) ->
-                        {ok, Socket::port()} |
-                        not_found |
-                        {'error','no_servers'}.
+          Servers::[fifo:hypervisor()]) ->
+                 {ok, Socket::port()} |
+                 not_found |
+                 {'error','no_servers'}.
 
 run(ID, Servers) when
       is_binary(ID)->
@@ -157,17 +116,32 @@ run(ID, Servers) when
         F(DTRace, Val) ->
                send({dtrace, F, DTRace, Val})).
 
-?HS(name).
+-spec uuid(ID::fifo:dtrace_id(), binary()) ->
+                  ok | {'error','no_servers'}.
 ?HS(uuid).
+
+-spec name(ID::fifo:dtrace_id(), binary()) ->
+                  ok | {'error','no_servers'}.
+?HS(name).
+
+
+-spec script(ID::fifo:dtrace_id(), string()) ->
+                    ok | {'error','no_servers'}.
 ?HS(script).
+
+-spec set_metadata(ID::fifo:dtrace_id(), [{jsxd:key(), jsxd:value()}]) ->
+                          ok | {'error','no_servers'}.
 ?HS(set_metadata).
+
+-spec set_config(ID::fifo:dtrace_id(), [{jsxd:key(), jsxd:value()}]) ->
+                        ok | {'error','no_servers'}.
 ?HS(set_config).
 
 %%%===================================================================
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_dtrace_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

@@ -5,9 +5,7 @@
          delete/1,
          get/1,
          metadata_set/2,
-         metadata_set/3,
          list/2,
-         list/1,
          list/0,
          add_element/2,
          remove_element/2,
@@ -27,10 +25,10 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec add(Name::binary(),
-                   Type::atom()) ->
-                          {ok, UUID::fifo:uuid()} |
-                          duplicate |
-                          {'error','no_servers'}.
+          Type::atom()) ->
+                 {ok, UUID::fifo:grouping_id()} |
+                 duplicate |
+                 {'error','no_servers'}.
 add(Name, cluster) when
       is_binary(Name)->
     send({grouping, add, Name, cluster});
@@ -45,9 +43,9 @@ add(Name, stack) when
 %% @doc Deletes a grouping script from the library
 %% @end
 %%--------------------------------------------------------------------
--spec delete(UUID::fifo:uuid()) ->
-                           ok |
-                           {'error','no_servers'}.
+-spec delete(UUID::fifo:grouping_id()) ->
+                    ok |
+                    {'error','no_servers'}.
 delete(ID) when
       is_binary(ID)->
     send({grouping, delete, ID}).
@@ -56,10 +54,10 @@ delete(ID) when
 %% @doc Reads a grouping script and returns the jsx object for it.
 %% @end
 %%--------------------------------------------------------------------
--spec get(UUID::fifo:uuid()) ->
-                        {ok, Data::fifo:config_list()} |
-                        not_found |
-                        {'error','no_servers'}.
+-spec get(UUID::fifo:grouping_id()) ->
+                 {ok, Data::fifo:grouping()} |
+                 not_found |
+                 {'error','no_servers'}.
 get(ID) when
       is_binary(ID)->
     send({grouping, get, ID}).
@@ -69,8 +67,8 @@ get(ID) when
 %% @end
 %%--------------------------------------------------------------------
 -spec list() ->
-                         {ok, [UUID::fifo:uuid()]} |
-                         {'error','no_servers'}.
+                  {ok, [UUID::fifo:grouping_id()]} |
+                  {'error','no_servers'}.
 list()->
     send({grouping, list}).
 
@@ -79,65 +77,55 @@ list()->
 %%   the passed requirements.
 %% @end
 %%--------------------------------------------------------------------
--spec list([Requirement::fifo:matcher()]) ->
-                         {ok, [{Ranking::integer(),
-                                ID::fifo:id()}]} |
-                         {'error','no_servers'}.
-list(Requirements)->
-    send({grouping, list, Requirements}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists the ID's of all scripts in the database filtered by
-%%   the passed requirements.
-%% @end
-%%--------------------------------------------------------------------
 -spec list([Requirement::fifo:matcher()], boolean()) ->
-                         {ok, [{Ranking::integer(),
-                                ID::fifo:id()|fifo:object()}]} |
-                         {'error','no_servers'}.
+                  {ok, [{Ranking::integer(), ID::fifo:grouping_id()}]} |
+                  {ok, [{Ranking::integer(), ID::fifo:grouping()}]} |
+                  {'error','no_servers'}.
 list(Requirements, Full)->
     send({grouping, list, Requirements, Full}).
-
-%%--------------------------------------------------------------------
-%% @doc Lists the ID's of all scripts in the database filtered by
-%%   the passed requirements.
-%% @end
-%%--------------------------------------------------------------------
--spec metadata_set(Grouping::fifo:uuid(),
-                 Attribute::fifo:keys(),
-                 Value::fifo:value() | delete) ->
-                        ok | not_found |
-                        {'error','no_servers'}.
-metadata_set(Grouping, Attribute, Value) when
-      is_binary(Grouping) ->
-    send({grouping, metadata, set, Grouping, Attribute, Value}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets options on a dtace script. The root key 'config' has a
 %%   special meaning here since it holds replacement variables.
 %% @end
 %%--------------------------------------------------------------------
--spec metadata_set(Grouping::fifo:uuid(),
-                 Attributes::fifo:config_list()) ->
-                        ok | not_found |
-                        {'error','no_servers'}.
+-spec metadata_set(Grouping::fifo:grouping_id(),
+                   Attributes::fifo:attr_list()) ->
+                          ok | not_found |
+                          {'error','no_servers'}.
 metadata_set(Grouping, Attributes) when
       is_binary(Grouping) ->
     send({grouping, metadata, set, Grouping, Attributes}).
 
 
+%%--------------------------------------------------------------------
+%% @doc Adds or removes a element (child) to a grouping, children can
+%%   be either a grouping or a VM.
+%%--------------------------------------------------------------------
+-spec add_element(fifo:grouping_id(), fifo:vm_id() | fifo:grouping_id()) ->
+                         ok | not_found | {error, no_servers}.
 add_element(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, element, add, Grouping, Element}).
 
+-spec remove_element(fifo:grouping_id(), fifo:vm_id()) ->
+                         ok | not_found | {error, r_servers}.
 remove_element(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, element, remove, Grouping, Element}).
 
+%%--------------------------------------------------------------------
+%% @doc Adds or removes a grouping (paremnt) to a grouping, parents
+%%   can only be groupings.
+%%--------------------------------------------------------------------
+-spec add_grouping(fifo:grouping_id(), fifo:vm_id()) ->
+                         ok | not_found | {error, r_servers}.
 add_grouping(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, grouping, add, Grouping, Element}).
 
+-spec remove_grouping(fifo:grouping_id(), fifo:grouping_id()) ->
+                         ok | not_found | {error, r_servers}.
 remove_grouping(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, grouping, remove, Grouping, Element}).
@@ -146,7 +134,7 @@ remove_grouping(Grouping, Element)
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_grouping_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

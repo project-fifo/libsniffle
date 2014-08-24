@@ -8,9 +8,7 @@
          add_iprange/2,
          add_iprange/3,
          remove_iprange/2,
-         set/2,
          set_metadata/2,
-         set/3,
          list/2,
          list/3,
          name/2,
@@ -26,9 +24,9 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec create(Name::binary()) ->
-                            {ok, UUID::fifo:uuid()} |
-                            duplicate |
-                            {'error','no_servers'}.
+                    {ok, UUID::fifo:network_id()} |
+                    duplicate |
+                    {'error','no_servers'}.
 create(Name) ->
     create(mdns, Name).
 
@@ -40,9 +38,9 @@ create(Sniffle, Name) when
 %% @doc Deletes a network from the database
 %% @end
 %%--------------------------------------------------------------------
--spec delete(Network::fifo:uuid()) ->
-                            ok | not_found |
-                            {'error','no_servers'}.
+-spec delete(Network::fifo:network_id()) ->
+                    ok | not_found |
+                    {'error','no_servers'}.
 delete(Network) when
       is_binary(Network) ->
     send({network, delete, Network}).
@@ -51,10 +49,10 @@ delete(Network) when
 %% @doc Reads a network from the database
 %% @end
 %%--------------------------------------------------------------------
--spec get(Network::binary()) ->
-                         not_found |
-                         {ok, Network::fifo:config_list()} |
-                         {'error','no_servers'}.
+-spec get(Network::fifo:network_id()) ->
+                 not_found |
+                 {ok, Network::fifo:network()} |
+                 {'error','no_servers'}.
 get(Network) when
       is_binary(Network) ->
     send({network, get, Network}).
@@ -63,12 +61,12 @@ get(Network) when
 %% @doc Adds a iprange to a network
 %% @end
 %%--------------------------------------------------------------------
--spec add_iprange(Network::binary(), IPrange::binary()) ->
-                                 not_found |
-                                 ok |
-                                 {'error','no_servers'}.
+-spec add_iprange(Network::fifo:network_id(), IPrange::fifo:iprange_id()) ->
+                         not_found |
+                         ok |
+                         {'error','no_servers'}.
 add_iprange(Network, IPRange) ->
-      add_iprange(mdns, Network, IPRange).
+    add_iprange(mdns, Network, IPRange).
 
 add_iprange(Sniffle, Network, IPRange) when
       is_binary(Network),
@@ -79,39 +77,14 @@ add_iprange(Sniffle, Network, IPRange) when
 %% @doc Adds a iprange to a network
 %% @end
 %%--------------------------------------------------------------------
--spec remove_iprange(Network::binary(), IPrange::binary()) ->
-                                    not_found |
-                                    ok |
-                                    {'error','no_servers'}.
+-spec remove_iprange(Network::fifo:network_id(), IPrange::fifo:iprange_id()) ->
+                            not_found |
+                            ok |
+                            {'error','no_servers'}.
 remove_iprange(Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
     send({network, remove_iprange, Network, IPRange}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets a attribute on the pacakge.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Network::fifo:id(),
-                  Attribute::fifo:keys(),
-                  Value::fifo:value() | delete) -> ok | not_found |
-                                                   {'error','no_servers'}.
-set(Network, Attribute, Value)  when
-      is_binary(Network) ->
-    send({network, set, Network, Attribute, Value}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets multiple attributes on the pacakge.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Network::fifo:id(),
-                  Attirbutes::fifo:config_list()) ->
-                         ok | not_found |
-                         {'error','no_servers'}.
-set(Network, Attributes) when
-      is_binary(Network),
-      is_list(Attributes) ->
-    send({network, set, Network, Attributes}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists all networks known to the system filtered by
@@ -119,9 +92,9 @@ set(Network, Attributes) when
 %% @end
 %%--------------------------------------------------------------------
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
-                          {ok, [{Ranking::integer(),
-                                 ID::fifo:id()|fifo:object()}]} |
-                          {'error','no_servers'}.
+                  {ok, [{Ranking::integer(), fifo:network_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:network()}]} |
+                  {'error','no_servers'}.
 list(Reqs, Full) ->
     list(mdns, Reqs, Full).
 
@@ -139,7 +112,7 @@ list(Sniffle, Reqs, Full) ->
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_network_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

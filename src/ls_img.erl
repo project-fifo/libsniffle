@@ -63,8 +63,13 @@ get(?UUID, Idx) when Idx >= 0 ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list() ->
-                      {ok, Imgs::[fifo:uuid()]} |
-                      {'error','no_servers'}.
+                  {ok, Imgs :: [fifo:uuid()]} |
+                  {ok, AKey :: string(), SKey :: string(),
+                   S3Host :: inet:hostname() | inet:ip_address(),
+                   S3Port :: inet:port_number(),
+                   Bucket :: string(),
+                   Target :: binary()} |
+                  {'error','no_servers'}.
 list() ->
     send({img, list}).
 
@@ -82,7 +87,7 @@ list(?UUID) ->
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_image_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |

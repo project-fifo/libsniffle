@@ -11,9 +11,7 @@
          release/2,
          claim/1,
          list/2,
-         list/3,
-         set/2,
-         set/3
+         list/3
         ]).
 
 -export([
@@ -41,16 +39,16 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec create(Iprange::binary(),
-                     Network::integer() | binary(),
-                     Gateway::integer() | binary(),
-                     Netmask::integer() | binary(),
-                     First::integer() | binary(),
-                     Last::integer() | binary(),
-                     Tag::binary(),
-                     Vlan::pos_integer()) ->
-                            {ok, UUID::fifo:id()} |
-                            duplicate |
-                            {'error','no_servers'}.
+             Network::integer() | binary(),
+             Gateway::integer() | binary(),
+             Netmask::integer() | binary(),
+             First::integer() | binary(),
+             Last::integer() | binary(),
+             Tag::binary(),
+             Vlan::pos_integer()) ->
+                    {ok, UUID::fifo:iprange_id()} |
+                    duplicate |
+                    {'error','no_servers'}.
 
 create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
@@ -71,21 +69,21 @@ create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Tag),
       is_integer(Vlan), Vlan >= 0->
     create(Iprange,
-                   ip_to_int(Network),
-                   ip_to_int(Gateway),
-                   ip_to_int(Netmask),
-                   ip_to_int(First),
-                   ip_to_int(Last),
-                   Tag,
-                   Vlan).
+           ip_to_int(Network),
+           ip_to_int(Gateway),
+           ip_to_int(Netmask),
+           ip_to_int(First),
+           ip_to_int(Last),
+           Tag,
+           Vlan).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes a iprange from the server.
 %% @end
 %%--------------------------------------------------------------------
 -spec delete(Iprange::binary()) ->
-                            ok | not_found |
-                            {'error','no_servers'}.
+                    ok | not_found |
+                    {'error','no_servers'}.
 
 delete(Iprange) ->
     send({iprange, delete, Iprange}).
@@ -95,47 +93,21 @@ delete(Iprange) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec get(Iprange::binary()) ->
-                         not_found |
-                         {ok, fifo:config_list()} |
-                         {'error','no_servers'}.
+                 not_found |
+                 {ok, fifo:iprange()} |
+                 {'error','no_servers'}.
 
 get(Iprange) ->
     send({iprange, get, Iprange}).
 
 %%--------------------------------------------------------------------
-%% @doc Sets a attribute on the iprange.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Iprange::fifo:id(),
-                  Attribute::fifo:keys(),
-                  Value::fifo:value() | delete) ->
-                         ok | not_found |
-                         {'error','no_servers'}.
-set(Iprange, Attribute, Value)  when
-      is_binary(Iprange) ->
-    send({iprange, set, Iprange, Attribute, Value}).
-
-%%--------------------------------------------------------------------
-%% @doc Sets multiple attributes on the iprange.
-%% @end
-%%--------------------------------------------------------------------
--spec set(Iprange::fifo:id(),
-                  Attirbutes::fifo:config_list()) ->
-                         ok | not_found |
-                         {'error','no_servers'}.
-set(Iprange, Attributes) when
-      is_binary(Iprange),
-      is_list(Attributes) ->
-    send({iprange, set, Iprange, Attributes}).
-
-%%--------------------------------------------------------------------
 %% @doc Tries to release a claimed ip address from a range.
 %% @end
 %%--------------------------------------------------------------------
--spec release(Iprange::binary(),
-                      Ip::integer() | string() | binary()) ->
-                             ok | not_found |
-                             {'error','no_servers'}.
+-spec release(Iprange::fifo:iprange_id(),
+              Ip::integer()) ->
+                     ok | not_found |
+                     {'error','no_servers'}.
 
 release(Iprange, Ip) when
       is_binary(Iprange),
@@ -151,14 +123,14 @@ release(Iprange, Ip) when
 %%   network information.
 %% @end
 %%--------------------------------------------------------------------
--spec claim(Iprange::binary()) ->
-                           not_found |
-                           {ok, {Tag::binary(),
-                                 IP::pos_integer(),
-                                 Netmask::pos_integer(),
-                                 Gateway::pos_integer()}} |
-                           {error, failed} |
-                           {'error','no_servers'}.
+-spec claim(Iprange::fifo:iprange_id()) ->
+                   not_found |
+                   {ok, {Tag::binary(),
+                         IP::pos_integer(),
+                         Netmask::pos_integer(),
+                         Gateway::pos_integer()}} |
+                   {error, failed} |
+                   {'error','no_servers'}.
 claim(Iprange) ->
     send({iprange, claim, Iprange}).
 
@@ -168,9 +140,9 @@ claim(Iprange) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
-                          {ok, [{Ranking::integer(),
-                                 ID::fifo:id()|fifo:object()}]} |
-                          {'error','no_servers'}.
+                  {ok, [{Ranking::integer(), ID::fifo:iprange_id()}]} |
+                  {ok, [{Ranking::integer(), ID::fifo:iprange()}]} |
+                  {'error','no_servers'}.
 list(Reqs, Full) ->
     list(mdns, Reqs, Full).
 
@@ -215,7 +187,7 @@ ip_to_int(IP) ->
 %%% Internal Functions
 %%%===================================================================
 
--spec send(MSG::fifo:sniffle_message()) ->
+-spec send(MSG::fifo:sniffle_iprange_message()) ->
                   ok |
                   atom() |
                   {ok, Reply::term()} |
