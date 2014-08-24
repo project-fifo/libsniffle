@@ -103,7 +103,7 @@ list(Reqs, Full) ->
                     ok | {error, no_servers}.
 ?HS(status).
 
--spec imported(fifo:dataset_id(), float()) ->
+-spec imported(fifo:dataset_id(), float() | non_neg_integer()) ->
                       ok | {error, no_servers}.
 ?HS(imported).
 

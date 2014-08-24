@@ -90,6 +90,7 @@ list(?UUID) ->
 -spec send(MSG::fifo:sniffle_image_message()) ->
                   ok |
                   atom() |
+                  term() |
                   {ok, Reply::term()} |
                   {error, no_servers}.
 send(Msg) ->
