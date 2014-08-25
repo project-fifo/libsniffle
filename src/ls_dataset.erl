@@ -151,7 +151,7 @@ list(Reqs, Full) ->
                     ok | {error, no_servers}.
 ?HS(version).
 
--spec set_metadata(fifo:dataset_id(), [{jsxd:key(), jsxd:value()}]) ->
+-spec set_metadata(fifo:dataset_id(), fifo:attr_list()) ->
                           ok | {error, no_servers}.
 ?HS(set_metadata).
 

@@ -105,7 +105,14 @@ list(Sniffle, Reqs, Full) ->
         F(DTRace, Val) ->
                send({network, F, DTRace, Val})).
 ?HS(uuid).
+
+-spec name(fifo:network_id(), binary()) ->
+                  ok |
+                  {error, no_servers}.
 ?HS(name).
+-spec set_metadata(fifo:network_id(), fifo:attr_list()) ->
+                          ok |
+                          {error, no_servers}.
 ?HS(set_metadata).
 
 %%%===================================================================

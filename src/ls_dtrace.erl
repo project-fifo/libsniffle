@@ -129,11 +129,11 @@ run(ID, Servers) when
                     ok | {'error','no_servers'}.
 ?HS(script).
 
--spec set_metadata(ID::fifo:dtrace_id(), [{jsxd:key(), jsxd:value()}]) ->
+-spec set_metadata(ID::fifo:dtrace_id(), fifo:attr_list()) ->
                           ok | {'error','no_servers'}.
 ?HS(set_metadata).
 
--spec set_config(ID::fifo:dtrace_id(), [{jsxd:key(), jsxd:value()}]) ->
+-spec set_config(ID::fifo:dtrace_id(), fifo:attr_list()) ->
                         ok | {'error','no_servers'}.
 ?HS(set_config).
 
