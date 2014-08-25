@@ -116,24 +116,24 @@ run(ID, Servers) when
         F(DTRace, Val) ->
                send({dtrace, F, DTRace, Val})).
 
--spec uuid(ID::fifo:dtrace_id(), binary()) ->
+-spec uuid(fifo:dtrace_id(), binary()) ->
                   ok | {'error','no_servers'}.
 ?HS(uuid).
 
--spec name(ID::fifo:dtrace_id(), binary()) ->
+-spec name(fifo:dtrace_id(), binary()) ->
                   ok | {'error','no_servers'}.
 ?HS(name).
 
 
--spec script(ID::fifo:dtrace_id(), string()) ->
+-spec script(fifo:dtrace_id(), string()) ->
                     ok | {'error','no_servers'}.
 ?HS(script).
 
--spec set_metadata(ID::fifo:dtrace_id(), fifo:attr_list()) ->
+-spec set_metadata(fifo:dtrace_id(), fifo:attr_list()) ->
                           ok | {'error','no_servers'}.
 ?HS(set_metadata).
 
--spec set_config(ID::fifo:dtrace_id(), fifo:attr_list()) ->
+-spec set_config(fifo:dtrace_id(), fifo:attr_list()) ->
                         ok | {'error','no_servers'}.
 ?HS(set_config).
 
