@@ -56,7 +56,7 @@ delete(ID) when
 %%--------------------------------------------------------------------
 -spec get(UUID::fifo:uuid()) ->
                  not_found |
-                 {ok, Data::fifo:dataset()} |
+                 {ok, Data::fifo:dtrace()} |
                  {'error','no_servers'}.
 get(ID) when
       is_binary(ID)->
@@ -67,7 +67,7 @@ get(ID) when
 %% @end
 %%--------------------------------------------------------------------
 -spec list() ->
-                  {ok, [UUID::fifo:dataset_id()]} |
+                  {ok, [UUID::fifo:dtrace_id()]} |
                   {'error','no_servers'}.
 list()->
     send({dtrace, list}).
@@ -78,8 +78,8 @@ list()->
 %% @end
 %%--------------------------------------------------------------------
 -spec list([Requirement::fifo:matcher()], boolean()) ->
-                  {ok, [{Ranking::integer(), ID::fifo:dataset_id()}]} |
-                  {ok, [{Ranking::integer(), Dataset::fifo:dataset()}]} |
+                  {ok, [{Ranking::integer(), ID::fifo:dtrace_id()}]} |
+                  {ok, [{Ranking::integer(), Dtrace::fifo:dtrace()}]} |
                   {'error','no_servers'}.
 list(Requirements, Full)->
     send({dtrace, list, Requirements, Full}).
