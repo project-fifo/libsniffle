@@ -6,10 +6,10 @@
 
 -export([
          get/1,
-         dry_run/3, create/3, delete/1, store/1,
+         dry_run/3, create/3, delete/1, delete/2, store/1, store/2,
          register/2, unregister/1,
          state/2,
-         update/3,
+         update/3, update/4,
          add_nic/2, remove_nic/2, primary_nic/2,
          set_config/2,
          set_info/2,
@@ -21,7 +21,7 @@
          snapshot/2, delete_snapshot/2, rollback_snapshot/2,
          commit_snapshot_rollback/2, promote_snapshot/3,
          incremental_backup/4, full_backup/3,
-         restore_backup/2, restore_backup/3, delete_backup/3,
+         restore_backup/2, restore_backup/3, restore_backup/4, delete_backup/3,
          service_enable/2, service_disable/2, service_clear/2,
          list/0, list/2,
          start/1, stop/1, stop/2,
@@ -169,19 +169,28 @@ reboot(VM, [force]) when
 %%   was successful calls a unregister.
 %% @end
 %%--------------------------------------------------------------------
--spec delete(VM::fifo:vm_id()) ->
+-spec delete(User::fifo:user_id() | undefined,
+             VM::fifo:vm_id()) ->
                     ok | not_found |
                     {'error','no_servers'}.
-delete(VM) when
-      is_binary(VM) ->
-    send({vm, delete, VM}).
 
--spec store(VM::fifo:vm_id()) ->
+delete(User, VM) when
+      is_binary(VM) ->
+    send({vm, delete, User, VM}).
+
+delete(VM) ->
+    delete(undefined, VM).
+
+-spec store(User::fifo:user_id() | undefined,
+            VM::fifo:vm_id()) ->
                    ok | not_found |
                    {'error','no_servers'}.
-store(VM) when
+store(User, VM) when
       is_binary(VM) ->
-    send({vm, store, VM}).
+    send({vm, store, User, VM}).
+
+store(VM) ->
+    store(undefined, VM).
 
 %%--------------------------------------------------------------------
 %% @doc Changes the owner of a VM.
@@ -198,14 +207,17 @@ owner(VM, Owner) ->
 %%   perspective and changing some of the config values.
 %% @end
 %%--------------------------------------------------------------------
--spec update(VM::fifo:vm_id(),
+-spec update(User::fifo:user_id() | undefined, VM::fifo:vm_id(),
              Package::binary() | undefined,
              Config::fifo:attr_list()) -> ok | not_found |
                                           {'error','no_servers'}.
-update(VM, Package, Config) when
+update(User, VM, Package, Config) when
       is_binary(VM),
       is_list(Config) ->
-    send({vm, update, VM, Package, Config}).
+    send({vm, update, User, VM, Package, Config}).
+
+update(VM, Package, Config) ->
+    update(undefined, VM, Package, Config).
 
 %%--------------------------------------------------------------------
 %% @doc Adds a new interface to a VM.
@@ -377,7 +389,10 @@ restore_backup(Vm, Backup) ->
 %% @end
 %%--------------------------------------------------------------------
 restore_backup(Vm, Backup, Hypervisor) ->
-    send({vm, backup, restore, Vm, Backup, Hypervisor}).
+    restore_backup(undefined, Vm, Backup, Hypervisor).
+
+restore_backup(User, Vm, Backup, Hypervisor) ->
+    send({vm, backup, restore, User, Vm, Backup, Hypervisor}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes the backup of a VM.
