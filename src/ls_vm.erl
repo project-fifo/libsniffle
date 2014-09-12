@@ -26,7 +26,7 @@
          list/0, list/2,
          start/1, stop/1, stop/2,
          reboot/1, reboot/2,
-         owner/2
+         owner/2, owner/3
         ]).
 
 -define(UUID, <<UUID:36/binary>>).
