@@ -196,11 +196,15 @@ store(VM) ->
 %% @doc Changes the owner of a VM.
 %% @end
 %%--------------------------------------------------------------------
--spec owner(VM::fifo:vm_id(), Owner::fifo:uuid()) ->
+-spec owner(User::fifo:user_id() | undefined,
+            VM::fifo:vm_id(), Owner::fifo:uuid()) ->
                    ok | not_found |
                    {'error','no_servers'}.
+owner(User, VM, Owner) ->
+    send({vm, owner, User, VM, Owner}).
+
 owner(VM, Owner) ->
-    send({vm, owner, VM, Owner}).
+    owner(undefined, VM, Owner).
 
 %%--------------------------------------------------------------------
 %% @doc Updates a VM by attempting to resize it from package
