@@ -13,6 +13,7 @@
          set_metadata/2,
          imported/2,
          status/2,
+         sha1/2,
          description/2,
          disk_driver/2,
          homepage/2,
@@ -102,6 +103,10 @@ list(Reqs, Full) ->
 -spec status(fifo:dataset_id(), binary()) ->
                     ok | {error, no_servers}.
 ?HS(status).
+
+-spec sha1(fifo:dataset_id(), binary()) ->
+                  ok | {error, no_servers}.
+?HS(sha1).
 
 -spec imported(fifo:dataset_id(), float() | non_neg_integer()) ->
                       ok | {error, no_servers}.
