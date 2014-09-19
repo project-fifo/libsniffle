@@ -4,8 +4,8 @@
          add/2,
          delete/1,
          get/1,
-         metadata_set/2,
-         config_set/2,
+         set_metadata/2,
+         set_config/2,
          list/2,
          list/0,
          add_element/2,
@@ -89,11 +89,11 @@ list(Requirements, Full)->
 %% @doc Sets the metadat for a grouping. 
 %% @end
 %%--------------------------------------------------------------------
--spec metadata_set(Grouping::fifo:grouping_id(),
+-spec set_metadata(Grouping::fifo:grouping_id(),
                    Attributes::fifo:attr_list()) ->
                           ok | not_found |
                           {'error','no_servers'}.
-metadata_set(Grouping, Attributes) when
+set_metadata(Grouping, Attributes) when
       is_binary(Grouping) ->
     send({grouping, metadata, set, Grouping, Attributes}).
 
@@ -102,11 +102,11 @@ metadata_set(Grouping, Attributes) when
 %% @doc Sets the cluster/stack config for a grouping.
 %% @end
 %%--------------------------------------------------------------------
--spec config_set(Grouping::fifo:grouping_id(),
+-spec set_config(Grouping::fifo:grouping_id(),
                    Attributes::fifo:attr_list()) ->
                           ok | not_found |
                           {'error','no_servers'}.
-config_set(Grouping, Attributes) when
+set_config(Grouping, Attributes) when
       is_binary(Grouping) ->
     send({grouping, config, set, Grouping, Attributes}).
 
