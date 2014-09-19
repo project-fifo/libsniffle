@@ -5,6 +5,7 @@
          delete/1,
          get/1,
          metadata_set/2,
+         config_set/2,
          list/2,
          list/0,
          add_element/2,
@@ -85,8 +86,7 @@ list(Requirements, Full)->
     send({grouping, list, Requirements, Full}).
 
 %%--------------------------------------------------------------------
-%% @doc Sets options on a dtace script. The root key 'config' has a
-%%   special meaning here since it holds replacement variables.
+%% @doc Sets the metadat for a grouping. 
 %% @end
 %%--------------------------------------------------------------------
 -spec metadata_set(Grouping::fifo:grouping_id(),
@@ -97,6 +97,18 @@ metadata_set(Grouping, Attributes) when
       is_binary(Grouping) ->
     send({grouping, metadata, set, Grouping, Attributes}).
 
+
+%%--------------------------------------------------------------------
+%% @doc Sets the cluster/stack config for a grouping.
+%% @end
+%%--------------------------------------------------------------------
+-spec config_set(Grouping::fifo:grouping_id(),
+                   Attributes::fifo:attr_list()) ->
+                          ok | not_found |
+                          {'error','no_servers'}.
+config_set(Grouping, Attributes) when
+      is_binary(Grouping) ->
+    send({grouping, config, set, Grouping, Attributes}).
 
 %%--------------------------------------------------------------------
 %% @doc Adds or removes a element (child) to a grouping, children can
