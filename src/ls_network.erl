@@ -4,6 +4,7 @@
          create/1,
          create/2,
          delete/1,
+         delete/2,
          get/1,
          add_iprange/2,
          add_iprange/3,
@@ -43,7 +44,11 @@ create(Sniffle, Name) when
                     {'error','no_servers'}.
 delete(Network) when
       is_binary(Network) ->
-    send({network, delete, Network}).
+    delete(mdns, Network).
+
+delete(Sniffle, Network) when
+      is_binary(Network) ->
+    send(Sniffle, {network, delete, Network}).
 
 %%--------------------------------------------------------------------
 %% @doc Reads a network from the database
