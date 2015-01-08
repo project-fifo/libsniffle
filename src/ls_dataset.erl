@@ -171,6 +171,15 @@ list(Reqs, Full) ->
                   {error, no_servers}.
 send(Msg) ->
     send(mdns, Msg).
+
+
+-spec send(mdns | {term(), term()},
+           MSG::fifo:sniffle_dataset_message()) ->
+                  ok |
+                  atom() |
+                  {ok, Reply::term()} |
+                  {error, no_servers}.
+
 send(Sniffle, Msg) ->
     case libsniffle_server:send(Sniffle, Msg) of
         {reply, Reply} ->
