@@ -66,12 +66,14 @@ unregister(Hypervisor) ->
 
 -spec service_action(
         Hypervisor::fifo:uuid(),
-        Action::enable|disable|clear,
+        Action::enable|disable|clear|refresh|restart,
         Service::binary()) ->
                             ok | not_found |
                             {'error','no_servers'}.
 service_action(Hypervisor, Action, Service) when
       Action =:= enable;
+      Action =:= refresh;
+      Action =:= restart;
       Action =:= disable;
       Action =:= clear ->
     send({hypervisor, service, Hypervisor, Action, Service}).

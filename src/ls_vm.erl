@@ -23,6 +23,7 @@
          incremental_backup/4, full_backup/3,
          restore_backup/2, restore_backup/3, restore_backup/4, delete_backup/3,
          service_enable/2, service_disable/2, service_clear/2,
+         service_refresh/2, service_restart/2,
          list/0, list/2,
          start/1, stop/1, stop/2,
          reboot/1, reboot/2,
@@ -425,6 +426,20 @@ service_disable(Vm, Service) ->
 %%--------------------------------------------------------------------
 service_clear(Vm, Service) ->
     send({vm, service, clear, Vm, Service}).
+
+%%--------------------------------------------------------------------
+%% @doc Restarts a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+service_restart(Vm, Service) ->
+    send({vm, service, restart, Vm, Service}).
+
+%%--------------------------------------------------------------------
+%% @doc Refreshes a service on a VM.
+%% @end
+%%--------------------------------------------------------------------
+service_refresh(Vm, Service) ->
+    send({vm, service, refresh, Vm, Service}).
 
 %%--------------------------------------------------------------------
 %% @doc Creates a ZFS new snapshot of a given VM.
