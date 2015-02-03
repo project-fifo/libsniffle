@@ -2,6 +2,7 @@
 
 -export([
          start/0,
+         s3/1,
          servers/0,
          version/0,
          cloud_status/0
@@ -39,8 +40,23 @@ servers() ->
 -spec version() -> binary() |
                    {error, no_servers}.
 version() ->
-    ServerVersion = send(version),
-    ServerVersion.
+    send(version).
+
+%%--------------------------------------------------------------------
+%% @private
+%% @doc Gets the s3 information for a data type.
+%% @end
+%%--------------------------------------------------------------------
+-spec s3(Type :: atom()) -> binary() |
+                  {ok,{S3Host :: binary(), S3Port :: integer(),
+                       AKey :: binary(), SKey :: binary(),
+                       Bucket :: binary()}} |
+                  {error, no_servers}.
+
+s3(Type) when is_atom(Type) ->
+    send({s3, Type}).
+
+
 
 %%--------------------------------------------------------------------
 %% @doc Reads the overall cloud status.
@@ -63,6 +79,7 @@ cloud_status() ->
                   {error, no_servers}.
 send(Msg) ->
     send(mdns, Msg).
+
 send(Sniffle, Msg) ->
     case libsniffle_server:send(Sniffle, Msg) of
         {reply, Reply} ->
