@@ -24,7 +24,7 @@
          restore_backup/2, restore_backup/3, restore_backup/4, delete_backup/3,
          service_enable/2, service_disable/2, service_clear/2,
          service_refresh/2, service_restart/2,
-         add_fw_rule/2, delete_fw_rule/2,
+         add_fw_rule/2, remove_fw_rule/2,
          list/0, list/2,
          start/1, stop/1, stop/2,
          reboot/1, reboot/2,
@@ -51,11 +51,11 @@ add_fw_rule(UUID, Rule) ->
 %% @doc Deletes a firewall rule from a VM.
 %% @end
 %%--------------------------------------------------------------------
--spec delete_fw_rule(VM::fifo:vm_id(), Hypervisor::fifo:fw_rule()) ->
+-spec remove_fw_rule(VM::fifo:vm_id(), Hypervisor::fifo:fw_rule()) ->
                             ok |
                             {'error','no_servers'}.
-delete_fw_rule(UUID, Rule) ->
-    send({vm, fw, delete, UUID, Rule}).
+remove_fw_rule(UUID, Rule) ->
+    send({vm, fw, remove, UUID, Rule}).
 
 %%--------------------------------------------------------------------
 %% @doc Initiates the creating a new VM, this will just return the
