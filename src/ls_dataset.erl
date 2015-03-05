@@ -19,7 +19,8 @@
          homepage/2,
          image_size/2,
          name/2,
-         networks/2,
+         add_network/2,
+         remove_network/2,
          nic_driver/2,
          os/2,
          type/2,
@@ -132,9 +133,13 @@ list(Reqs, Full) ->
                   ok | {error, no_servers}.
 ?HS(name).
 
--spec networks(fifo:dataset_id(), list()) ->
+-spec add_network(fifo:dataset_id(), {binary(), binary()}) ->
                     ok | {error, no_servers}.
-?HS(networks).
+?HS(add_network).
+
+-spec remove_network(fifo:dataset_id(), {binary(), binary()}) ->
+                            ok | {error, no_servers}.
+?HS(remove_network).
 
 -spec nic_driver(fifo:dataset_id(), binary()) ->
                         ok | {error, no_servers}.
