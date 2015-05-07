@@ -9,6 +9,7 @@
          dry_run/3, create/3, delete/1, delete/2, store/1, store/2,
          register/2, unregister/1,
          state/2,
+         creating/2,
          update/3, update/4,
          add_nic/2, remove_nic/2, primary_nic/2,
          set_config/2,
@@ -301,6 +302,18 @@ primary_nic(VM, Mac) when
 state(VM, State) when
       is_binary(VM) ->
     send({vm, state, VM, State}).
+
+%%--------------------------------------------------------------------
+%% @doc Sets the state of a VM.
+%% @end
+%%--------------------------------------------------------------------
+-spec creating(VM::fifo:vm_id(),
+               Creating::false | {atom(), tuple()}) ->
+                      ok | not_found |
+                      {'error','no_servers'}.
+creating(VM, Creating) when Creating == false,
+                         is_tuple(Creating) ->
+    send({vm, creating, VM, Creating}).
 
 %%--------------------------------------------------------------------
 %% @doc Sets a service attribute on the VM object in the database
