@@ -311,7 +311,7 @@ state(VM, State) when
                Creating::false | {atom(), tuple()}) ->
                       ok | not_found |
                       {'error','no_servers'}.
-creating(VM, Creating) when Creating == false,
+creating(VM, Creating) when Creating == false;
                          is_tuple(Creating) ->
     send({vm, creating, VM, Creating}).
 
