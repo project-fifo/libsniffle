@@ -67,7 +67,12 @@ create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
 create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
       is_binary(Tag),
-      is_integer(Vlan), Vlan >= 0->
+      is_integer(Vlan), Vlan >= 0,
+      is_binary(Network),
+      is_binary(Gateway),
+      is_binary(Netmask),
+      is_binary(First),
+      is_binary(Last) ->
     create(Iprange,
            ip_to_int(Network),
            ip_to_int(Gateway),
