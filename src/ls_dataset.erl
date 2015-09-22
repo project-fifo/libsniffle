@@ -145,7 +145,7 @@ list(Reqs, Full) ->
                             ok | {error, no_servers}.
 ?HS(remove_network).
 
--spec add_requirement(fifo:dataset_id(), {binary(), binary()}) ->
+-spec add_requirement(fifo:dataset_id(), fifo:matcher()) ->
                     ok | {error, no_servers}.
 ?HS(add_requirement).
 
