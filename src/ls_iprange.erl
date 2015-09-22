@@ -133,7 +133,8 @@ release(Iprange, Ip) when
                    {ok, {Tag::binary(),
                          IP::pos_integer(),
                          Netmask::pos_integer(),
-                         Gateway::pos_integer()}} |
+                         Gateway::pos_integer(),
+                         VLan::non_neg_integer()}} |
                    {error, failed} |
                    {'error','no_servers'}.
 claim(Iprange) ->
