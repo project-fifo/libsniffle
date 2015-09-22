@@ -192,10 +192,11 @@ reboot(VM, [force]) when
 %%   was successful calls a unregister.
 %% @end
 %%--------------------------------------------------------------------
--spec delete(User::fifo:user_id() | undefined,
+-spec delete(User::fifo:vm_id() | undefined,
              VM::fifo:vm_id()) ->
                     ok | not_found |
-                    {'error','no_servers'}.
+                    {error, creating} |
+                    {error, no_servers}.
 
 delete(User, VM) when
       is_binary(VM) ->
@@ -204,7 +205,7 @@ delete(User, VM) when
 delete(VM) ->
     delete(undefined, VM).
 
--spec store(User::fifo:user_id() | undefined,
+-spec store(User::fifo:vm_id() | undefined,
             VM::fifo:vm_id()) ->
                    ok | not_found |
                    {'error','no_servers'}.
@@ -560,9 +561,11 @@ list(Reqs, Full) ->
 
 -spec send(MSG::fifo:sniffle_vm_message()) ->
                   ok |
+                  not_found |
                   atom() |
                   {ok, Reply::term()} |
-                  {error, no_servers}.
+                  {error, no_server} |
+                  {error, Reason::term()}.
 send(Msg) ->
     send(mdns, Msg).
 send(Sniffle, Msg) ->
