@@ -22,7 +22,9 @@
          uuid/2,
          zfs_io_priority/2,
          remove_requirement/2,
-         add_requirement/2
+         add_requirement/2,
+         org_resource_dec/3,
+         org_resource_inc/3
         ]).
 
 -define(UUID, <<UUID:36/binary>>).
@@ -88,9 +90,34 @@ list() ->
 list(Reqs, Full) ->
     send({package, list, Reqs, Full}).
 
+%%--------------------------------------------------------------------
+%% @doc Increases the required resources for the creating org.
+%% @end
+%%--------------------------------------------------------------------
+-spec org_resource_inc(fifo:packge_id(), binary(), integer()) ->
+                              ok |
+                              {'error','no_servers'}.
+
+org_resource_inc(Package, Resource, V) when
+      is_binary(Package), is_binary(Resource), is_integer(V) ->
+    send({package, resources, org, inc, Package, Resource, V}).
+
+%%--------------------------------------------------------------------
+%% @doc Decreases the required resources for the creating org.
+%% @end
+%%--------------------------------------------------------------------
+
+-spec org_resource_dec(fifo:packge_id(), binary(), integer()) ->
+                              ok |
+                              {'error','no_servers'}.
+org_resource_dec(Package, Resource, V) when
+      is_binary(Package), is_binary(Resource), is_integer(V) ->
+    send({package, resources, org, inc, Package, Resource, V}).
+
 -define(HS(F),
         F(DTRace, Val) ->
                send({package, F, DTRace, Val})).
+
 
 ?HS(set_metadata).
 ?HS(blocksize).
