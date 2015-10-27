@@ -112,7 +112,7 @@ org_resource_inc(Package, Resource, V) when
                               {'error','no_servers'}.
 org_resource_dec(Package, Resource, V) when
       is_binary(Package), is_binary(Resource), is_integer(V) ->
-    send({package, resources, org, inc, Package, Resource, V}).
+    send({package, resources, org, dec, Package, Resource, V}).
 
 -define(HS(F),
         F(DTRace, Val) ->
