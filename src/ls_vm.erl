@@ -5,7 +5,7 @@
 -endif.
 
 -export([
-         get/1,
+         get/1, get_docker/1,
          dry_run/3, create/3, delete/1, delete/2, store/1, store/2,
          register/2, unregister/1,
          state/2,
@@ -63,7 +63,7 @@ remove_fw_rule(UUID, Rule) ->
 %%   UUID progress is directy written to the object in the database.
 %% @end
 %%--------------------------------------------------------------------
--spec create(PackageID::fifo:package_id(), DatasetID::fifo:package_id(),
+-spec create(PackageID::fifo:package_id(), DatasetID::fifo:package_id() | {docker, binary()},
              Config::fifo:attr_list()) ->
                     {error, no_servers} |
                     {ok, UUID::binary()}.
@@ -119,6 +119,18 @@ unregister(VM) when
 get(VM) when
       is_binary(VM) ->
     send({vm, get, VM}).
+
+%%--------------------------------------------------------------------
+%% @doc Reads the VM attribute from the database.
+%% @end
+%%--------------------------------------------------------------------
+-spec get_docker(VM::binary()) ->
+                 not_found |
+                 {ok, fifo:vm()} |
+                 {'error','no_servers'}.
+get_docker(VM) when
+      is_binary(VM) ->
+    send({vm, get, docker, VM}).
 
 %%--------------------------------------------------------------------
 %% @doc Starts a VM on the hypervisor.
