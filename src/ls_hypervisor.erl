@@ -42,7 +42,7 @@
                Host::binary(),
                Port::inet:port_number()) ->
                       ok |
-                      {'error','no_servers'}.
+                      {'error', 'no_servers'}.
 register(Hypervisor, Host, Port) when
       is_binary(Hypervisor),
       is_integer(Port),
@@ -55,7 +55,7 @@ register(Hypervisor, Host, Port) when
 %%--------------------------------------------------------------------
 -spec unregister(Hypervisor::binary()) ->
                         ok | not_found |
-                        {'error','no_servers'}.
+                        {'error', 'no_servers'}.
 unregister(Hypervisor) ->
     send({hypervisor, unregister, Hypervisor}).
 
@@ -69,7 +69,7 @@ unregister(Hypervisor) ->
         Action::enable|disable|clear|refresh|restart,
         Service::binary()) ->
                             ok | not_found |
-                            {'error','no_servers'}.
+                            {'error', 'no_servers'}.
 service_action(Hypervisor, Action, Service) when
       Action =:= enable;
       Action =:= refresh;
@@ -86,7 +86,7 @@ service_action(Hypervisor, Action, Service) when
 -spec get(Hypervisor::binary()) ->
                  not_found |
                  {ok, fifo:hypervisor()} |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 get(Hypervisor) ->
     send({hypervisor, get, Hypervisor}).
 
@@ -95,7 +95,7 @@ get(Hypervisor) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list() -> {ok, [binary()]} |
-                {'error','no_servers'}.
+                {'error', 'no_servers'}.
 list() ->
     send({hypervisor, list}).
 
@@ -107,7 +107,7 @@ list() ->
 -spec list(Requirements::[fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), ID::fifo:hypervisor_id()}]} |
                   {ok, [{Ranking::integer(), ID::fifo:hypervisor()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Requirements, Full) ->
     send({hypervisor, list, Requirements, Full}).
 

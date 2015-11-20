@@ -101,21 +101,12 @@ handle_call({send, mdns, Msg}, _From, #state{zmq_worker = Pid} = State) ->
     {reply, Reply, State};
 
 handle_call({send, {IP, Port}, Msg}, _From, State) ->
-    case gen_tcp:connect(IP, Port, [binary, {active,false}, {packet,4}], 100) of
+    Opts = [binary, {active, false}, {packet, 4}],
+    case gen_tcp:connect(IP, Port, Opts, 100) of
         {ok, Socket} ->
             R = case gen_tcp:send(Socket, term_to_binary(Msg)) of
                     ok ->
-                        case gen_tcp:recv(Socket, 0) of
-                            {ok, Repl} ->
-                                case binary_to_term(Repl) of
-                                    {reply, Reply} ->
-                                        Reply;
-                                    _ ->
-                                        {error, reply}
-                                end;
-                            _ ->
-                                {error, recv}
-                        end;
+                        recv(Socket);
                     _ ->
                         {error, send}
                 end,
@@ -129,6 +120,20 @@ handle_call({send, {IP, Port}, Msg}, _From, State) ->
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
+
+
+recv(Socket) ->
+    case gen_tcp:recv(Socket, 0) of
+        {ok, Repl} ->
+            case binary_to_term(Repl) of
+                {reply, Reply} ->
+                    Reply;
+                _ ->
+                    {error, reply}
+            end;
+        _ ->
+            {error, recv}
+    end.
 
 %%--------------------------------------------------------------------
 %% @private

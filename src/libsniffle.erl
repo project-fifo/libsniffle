@@ -27,7 +27,7 @@ start() ->
 %%--------------------------------------------------------------------
 -spec servers() -> [{{string(),
                       [{atom(), binary()}]},
-                     string(),integer()}].
+                     string(), integer()}].
 servers() ->
     libsniffle_server:servers().
 
@@ -48,10 +48,10 @@ version() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec s3(Type :: atom()) -> binary() |
-                  {ok,{S3Host :: binary(), S3Port :: integer(),
-                       AKey :: binary(), SKey :: binary(),
-                       Bucket :: binary()}} |
-                  {error, no_servers}.
+                            {ok, {S3Host :: binary(), S3Port :: integer(),
+                                  AKey :: binary(), SKey :: binary(),
+                                  Bucket :: binary()}} |
+                            {error, no_servers}.
 
 s3(Type) when is_atom(Type) ->
     send({s3, Type}).
@@ -62,7 +62,7 @@ s3(Type) when is_atom(Type) ->
 %% @doc Reads the overall cloud status.
 %% @end
 %%--------------------------------------------------------------------
--spec cloud_status() -> {'error','no_servers'} |
+-spec cloud_status() -> {'error', 'no_servers'} |
                         {ok, {Resources::fifo:object(),
                               Warnings::fifo:object()}}.
 cloud_status() ->

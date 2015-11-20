@@ -29,7 +29,7 @@
           Type::atom()) ->
                  {ok, UUID::fifo:grouping_id()} |
                  duplicate |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 add(Name, cluster) when
       is_binary(Name)->
     send({grouping, add, Name, cluster});
@@ -46,7 +46,7 @@ add(Name, stack) when
 %%--------------------------------------------------------------------
 -spec delete(UUID::fifo:grouping_id()) ->
                     ok |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 delete(ID) when
       is_binary(ID)->
     send({grouping, delete, ID}).
@@ -58,7 +58,7 @@ delete(ID) when
 -spec get(UUID::fifo:grouping_id()) ->
                  {ok, Data::fifo:grouping()} |
                  not_found |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 get(ID) when
       is_binary(ID)->
     send({grouping, get, ID}).
@@ -69,7 +69,7 @@ get(ID) when
 %%--------------------------------------------------------------------
 -spec list() ->
                   {ok, [UUID::fifo:grouping_id()]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list()->
     send({grouping, list}).
 
@@ -81,18 +81,18 @@ list()->
 -spec list([Requirement::fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), ID::fifo:grouping_id()}]} |
                   {ok, [{Ranking::integer(), ID::fifo:grouping()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Requirements, Full)->
     send({grouping, list, Requirements, Full}).
 
 %%--------------------------------------------------------------------
-%% @doc Sets the metadat for a grouping. 
+%% @doc Sets the metadat for a grouping.
 %% @end
 %%--------------------------------------------------------------------
 -spec set_metadata(Grouping::fifo:grouping_id(),
                    Attributes::fifo:attr_list()) ->
                           ok | not_found |
-                          {'error','no_servers'}.
+                          {'error', 'no_servers'}.
 set_metadata(Grouping, Attributes) when
       is_binary(Grouping) ->
     send({grouping, metadata, set, Grouping, Attributes}).
@@ -103,9 +103,9 @@ set_metadata(Grouping, Attributes) when
 %% @end
 %%--------------------------------------------------------------------
 -spec set_config(Grouping::fifo:grouping_id(),
-                   Attributes::fifo:attr_list()) ->
-                          ok | not_found |
-                          {'error','no_servers'}.
+                 Attributes::fifo:attr_list()) ->
+                        ok | not_found |
+                        {'error', 'no_servers'}.
 set_config(Grouping, Attributes) when
       is_binary(Grouping) ->
     send({grouping, config, set, Grouping, Attributes}).
@@ -121,7 +121,7 @@ add_element(Grouping, Element)
     send({grouping, element, add, Grouping, Element}).
 
 -spec remove_element(fifo:grouping_id(), fifo:vm_id()) ->
-                         ok | not_found | {error, r_servers}.
+                            ok | not_found | {error, r_servers}.
 remove_element(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, element, remove, Grouping, Element}).
@@ -131,13 +131,13 @@ remove_element(Grouping, Element)
 %%   can only be groupings.
 %%--------------------------------------------------------------------
 -spec add_grouping(fifo:grouping_id(), fifo:vm_id()) ->
-                         ok | not_found | {error, r_servers}.
+                          ok | not_found | {error, r_servers}.
 add_grouping(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, grouping, add, Grouping, Element}).
 
 -spec remove_grouping(fifo:grouping_id(), fifo:grouping_id()) ->
-                         ok | not_found | {error, r_servers}.
+                             ok | not_found | {error, r_servers}.
 remove_grouping(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, grouping, remove, Grouping, Element}).

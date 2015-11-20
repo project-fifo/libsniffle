@@ -42,7 +42,7 @@
 %%--------------------------------------------------------------------
 -spec create(Dataset::binary()) ->
                     ok | duplicate |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 create(Dataset) ->
     send({dataset, create, Dataset}).
 
@@ -53,7 +53,7 @@ create(Dataset) ->
 -spec import(URL::binary()) ->
                     {ok, UUID::fifo:dataset_id()} |
                     {error, Reason::term()} |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 import(URL) ->
     send({dataset, import, URL}).
 
@@ -64,7 +64,7 @@ import(URL) ->
 %%--------------------------------------------------------------------
 -spec delete(Dataset::binary()) ->
                     ok | not_found |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 delete(Dataset) ->
     send({dataset, delete, Dataset}).
 
@@ -73,7 +73,7 @@ delete(Dataset) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec get(Dataset::binary()) ->
-                 {'error','no_servers'} |
+                 {'error', 'no_servers'} |
                  not_found |
                  {ok, fifo:dataset()}.
 get(Dataset) ->
@@ -85,7 +85,7 @@ get(Dataset) ->
 %%--------------------------------------------------------------------
 -spec list() ->
                   {ok, Datasets::[fifo:dataset_id()]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list() ->
     send({dataset, list}).
 
@@ -95,9 +95,10 @@ list() ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list(Reqs::term(), boolean()) ->
-                  {ok, Datasets::[{Ranking::integer(), ID::fifo:dataset_id()}]} |
+                  {ok, Datasets::[{Ranking::integer(),
+                                   ID::fifo:dataset_id()}]} |
                   {ok, Datasets::[{Ranking::integer(), Dset::fifo:dataset()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Reqs, Full) ->
     send({dataset, list, Reqs, Full}).
 
@@ -138,7 +139,7 @@ list(Reqs, Full) ->
 ?HS(name).
 
 -spec add_network(fifo:dataset_id(), {binary(), binary()}) ->
-                    ok | {error, no_servers}.
+                         ok | {error, no_servers}.
 ?HS(add_network).
 
 -spec remove_network(fifo:dataset_id(), {binary(), binary()}) ->
@@ -146,11 +147,11 @@ list(Reqs, Full) ->
 ?HS(remove_network).
 
 -spec add_requirement(fifo:dataset_id(), fifo:matcher()) ->
-                    ok | {error, no_servers}.
+                             ok | {error, no_servers}.
 ?HS(add_requirement).
 
 -spec remove_requirement(fifo:dataset_id(), {binary(), binary()}) ->
-                            ok | {error, no_servers}.
+                                ok | {error, no_servers}.
 ?HS(remove_requirement).
 
 -spec nic_driver(fifo:dataset_id(), binary()) ->
@@ -162,23 +163,23 @@ list(Reqs, Full) ->
 ?HS(os).
 
 -spec type(fifo:dataset_id(), zone | kvm) ->
-                    ok | {error, no_servers}.
+                  ok | {error, no_servers}.
 ?HS(type).
 
 -spec zone_type(fifo:dataset_id(), lx | ipkg | lipkg) ->
-                    ok | {error, no_servers}.
+                       ok | {error, no_servers}.
 ?HS(zone_type).
 
 -spec users(fifo:dataset_id(), list()) ->
-                    ok | {error, no_servers}.
+                   ok | {error, no_servers}.
 ?HS(users).
 
 -spec version(fifo:dataset_id(), binary()) ->
-                    ok | {error, no_servers}.
+                     ok | {error, no_servers}.
 ?HS(version).
 
 -spec kernel_version(fifo:dataset_id(), binary()) ->
-                    ok | {error, no_servers}.
+                            ok | {error, no_servers}.
 ?HS(kernel_version).
 
 -spec set_metadata(fifo:dataset_id(), fifo:attr_list()) ->

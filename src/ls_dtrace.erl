@@ -33,7 +33,7 @@
           Script::string()) ->
                  {ok, UUID::fifo:dtrace_id()} |
                  duplicate |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 add(Name, Script) when
       is_binary(Name),
       is_list(Script)->
@@ -45,7 +45,7 @@ add(Name, Script) when
 %%--------------------------------------------------------------------
 -spec delete(UUID::fifo:uuid()) ->
                     ok |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 delete(ID) when
       is_binary(ID)->
     send({dtrace, delete, ID}).
@@ -57,7 +57,7 @@ delete(ID) when
 -spec get(UUID::fifo:uuid()) ->
                  not_found |
                  {ok, Data::fifo:dtrace()} |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 get(ID) when
       is_binary(ID)->
     send({dtrace, get, ID}).
@@ -68,7 +68,7 @@ get(ID) when
 %%--------------------------------------------------------------------
 -spec list() ->
                   {ok, [UUID::fifo:dtrace_id()]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list()->
     send({dtrace, list}).
 
@@ -80,7 +80,7 @@ list()->
 -spec list([Requirement::fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), ID::fifo:dtrace_id()}]} |
                   {ok, [{Ranking::integer(), Dtrace::fifo:dtrace()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Requirements, Full)->
     send({dtrace, list, Requirements, Full}).
 
@@ -95,7 +95,7 @@ list(Requirements, Full)->
           Servers::[fifo:hypervisor()]) ->
                  {ok, Socket::port()} |
                  not_found |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 
 run(ID, Servers) when
       is_binary(ID)->
@@ -103,9 +103,11 @@ run(ID, Servers) when
         {error, no_server} ->
             {error, no_server};
         {ok, Server, Port} ->
-            case gen_tcp:connect(Server, Port, [binary, {active, true}, {packet, 4}], 100) of
+            Opts = [binary, {active, true}, {packet, 4}],
+            case gen_tcp:connect(Server, Port, Opts, 100) of
                 {ok, Socket} ->
-                    ok = gen_tcp:send(Socket, term_to_binary({dtrace, run, ID, Servers})),
+                    Bin = term_to_binary({dtrace, run, ID, Servers}),
+                    ok = gen_tcp:send(Socket, Bin),
                     {ok, Socket};
                 E ->
                     E
@@ -117,24 +119,24 @@ run(ID, Servers) when
                send({dtrace, F, DTRace, Val})).
 
 -spec uuid(fifo:dtrace_id(), binary()) ->
-                  ok | {'error','no_servers'}.
+                  ok | {'error', 'no_servers'}.
 ?HS(uuid).
 
 -spec name(fifo:dtrace_id(), binary()) ->
-                  ok | {'error','no_servers'}.
+                  ok | {'error', 'no_servers'}.
 ?HS(name).
 
 
 -spec script(fifo:dtrace_id(), string()) ->
-                    ok | {'error','no_servers'}.
+                    ok | {'error', 'no_servers'}.
 ?HS(script).
 
 -spec set_metadata(fifo:dtrace_id(), fifo:attr_list()) ->
-                          ok | {'error','no_servers'}.
+                          ok | {'error', 'no_servers'}.
 ?HS(set_metadata).
 
 -spec set_config(fifo:dtrace_id(), fifo:attr_list()) ->
-                        ok | {'error','no_servers'}.
+                        ok | {'error', 'no_servers'}.
 ?HS(set_config).
 
 %%%===================================================================

@@ -38,9 +38,9 @@
 %% @end
 %%--------------------------------------------------------------------
 -spec create(Name::binary()) ->
-                            {ok, UUID::fifo:package_id()} |
-                            duplicate |
-                            {'error','no_servers'}.
+                    {ok, UUID::fifo:package_id()} |
+                    duplicate |
+                    {'error', 'no_servers'}.
 create(Name) when
       is_binary(Name) ->
     send({package, create, Name}).
@@ -50,8 +50,8 @@ create(Name) when
 %% @end
 %%--------------------------------------------------------------------
 -spec delete(Package::fifo:uuid()) ->
-                            ok | not_found |
-                            {'error','no_servers'}.
+                    ok | not_found |
+                    {'error', 'no_servers'}.
 delete(Package) when
       is_binary(Package) ->
     send({package, delete, Package}).
@@ -61,9 +61,9 @@ delete(Package) when
 %% @end
 %%--------------------------------------------------------------------
 -spec get(Package::binary()) ->
-                         not_found |
-                         {ok, Package::fifo:package()} |
-                         {'error','no_servers'}.
+                 not_found |
+                 {ok, Package::fifo:package()} |
+                 {'error', 'no_servers'}.
 get(Package) when
       is_binary(Package) ->
     send({package, get, Package}).
@@ -74,7 +74,7 @@ get(Package) when
 %%--------------------------------------------------------------------
 -spec list() ->
                   {ok, Packages::[fifo:package_id()]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list() ->
     send({package, list}).
 
@@ -86,7 +86,7 @@ list() ->
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), ID::fifo:package_id()}]} |
                   {ok, [{Ranking::integer(), ID::fifo:package()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Reqs, Full) ->
     send({package, list, Reqs, Full}).
 
@@ -96,7 +96,7 @@ list(Reqs, Full) ->
 %%--------------------------------------------------------------------
 -spec org_resource_inc(fifo:packge_id(), binary(), integer()) ->
                               ok |
-                              {'error','no_servers'}.
+                              {'error', 'no_servers'}.
 
 org_resource_inc(Package, Resource, V) when
       is_binary(Package), is_binary(Resource), is_integer(V) ->
@@ -109,7 +109,7 @@ org_resource_inc(Package, Resource, V) when
 
 -spec org_resource_dec(fifo:packge_id(), binary(), integer()) ->
                               ok |
-                              {'error','no_servers'}.
+                              {'error', 'no_servers'}.
 org_resource_dec(Package, Resource, V) when
       is_binary(Package), is_binary(Resource), is_integer(V) ->
     send({package, resources, org, dec, Package, Resource, V}).

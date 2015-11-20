@@ -48,7 +48,7 @@
              Vlan::pos_integer()) ->
                     {ok, UUID::fifo:iprange_id()} |
                     duplicate |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 
 create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
       is_binary(Iprange),
@@ -88,7 +88,7 @@ create(Iprange, Network, Gateway, Netmask, First, Last, Tag, Vlan) when
 %%--------------------------------------------------------------------
 -spec delete(Iprange::binary()) ->
                     ok | not_found |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 
 delete(Iprange) ->
     send({iprange, delete, Iprange}).
@@ -100,7 +100,7 @@ delete(Iprange) ->
 -spec get(Iprange::binary()) ->
                  not_found |
                  {ok, fifo:iprange()} |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 
 get(Iprange) ->
     send({iprange, get, Iprange}).
@@ -112,7 +112,7 @@ get(Iprange) ->
 -spec release(Iprange::fifo:iprange_id(),
               Ip::integer()) ->
                      ok | not_found |
-                     {'error','no_servers'}.
+                     {'error', 'no_servers'}.
 
 release(Iprange, Ip) when
       is_binary(Iprange),
@@ -136,7 +136,7 @@ release(Iprange, Ip) when
                          Gateway::pos_integer(),
                          VLan::non_neg_integer()}} |
                    {error, failed} |
-                   {'error','no_servers'}.
+                   {'error', 'no_servers'}.
 claim(Iprange) ->
     send({iprange, claim, Iprange}).
 
@@ -148,7 +148,7 @@ claim(Iprange) ->
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), ID::fifo:iprange_id()}]} |
                   {ok, [{Ranking::integer(), ID::fifo:iprange()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Reqs, Full) ->
     list(mdns, Reqs, Full).
 

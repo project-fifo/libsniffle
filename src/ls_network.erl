@@ -27,7 +27,7 @@
 -spec create(Name::binary()) ->
                     {ok, UUID::fifo:network_id()} |
                     duplicate |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 create(Name) ->
     create(mdns, Name).
 
@@ -41,7 +41,7 @@ create(Sniffle, Name) when
 %%--------------------------------------------------------------------
 -spec delete(Network::fifo:network_id()) ->
                     ok | not_found |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 delete(Network) when
       is_binary(Network) ->
     delete(mdns, Network).
@@ -57,7 +57,7 @@ delete(Sniffle, Network) when
 -spec get(Network::fifo:network_id()) ->
                  not_found |
                  {ok, Network::fifo:network()} |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 get(Network) when
       is_binary(Network) ->
     send({network, get, Network}).
@@ -69,7 +69,7 @@ get(Network) when
 -spec add_iprange(Network::fifo:network_id(), IPrange::fifo:iprange_id()) ->
                          not_found |
                          ok |
-                         {'error','no_servers'}.
+                         {'error', 'no_servers'}.
 add_iprange(Network, IPRange) ->
     add_iprange(mdns, Network, IPRange).
 
@@ -85,7 +85,7 @@ add_iprange(Sniffle, Network, IPRange) when
 -spec remove_iprange(Network::fifo:network_id(), IPrange::fifo:iprange_id()) ->
                             not_found |
                             ok |
-                            {'error','no_servers'}.
+                            {'error', 'no_servers'}.
 remove_iprange(Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
@@ -99,7 +99,7 @@ remove_iprange(Network, IPRange) when
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), fifo:network_id()}]} |
                   {ok, [{Ranking::integer(), fifo:network()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Reqs, Full) ->
     list(mdns, Reqs, Full).
 

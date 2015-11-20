@@ -44,7 +44,7 @@
 %%--------------------------------------------------------------------
 -spec add_fw_rule(VM::fifo:vm_id(), Hypervisor::fifo:fw_rule()) ->
                          ok |
-                         {'error','no_servers'}.
+                         {'error', 'no_servers'}.
 add_fw_rule(UUID, Rule) ->
     send({vm, fw, add, UUID, Rule}).
 
@@ -54,7 +54,7 @@ add_fw_rule(UUID, Rule) ->
 %%--------------------------------------------------------------------
 -spec remove_fw_rule(VM::fifo:vm_id(), Hypervisor::fifo:fw_rule()) ->
                             ok |
-                            {'error','no_servers'}.
+                            {'error', 'no_servers'}.
 remove_fw_rule(UUID, Rule) ->
     send({vm, fw, remove, UUID, Rule}).
 
@@ -63,7 +63,8 @@ remove_fw_rule(UUID, Rule) ->
 %%   UUID progress is directy written to the object in the database.
 %% @end
 %%--------------------------------------------------------------------
--spec create(PackageID::fifo:package_id(), DatasetID::fifo:package_id() | {docker, binary()},
+-spec create(PackageID::fifo:package_id(),
+             DatasetID::fifo:package_id() |{docker, binary()},
              Config::fifo:attr_list()) ->
                     {error, no_servers} |
                     {ok, UUID::binary()}.
@@ -76,7 +77,8 @@ create(PackageID, DatasetID, Config) ->
 %%   UUID progress is directy written to the object in the database.
 %% @end
 %%--------------------------------------------------------------------
--spec dry_run(PackageID::binary(), DatasetID::binary(), Config::[{Key::binary(), Value::term()}]) ->
+-spec dry_run(PackageID::binary(), DatasetID::binary(),
+              Config::[{Key::binary(), Value::term()}]) ->
                      {error, no_servers} |
                      {ok, success|failed}.
 
@@ -89,7 +91,7 @@ dry_run(PackageID, DatasetID, Config) ->
 %%--------------------------------------------------------------------
 -spec register(VM::fifo:vm_id(), Hypervisor::fifo:hypervisor_id()) ->
                       ok |
-                      {'error','no_servers'}.
+                      {'error', 'no_servers'}.
 register(VM, Hypervisor) when
       is_binary(VM),
       is_binary(Hypervisor) ->
@@ -103,7 +105,7 @@ register(VM, Hypervisor) when
 -spec unregister(VM::fifo:vm_id()) ->
                         ok |
                         not_found |
-                        {'error','no_servers'}.
+                        {'error', 'no_servers'}.
 unregister(VM) when
       is_binary(VM) ->
     send({vm, unregister, VM}).
@@ -115,7 +117,7 @@ unregister(VM) when
 -spec get(VM::fifo:vm_id()) ->
                  not_found |
                  {ok, fifo:vm()} |
-                 {'error','no_servers'}.
+                 {'error', 'no_servers'}.
 get(VM) when
       is_binary(VM) ->
     send({vm, get, VM}).
@@ -125,9 +127,9 @@ get(VM) when
 %% @end
 %%--------------------------------------------------------------------
 -spec get_docker(VM::binary()) ->
-                 not_found |
-                 {ok, fifo:vm()} |
-                 {'error','no_servers'}.
+                        not_found |
+                        {ok, fifo:vm()} |
+                        {'error', 'no_servers'}.
 get_docker(VM) when
       is_binary(VM) ->
     send({vm, get, docker, VM}).
@@ -138,7 +140,10 @@ get_docker(VM) when
 %%--------------------------------------------------------------------
 -spec start(VM::fifo:vm_id()) ->
                    ok | not_found |
-                   {'error','no_servers'}.
+                   {error, creating} |
+                   {error, not_deployed} |
+                   {'error', 'no_servers'}.
+
 start(VM) when
       is_binary(VM) ->
     send({vm, start, VM}).
@@ -149,7 +154,7 @@ start(VM) when
 %%--------------------------------------------------------------------
 -spec stop(VM::fifo:vm_id()) ->
                   ok | not_found |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 stop(VM) when is_binary(VM) ->
     stop(VM, []).
 
@@ -161,7 +166,7 @@ stop(VM) when is_binary(VM) ->
 -spec stop(VM::fifo:vm_id(),
            Options::[atom() | {atom(), term()}]) ->
                   ok | not_found |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 stop(VM, []) when
       is_binary(VM)->
     send({vm, stop, VM});
@@ -176,7 +181,7 @@ stop(VM, [force]) when
 %%--------------------------------------------------------------------
 -spec reboot(VM::fifo:vm_id()) ->
                     ok | not_found |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 reboot(VM) when
       is_binary(VM) ->
     reboot(VM, []).
@@ -189,7 +194,7 @@ reboot(VM) when
 -spec reboot(VM::fifo:vm_id(),
              Options::[atom() | {atom(), term()}]) ->
                     ok | not_found |
-                    {'error','no_servers'}.
+                    {'error', 'no_servers'}.
 reboot(VM, []) when
       is_binary(VM) ->
     send({vm, reboot, VM});
@@ -220,7 +225,7 @@ delete(VM) ->
 -spec store(User::fifo:vm_id() | undefined,
             VM::fifo:vm_id()) ->
                    ok | not_found |
-                   {'error','no_servers'}.
+                   {'error', 'no_servers'}.
 store(User, VM) when
       is_binary(VM) ->
     send({vm, store, User, VM}).
@@ -235,7 +240,7 @@ store(VM) ->
 -spec owner(User::fifo:user_id() | undefined,
             VM::fifo:vm_id(), Owner::fifo:uuid()) ->
                    ok | not_found |
-                   {'error','no_servers'}.
+                   {'error', 'no_servers'}.
 owner(User, VM, Owner) ->
     send({vm, owner, User, VM, Owner}).
 
@@ -250,7 +255,7 @@ owner(VM, Owner) ->
 -spec update(User::fifo:user_id() | undefined, VM::fifo:vm_id(),
              Package::binary() | undefined,
              Config::fifo:attr_list()) -> ok | not_found |
-                                          {'error','no_servers'}.
+                                          {'error', 'no_servers'}.
 update(User, VM, Package, Config) when
       is_binary(VM),
       is_list(Config) ->
@@ -265,7 +270,7 @@ update(VM, Package, Config) ->
 %%--------------------------------------------------------------------
 -spec add_nic(VM::fifo:vm_id(),
               Network::fifo:network_id()) -> ok | not_found |
-                                             {'error','no_servers'|
+                                             {'error', 'no_servers'|
                                               'update_failed'|
                                               'claim_failed'|
                                               'not_stopped'|_Reason}.
@@ -280,7 +285,7 @@ add_nic(VM, IPRange) when
 %%--------------------------------------------------------------------
 -spec remove_nic(VM::fifo:vm_id(),
                  Mac::binary()) -> ok | not_found |
-                                   {'error','no_servers'|
+                                   {'error', 'no_servers'|
                                     'update_failed'|
                                     'not_found'|
                                     'not_stopped'|_Reason}.
@@ -295,7 +300,7 @@ remove_nic(VM, Mac) when
 %%--------------------------------------------------------------------
 -spec primary_nic(VM::fifo:vm_id(),
                   Mac::binary()) -> ok | not_found |
-                                    {'error','no_servers'|
+                                    {'error', 'no_servers'|
                                      'update_failed'|
                                      'not_found'|
                                      'not_stopped'|_Reason}.
@@ -311,7 +316,7 @@ primary_nic(VM, Mac) when
 -spec state(VM::fifo:vm_id(),
             State::binary()) ->
                    ok | not_found |
-                   {'error','no_servers'}.
+                   {'error', 'no_servers'}.
 state(VM, State) when
       is_binary(VM) ->
     send({vm, state, VM, State}).
@@ -323,9 +328,9 @@ state(VM, State) when
 -spec creating(VM::fifo:vm_id(),
                Creating::false | {atom(), tuple()}) ->
                       ok | not_found |
-                      {'error','no_servers'}.
+                      {'error', 'no_servers'}.
 creating(VM, Creating) when Creating == false;
-                         is_tuple(Creating) ->
+                            is_tuple(Creating) ->
     send({vm, creating, VM, Creating}).
 
 %%--------------------------------------------------------------------
@@ -336,7 +341,7 @@ creating(VM, Creating) when Creating == false;
                   [{Attribute::fifo:keys(),
                     Value::fifo:value() | delete}]) ->
                          ok | not_found |
-                         {'error','no_servers'}.
+                         {'error', 'no_servers'}.
 set_service(VM, AVs) when
       is_binary(VM) ->
     send({vm, set_service, VM, AVs}).
@@ -349,7 +354,7 @@ set_service(VM, AVs) when
                  [{Attribute::fifo:keys(),
                    Value::fifo:value() | delete}]) ->
                         ok | not_found |
-                        {'error','no_servers'}.
+                        {'error', 'no_servers'}.
 set_backup(VM, AVs) when
       is_binary(VM) ->
     send({vm, set_backup, VM, AVs}).
@@ -362,7 +367,7 @@ set_backup(VM, AVs) when
                    [{Attribute::fifo:keys(),
                      Value::fifo:value() | delete}]) ->
                           ok | not_found |
-                          {'error','no_servers'}.
+                          {'error', 'no_servers'}.
 set_snapshot(VM, AVs) when
       is_binary(VM) ->
     send({vm, set_snapshot, VM, AVs}).
@@ -375,7 +380,7 @@ set_snapshot(VM, AVs) when
                    [{Attribute::fifo:keys(),
                      Value::fifo:value() | delete}]) ->
                           ok | not_found |
-                          {'error','no_servers'}.
+                          {'error', 'no_servers'}.
 set_metadata(VM, AVs) when
       is_binary(VM) ->
     send({vm, set_metadata, VM, AVs}).
@@ -388,7 +393,7 @@ set_metadata(VM, AVs) when
                  [{Attribute::fifo:keys(),
                    Value::fifo:value() | delete}]) ->
                         ok | not_found |
-                        {'error','no_servers'}.
+                        {'error', 'no_servers'}.
 set_config(VM, AVs) when
       is_binary(VM) ->
     send({vm, set_config, VM, AVs}).
@@ -401,7 +406,7 @@ set_config(VM, AVs) when
                [{Attribute::fifo:keys(),
                  Value::fifo:value() | delete}]) ->
                       ok | not_found |
-                      {'error','no_servers'}.
+                      {'error', 'no_servers'}.
 set_info(VM, AVs) when
       is_binary(VM) ->
     send({vm, set_info, VM, AVs}).
@@ -411,7 +416,7 @@ set_info(VM, AVs) when
 %% @end
 %%--------------------------------------------------------------------
 -spec log(Vm::fifo:uuid(), Log::binary()) -> ok |
-                                             {'error','no_servers'}.
+                                             {'error', 'no_servers'}.
 log(Vm, Log) ->
     send({vm, log, Vm, Log}).
 
@@ -494,7 +499,7 @@ service_refresh(Vm, Service) ->
 %%--------------------------------------------------------------------
 -spec snapshot(Vm::fifo:uuid(), Comment::binary()) ->
                       {ok, fifo:uuid()} |
-                      {'error','no_servers'}.
+                      {'error', 'no_servers'}.
 snapshot(Vm, Comment) ->
     send({vm, snapshot, Vm, Comment}).
 
@@ -505,7 +510,7 @@ snapshot(Vm, Comment) ->
 -spec delete_snapshot(Vm::fifo:uuid(),
                       UUID::binary()) ->
                              ok |
-                             {'error','no_servers'}.
+                             {'error', 'no_servers'}.
 delete_snapshot(Vm, UUID) ->
     send({vm, snapshot, delete, Vm, UUID}).
 
@@ -517,7 +522,7 @@ delete_snapshot(Vm, UUID) ->
 -spec rollback_snapshot(Vm::fifo:uuid(),
                         UUID::fifo:uuid()) ->
                                ok |
-                               {'error','no_servers'}.
+                               {'error', 'no_servers'}.
 rollback_snapshot(Vm, UUID) ->
     send({vm, snapshot, rollback, Vm, UUID}).
 
@@ -529,7 +534,7 @@ rollback_snapshot(Vm, UUID) ->
 -spec commit_snapshot_rollback(Vm::fifo:uuid(),
                                UUID::fifo:uuid()) ->
                                       ok |
-                                      {'error','no_servers'}.
+                                      {'error', 'no_servers'}.
 commit_snapshot_rollback(Vm, UUID) ->
     send({vm, snapshot, commit_rollback, Vm, UUID}).
 
@@ -542,7 +547,7 @@ commit_snapshot_rollback(Vm, UUID) ->
                        UUID::fifo:uuid(),
                        Config::fifo:object()) ->
                               {ok, UUID::fifo:dataset_id()} |
-                              {'error','no_servers'}.
+                              {'error', 'no_servers'}.
 
 promote_snapshot(Vm, UUID, Config) ->
     send({vm, snapshot, promote, Vm, UUID, Config}).
@@ -551,7 +556,7 @@ promote_snapshot(Vm, UUID, Config) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec list() -> {ok, [fifo:uuid()]} |
-                {'error','no_servers'}.
+                {'error', 'no_servers'}.
 list() ->
     send({vm, list}).
 
@@ -563,7 +568,7 @@ list() ->
 -spec list(Reqs::[fifo:matcher()], boolean()) ->
                   {ok, [{Ranking::integer(), fifo:vm_id()}]} |
                   {ok, [{Ranking::integer(), fifo:vm()}]} |
-                  {'error','no_servers'}.
+                  {'error', 'no_servers'}.
 list(Reqs, Full) ->
     send({vm, list, Reqs, Full}).
 
