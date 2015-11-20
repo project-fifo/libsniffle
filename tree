@@ -6,8 +6,8 @@
    │     ├─ libsnarlmatch─0.1.7
    │     ├─ riak_dt─2.1.1
    │     └─ uuid─0.4.7
-   ├─ lager─3.0.1
+   ├─ lager─3.0.2
    │  └─ goldrush─0.1.7
-   └─ mdns_client_lib─0.1.28
+   └─ mdns_client_lib─0.1.30
       ├─ mdns_client─0.1.7
       └─ pooler─1.4.0

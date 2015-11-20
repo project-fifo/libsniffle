@@ -1,6 +1,6 @@
 REBAR = rebar3
 
-.PHONY: all test
+.PHONY: all test tree
 
 all: compile
 
@@ -8,6 +8,3 @@ include fifo.mk
 
 clean:
 	$(REBAR) clean
-
-eunit:
-	$(REBAR) eunit
