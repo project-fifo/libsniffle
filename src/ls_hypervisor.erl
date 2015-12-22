@@ -25,6 +25,7 @@
          sysinfo/2,
          uuid/2,
          version/2,
+         last_seen/2,
          virtualisation/2
         ]).
 
@@ -129,6 +130,7 @@ list(Requirements, Full) ->
 ?HS(sysinfo).
 ?HS(uuid).
 ?HS(version).
+?HS(last_seen).
 ?HS(virtualisation).
 
 
