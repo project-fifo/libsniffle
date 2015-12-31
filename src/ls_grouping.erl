@@ -8,6 +8,7 @@
          set_config/2,
          list/2,
          list/0,
+         stream/3,
          add_element/2,
          remove_element/2,
          add_grouping/2,
@@ -141,6 +142,25 @@ add_grouping(Grouping, Element)
 remove_grouping(Grouping, Element)
   when is_binary(Grouping), is_binary(Element) ->
     send({grouping, grouping, remove, Grouping, Element}).
+
+%%--------------------------------------------------------------------
+%% @doc Streams the Grouping scripts in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
+                  {ok, [{Ranking::integer(), fifo:grouping_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:grouping()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({grouping, stream, Reqs}, StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
+
 
 %%%===================================================================
 %%% Internal Functions

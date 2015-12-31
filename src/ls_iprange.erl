@@ -11,7 +11,8 @@
          release/2,
          claim/1,
          list/2,
-         list/3
+         list/3,
+         stream/3
         ]).
 
 -export([
@@ -140,6 +141,20 @@ release(Iprange, Ip) when
 claim(Iprange) ->
     send({iprange, claim, Iprange}).
 
+
+-define(HS(F),
+        F(DTRace, Val) ->
+               send({iprange, F, DTRace, Val})).
+
+?HS(name).
+?HS(uuid).
+?HS(network).
+?HS(netmask).
+?HS(gateway).
+?HS(set_metadata).
+?HS(tag).
+?HS(vlan).
+
 %%--------------------------------------------------------------------
 %% @doc Lists all ip ranges known to the system filtered by
 %%   given matchers.
@@ -154,6 +169,24 @@ list(Reqs, Full) ->
 
 list(Sniffle, Reqs, Full) ->
     send(Sniffle, {iprange, list, Reqs, Full}).
+
+%%--------------------------------------------------------------------
+%% @doc Streams the IPRANGE's in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
+                  {ok, [{Ranking::integer(), fifo:iprange_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:iprange()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({iprange, stream, Reqs}, StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 %%%===================================================================
 %%% Utility functions
@@ -210,18 +243,6 @@ send(Sniffle, Msg) ->
             E
     end.
 
--define(HS(F),
-        F(DTRace, Val) ->
-               send({iprange, F, DTRace, Val})).
-
-?HS(name).
-?HS(uuid).
-?HS(network).
-?HS(netmask).
-?HS(gateway).
-?HS(set_metadata).
-?HS(tag).
-?HS(vlan).
 
 %%%===================================================================
 %%% Tests

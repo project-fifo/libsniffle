@@ -11,6 +11,7 @@
          get/1,
          list/0,
          list/2,
+         stream/3,
          set_resource/2,
          set_characteristic/2,
          set_metadata/2,
@@ -132,6 +133,25 @@ list(Requirements, Full) ->
 ?HS(version).
 ?HS(last_seen).
 ?HS(virtualisation).
+
+
+%%--------------------------------------------------------------------
+%% @doc Streams the HYPERVISOR's in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
+                  {ok, [{Ranking::integer(), fifo:hypervisor_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:hypervisor()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({hypervisor, stream, Reqs}, StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 
 %%%===================================================================

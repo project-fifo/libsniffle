@@ -6,7 +6,8 @@
          get/1,
          list/2,
          list/0,
-         run/2
+         run/2,
+         stream/3
         ]).
 
 -export([
@@ -83,6 +84,24 @@ list()->
                   {'error', 'no_servers'}.
 list(Requirements, Full)->
     send({dtrace, list, Requirements, Full}).
+
+%%--------------------------------------------------------------------
+%% @doc Streams the Dtrace scripts in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
+                  {ok, [{Ranking::integer(), fifo:dtrace_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:dtrace()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({dtrace, stream, Reqs}, StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 
 %%--------------------------------------------------------------------

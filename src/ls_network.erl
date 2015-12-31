@@ -12,6 +12,7 @@
          set_metadata/2,
          list/2,
          list/3,
+         stream/3,
          name/2,
          uuid/2
         ]).
@@ -105,6 +106,24 @@ list(Reqs, Full) ->
 
 list(Sniffle, Reqs, Full) ->
     send(Sniffle, {network, list, Reqs, Full}).
+
+%%--------------------------------------------------------------------
+%% @doc Streams the NETWORK's in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
+                  {ok, [{Ranking::integer(), fifo:network_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:network()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({network, stream, Reqs}, StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 -define(HS(F),
         F(DTRace, Val) ->

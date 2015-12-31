@@ -5,7 +5,8 @@
          delete/1,
          get/1,
          list/0,
-         list/2
+         list/2,
+         stream/3
         ]).
 
 
@@ -89,6 +90,25 @@ list() ->
                   {'error', 'no_servers'}.
 list(Reqs, Full) ->
     send({package, list, Reqs, Full}).
+
+
+%%--------------------------------------------------------------------
+%% @doc Streams the PACKAGE's in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
+                  {ok, [{Ranking::integer(), fifo:package_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:package()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({package, stream, Reqs}, StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 %%--------------------------------------------------------------------
 %% @doc Increases the required resources for the creating org.
