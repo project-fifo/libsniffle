@@ -26,7 +26,7 @@
          service_enable/2, service_disable/2, service_clear/2,
          service_refresh/2, service_restart/2,
          add_fw_rule/2, remove_fw_rule/2,
-         list/0, list/2,
+         list/0, list/2, stream/2,
          start/1, stop/1, stop/2,
          reboot/1, reboot/2,
          owner/2, owner/3
@@ -571,6 +571,24 @@ list() ->
                   {'error', 'no_servers'}.
 list(Reqs, Full) ->
     send({vm, list, Reqs, Full}).
+
+%%--------------------------------------------------------------------
+%% @doc Streams the VM's in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], boolean()) ->
+                  {ok, [{Ranking::integer(), fifo:vm_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:vm()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn) ->
+    case libsniffle_server:stream({vm, stream, Reqs}, StreamFn) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 %%%===================================================================
 %%% Internal Functions

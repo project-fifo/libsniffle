@@ -6,7 +6,8 @@
          delete/1,
          get/1,
          list/0,
-         list/2
+         list/2,
+         stream/2
         ]).
 
 -export([
@@ -101,6 +102,25 @@ list() ->
                   {'error', 'no_servers'}.
 list(Reqs, Full) ->
     send({dataset, list, Reqs, Full}).
+
+
+%%--------------------------------------------------------------------
+%% @doc Streams the Datasets in chunks.
+%% @end
+%%--------------------------------------------------------------------
+-spec stream(Reqs::[fifo:matcher()], boolean()) ->
+                  {ok, [{Ranking::integer(), fifo:vm_id()}]} |
+                  {ok, [{Ranking::integer(), fifo:vm()}]} |
+                  {'error', 'no_servers'}.
+stream(Reqs, StreamFn) ->
+    case libsniffle_server:stream({dataset, stream, Reqs}, StreamFn) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
 
 -define(HS(F),
         F(Dataset, Val) ->
