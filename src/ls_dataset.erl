@@ -7,7 +7,7 @@
          get/1,
          list/0,
          list/2,
-         stream/2
+         stream/3
         ]).
 
 -export([
@@ -108,12 +108,12 @@ list(Reqs, Full) ->
 %% @doc Streams the Datasets in chunks.
 %% @end
 %%--------------------------------------------------------------------
--spec stream(Reqs::[fifo:matcher()], boolean()) ->
+-spec stream(Reqs::[fifo:matcher()], mdns_client_lib:stream_fun(), term()) ->
                   {ok, [{Ranking::integer(), fifo:vm_id()}]} |
                   {ok, [{Ranking::integer(), fifo:vm()}]} |
                   {'error', 'no_servers'}.
-stream(Reqs, StreamFn) ->
-    case libsniffle_server:stream({dataset, stream, Reqs}, StreamFn) of
+stream(Reqs, StreamFn, Acc0) ->
+    case libsniffle_server:stream({dataset, stream, Reqs}, StreamFn, Acc0) of
         {reply, Reply} ->
             Reply;
         noreply ->
