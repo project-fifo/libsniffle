@@ -22,7 +22,8 @@
          snapshot/2, delete_snapshot/2, rollback_snapshot/2,
          commit_snapshot_rollback/2, promote_snapshot/3,
          incremental_backup/4, full_backup/3,
-         restore_backup/2, restore_backup/3, restore_backup/4, delete_backup/3,
+         restore_backup/2, restore_backup/3, restore_backup/4, restore_backup/5,
+         delete_backup/3,
          service_enable/2, service_disable/2, service_clear/2,
          service_refresh/2, service_restart/2,
          add_fw_rule/2, remove_fw_rule/2,
@@ -448,8 +449,11 @@ restore_backup(Vm, Backup) ->
 restore_backup(Vm, Backup, Hypervisor) ->
     restore_backup(undefined, Vm, Backup, Hypervisor).
 
-restore_backup(User, Vm, Backup, Hypervisor) ->
-    send({vm, backup, restore, User, Vm, Backup, Hypervisor}).
+restore_backup(User, Vm, Backup, Rules) ->
+    send({vm, backup, restore, User, Vm, Backup, Rules}).
+
+restore_backup(User, Vm, Backup, Package, Rules) ->
+    send({vm, backup, restore, User, Vm, Backup, Package, Rules}).
 
 %%--------------------------------------------------------------------
 %% @doc Deletes the backup of a VM.
