@@ -5,7 +5,7 @@
 -endif.
 
 -export([
-         get/1, get_docker/1,
+         get/1, get_docker/1, get_hostname/2,
          dry_run/3, create/3, delete/1, delete/2, store/1, store/2,
          register/2, unregister/1,
          state/2,
@@ -18,6 +18,7 @@
          set_backup/2,
          set_snapshot/2,
          set_metadata/2,
+         hostname/3,
          log/2,
          snapshot/2, delete_snapshot/2, rollback_snapshot/2,
          commit_snapshot_rollback/2, promote_snapshot/3,
@@ -134,6 +135,34 @@ get(VM) when
 get_docker(VM) when
       is_binary(VM) ->
     send({vm, get, docker, VM}).
+
+%%--------------------------------------------------------------------
+%% @doc Looks up vm's by hostname and organisation
+%% @end
+%%--------------------------------------------------------------------
+-spec get_hostname(Hostname::binary(), Org::binary()) ->
+                        not_found |
+                        {ok, [{fifo:uuid(), integer()}]} |
+                        {'error', 'no_servers'}.
+get_hostname(Hostname, Org) when
+      is_binary(Hostname),
+      is_binary(Org) ->
+    send({vm, get, hostname, Hostname, Org}).
+
+
+%%--------------------------------------------------------------------
+%% @doc Sets the hostname on an interface.
+%% @end
+%%--------------------------------------------------------------------
+-spec hostname(Vm::binary(), Interface::binary(), Hostname::binary()) ->
+                        not_found |
+                        ok |
+                        {'error', 'no_servers'}.
+hostname(Vm, Interface, Hostname) when
+      is_binary(Vm),
+      is_binary(Interface),
+      is_binary(Hostname) ->
+    send({vm, hostname, Vm, Interface, Hostname}).
 
 %%--------------------------------------------------------------------
 %% @doc Starts a VM on the hypervisor.
