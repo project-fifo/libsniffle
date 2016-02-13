@@ -142,7 +142,7 @@ get_docker(VM) when
 %%--------------------------------------------------------------------
 -spec get_hostname(Hostname::binary(), Org::binary()) ->
                         not_found |
-                        {ok, [{fifo:uuid(), integer()}]} |
+                        {ok, term()} | %% this is a ft_hostname:hostname().
                         {'error', 'no_servers'}.
 get_hostname(Hostname, Org) when
       is_binary(Hostname),
