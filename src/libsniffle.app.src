@@ -1,13 +1,11 @@
-{application, libsniffle,
- [
-  {description, "Sniffle API"},
-  {vsn, "0.3.36"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib,
-		  mdns_client_lib
-                 ]},
-  {mod, { libsniffle_app, []}},
-  {env, [{domain, ".local"}]}
- ]}.
+{application,libsniffle,
+             [{description,"Sniffle API"},
+              {vsn,"0.3.37"},
+              {registered,[]},
+              {applications,[kernel,stdlib,mdns_client_lib]},
+              {mod,{libsniffle_app,[]}},
+              {env,[{domain,".local"}]},
+              {maintainers,["Heinz N. Gies"]},
+              {licenses,["CDDL"]},
+              {links,[{"Github",
+                       "https://github.com/project-fifo/libsniffle"}]}]}.
