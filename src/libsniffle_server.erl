@@ -104,10 +104,14 @@ handle_call({send, mdns, Msg}, _From, #state{zmq_worker = Pid} = State) ->
     Reply = mdns_client_lib:call(Pid, Msg),
     {reply, Reply, State};
 
-handle_call({stream, Msg, StreamFn, Acc0}, _From,
+handle_call({stream, Msg, StreamFn, Acc0}, From,
             #state{zmq_worker = Pid} = State) ->
-    Reply = mdns_client_lib:stream(Pid, Msg, StreamFn, Acc0, 60000),
-    {reply, Reply, State};
+    spawn(fun() ->
+                  Reply = mdns_client_lib:stream(Pid, Msg, StreamFn, Acc0,
+                                                 60000),
+                  gen_server:reply(From, Reply)
+          end),
+    {noreply, State};
 
 handle_call({send, {IP, Port}, Msg}, _From, State) ->
     Opts = [binary, {active, false}, {packet, 4}],
