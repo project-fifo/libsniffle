@@ -49,7 +49,7 @@ send(Sniffle, Msg) ->
     gen_server:call(?SERVER, {send, Sniffle, Msg}).
 
 stream(Msg, StreamFn, Acc0) ->
-    gen_server:call(?SERVER, {stream, Msg, StreamFn, Acc0}).
+    gen_server:call(?SERVER, {stream, Msg, StreamFn, Acc0}, 60000).
 
 get_server() ->
     gen_server:call(?SERVER, get_server).
