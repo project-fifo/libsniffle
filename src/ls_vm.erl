@@ -80,7 +80,7 @@ create(PackageID, DatasetID, Config) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec dry_run(PackageID::binary(), DatasetID::binary(),
-              Config::[{Key::binary(), Value::term()}]) ->
+              Config::maps:map()) ->
                      {error, no_servers} |
                      {ok, success|failed}.
 
@@ -284,11 +284,11 @@ owner(VM, Owner) ->
 %%--------------------------------------------------------------------
 -spec update(User::fifo:user_id() | undefined, VM::fifo:vm_id(),
              Package::binary() | undefined,
-             Config::fifo:attr_list()) -> ok | not_found |
+             Config::maps:map()) -> ok | not_found |
                                           {'error', 'no_servers'}.
 update(User, VM, Package, Config) when
       is_binary(VM),
-      is_list(Config) ->
+      is_map(Config) ->
     send({vm, update, User, VM, Package, Config}).
 
 update(VM, Package, Config) ->
@@ -373,7 +373,8 @@ creating(VM, Creating) when Creating == false;
                          ok | not_found |
                          {'error', 'no_servers'}.
 set_service(VM, AVs) when
-      is_binary(VM) ->
+      is_binary(VM),
+      is_list(AVs) ->
     send({vm, set_service, VM, AVs}).
 
 %%--------------------------------------------------------------------
@@ -386,7 +387,8 @@ set_service(VM, AVs) when
                         ok | not_found |
                         {'error', 'no_servers'}.
 set_backup(VM, AVs) when
-      is_binary(VM) ->
+      is_binary(VM),
+      is_list(AVs)->
     send({vm, set_backup, VM, AVs}).
 
 %%--------------------------------------------------------------------
@@ -412,7 +414,8 @@ set_snapshot(VM, AVs) when
                           ok | not_found |
                           {'error', 'no_servers'}.
 set_metadata(VM, AVs) when
-      is_binary(VM) ->
+      is_binary(VM),
+      is_list(AVs) ->
     send({vm, set_metadata, VM, AVs}).
 
 %%--------------------------------------------------------------------
@@ -438,7 +441,8 @@ set_config(VM, AVs) when
                       ok | not_found |
                       {'error', 'no_servers'}.
 set_info(VM, AVs) when
-      is_binary(VM) ->
+      is_binary(VM),
+      is_list(AVs) ->
     send({vm, set_info, VM, AVs}).
 
 %%--------------------------------------------------------------------
