@@ -1,6 +1,6 @@
 {application,libsniffle,
              [{description,"Sniffle API"},
-              {vsn,"0.3.47"},
+              {vsn,"0.3.48"},
               {registered,[]},
               {applications,[kernel,stdlib,mdns_client_lib]},
               {mod,{libsniffle_app,[]}},
