@@ -368,13 +368,14 @@ creating(VM, Creating) when Creating == false;
 %% @end
 %%--------------------------------------------------------------------
 -spec set_service(VM::fifo:vm_id(),
+                  maps:map() |
                   [{Attribute::fifo:keys(),
                     Value::fifo:value() | delete}]) ->
                          ok | not_found |
                          {'error', 'no_servers'}.
 set_service(VM, AVs) when
       is_binary(VM),
-      is_list(AVs) ->
+      (is_map(AVs) orelse is_list(AVs)) ->
     send({vm, set_service, VM, AVs}).
 
 %%--------------------------------------------------------------------
@@ -382,13 +383,14 @@ set_service(VM, AVs) when
 %% @end
 %%--------------------------------------------------------------------
 -spec set_backup(VM::fifo:vm_id(),
+                 maps:map() |
                  [{Attribute::fifo:keys(),
                    Value::fifo:value() | delete}]) ->
                         ok | not_found |
                         {'error', 'no_servers'}.
 set_backup(VM, AVs) when
       is_binary(VM),
-      is_list(AVs)->
+      (is_map(AVs) orelse is_list(AVs))->
     send({vm, set_backup, VM, AVs}).
 
 %%--------------------------------------------------------------------
@@ -409,13 +411,14 @@ set_snapshot(VM, AVs) when
 %% @end
 %%--------------------------------------------------------------------
 -spec set_metadata(VM::fifo:vm_id(),
+                   maps:map() |
                    [{Attribute::fifo:keys(),
                      Value::fifo:value() | delete}]) ->
                           ok | not_found |
                           {'error', 'no_servers'}.
 set_metadata(VM, AVs) when
       is_binary(VM),
-      is_list(AVs) ->
+      (is_map(AVs) orelse is_list(AVs)) ->
     send({vm, set_metadata, VM, AVs}).
 
 %%--------------------------------------------------------------------
@@ -436,13 +439,14 @@ set_config(VM, AVs) when
 %% @end
 %%--------------------------------------------------------------------
 -spec set_info(VM::fifo:vm_id(),
+               maps:map() |
                [{Attribute::fifo:keys(),
                  Value::fifo:value() | delete}]) ->
                       ok | not_found |
                       {'error', 'no_servers'}.
 set_info(VM, AVs) when
       is_binary(VM),
-      is_list(AVs) ->
+      (is_map(AVs) orelse is_list(AVs)) ->
     send({vm, set_info, VM, AVs}).
 
 %%--------------------------------------------------------------------
