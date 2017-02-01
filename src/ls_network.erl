@@ -9,6 +9,8 @@
          add_iprange/2,
          add_iprange/3,
          remove_iprange/2,
+         add_resolver/2,
+         remove_resolver/2,
          set_metadata/2,
          list/2,
          list/3,
@@ -64,7 +66,7 @@ get(Network) when
     send({network, get, Network}).
 
 %%--------------------------------------------------------------------
-%% @doc Adds a iprange to a network
+%% @doc Adds an iprange to a network
 %% @end
 %%--------------------------------------------------------------------
 -spec add_iprange(Network::fifo:network_id(), IPrange::fifo:iprange_id()) ->
@@ -80,7 +82,7 @@ add_iprange(Sniffle, Network, IPRange) when
     send(Sniffle, {network, add_iprange, Network, IPRange}).
 
 %%--------------------------------------------------------------------
-%% @doc Adds a iprange to a network
+%% @doc Remove an iprange to a network
 %% @end
 %%--------------------------------------------------------------------
 -spec remove_iprange(Network::fifo:network_id(), IPrange::fifo:iprange_id()) ->
@@ -91,6 +93,33 @@ remove_iprange(Network, IPRange) when
       is_binary(Network),
       is_binary(IPRange) ->
     send({network, remove_iprange, Network, IPRange}).
+
+
+%%--------------------------------------------------------------------
+%% @doc Adds a resoler to a network
+%% @end
+%%--------------------------------------------------------------------
+-spec add_resolver(Network::fifo:network_id(), Resolver::binary()) ->
+                         not_found |
+                         ok |
+                         {'error', 'no_servers'}.
+add_resolver(Network, Resolver) when
+      is_binary(Network),
+      is_binary(Resolver) ->
+    send({network, add_resolver, Network, Resolver}).
+
+%%--------------------------------------------------------------------
+%% @doc Remove a resolver to a network
+%% @end
+%%--------------------------------------------------------------------
+-spec remove_resolver(Network::fifo:network_id(), Resolver::binary()) ->
+                            not_found |
+                            ok |
+                            {'error', 'no_servers'}.
+remove_resolver(Network, Resolver) when
+      is_binary(Network),
+      is_binary(Resolver) ->
+    send({network, remove_resolver, Network, Resolver}).
 
 %%--------------------------------------------------------------------
 %% @doc Lists all networks known to the system filtered by
