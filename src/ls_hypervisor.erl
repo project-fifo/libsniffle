@@ -166,7 +166,7 @@ stream(Reqs, StreamFn, Acc0) ->
 send(Msg) ->
     send(mdns, Msg).
 send(Sniffle, Msg) ->
-    case libsniffle_server:send(Sniffle, Msg) of
+    case libsniffle_server:sync(Sniffle, Msg) of
         {reply, Reply} ->
             Reply;
         noreply ->

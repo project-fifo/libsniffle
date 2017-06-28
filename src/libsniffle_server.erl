@@ -13,6 +13,7 @@
 %% API
 -export([start_link/0,
          send/2,
+         sync/2,
          stream/3,
          servers/0]).
 
@@ -47,6 +48,9 @@ start_link() ->
 
 send(Sniffle, Msg) ->
     gen_server:call(?SERVER, {send, Sniffle, Msg}).
+
+sync(Sniffle, Msg) ->
+    gen_server:call(?SERVER, {sync, Sniffle, Msg}).
 
 stream(Msg, StreamFn, Acc0) ->
     gen_server:call(?SERVER, {stream, Msg, StreamFn, Acc0}, 60000).
@@ -106,6 +110,10 @@ handle_call({send, mdns, Msg}, From, #state{zmq_worker = Pid} = State) ->
                   gen_server:reply(From, Reply)
           end),
     {noreply, State};
+
+handle_call({sync, mdns, Msg}, From, #state{zmq_worker = Pid} = State) ->
+    Reply = mdns_client_lib:call(Pid, Msg),
+    {reply, Reply, State};
 
 handle_call({stream, Msg, StreamFn, Acc0}, From,
             #state{zmq_worker = Pid} = State) ->
