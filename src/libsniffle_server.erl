@@ -111,7 +111,7 @@ handle_call({send, mdns, Msg}, From, #state{zmq_worker = Pid} = State) ->
           end),
     {noreply, State};
 
-handle_call({sync, mdns, Msg}, From, #state{zmq_worker = Pid} = State) ->
+handle_call({sync, mdns, Msg}, _From, #state{zmq_worker = Pid} = State) ->
     Reply = mdns_client_lib:call(Pid, Msg),
     {reply, Reply, State};
 
