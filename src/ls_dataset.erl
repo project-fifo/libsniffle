@@ -8,7 +8,8 @@
          list/0,
          list/2,
          stream/3,
-         available/0
+         available/0,
+         available/2
         ]).
 
 -export([
@@ -39,11 +40,31 @@
 %%%===================================================================
 
 %%--------------------------------------------------------------------
+%% @doc Stream available datasets
+%% @end
+%%--------------------------------------------------------------------
+-spec available(mdns_client_lib:stream_fun(), term()) ->
+                       {ok, [maps:map()]} |
+                       ok |
+                       {'error', 'no_servers'}.
+available(StreamFn, Acc0) ->
+    case libsniffle_server:stream({dataset, available, stream},
+                                  StreamFn, Acc0) of
+        {reply, Reply} ->
+            Reply;
+        noreply ->
+            ok;
+        E ->
+            E
+    end.
+
+%%--------------------------------------------------------------------
 %% @doc Available datasets
 %% @end
 %%--------------------------------------------------------------------
--spec available() -> {ok, [maps:map()]} |
-                     {'error', 'no_servers'}.
+-spec available() ->
+                       {ok, [maps:map()]} |
+                       {'error', 'no_servers'}.
 available() ->
     send({dataset, available}).
 
