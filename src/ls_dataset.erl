@@ -42,7 +42,7 @@
 %% @doc Available datasets
 %% @end
 %%--------------------------------------------------------------------
--spec available() -> {ok, term()} |
+-spec available() -> {ok, [maps:map()]} |
                      {'error', 'no_servers'}.
 available() ->
     send({dataset, available}).
