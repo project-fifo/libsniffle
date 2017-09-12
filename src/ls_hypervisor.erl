@@ -18,6 +18,7 @@
          set_pool/2,
          set_service/2,
          alias/2,
+         architecture/2,
          etherstubs/2,
          host/2,
          networks/2,
@@ -123,6 +124,7 @@ list(Requirements, Full) ->
 ?HS(set_pool).
 ?HS(set_service).
 ?HS(alias).
+?HS(architecture).
 ?HS(etherstubs).
 ?HS(host).
 ?HS(networks).
