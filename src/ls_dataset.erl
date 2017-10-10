@@ -213,7 +213,7 @@ stream(Reqs, StreamFn, Acc0) ->
                 ok | {error, no_servers}.
 ?HS(os).
 
--spec type(fifo:dataset_id(), zone | kvm) ->
+-spec type(fifo:dataset_id(), zone | kvm | jail) ->
                   ok | {error, no_servers}.
 ?HS(type).
 
